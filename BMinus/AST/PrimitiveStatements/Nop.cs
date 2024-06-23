@@ -6,7 +6,7 @@ namespace BMinus.AST.PrimitiveStatements;
 public class Nop : Statement
 {
 	//Does Nothing
-	public Nop(Position position) : base(position)
+	public Nop( )
 	{
 	}
 	public override string ToString()

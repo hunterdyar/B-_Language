@@ -6,9 +6,8 @@ public class Statement
 {
 	public Position Position;
 
-	public Statement(Position position)
+	public Statement()
 	{
-		Position = position;
 	}
 
 	public override string ToString()

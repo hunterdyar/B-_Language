@@ -12,12 +12,12 @@ public class StatementParser
 	public static readonly TokenListParser<BMToken, Statement> SingleVariableDeclarationParser = 
      		from var in Token.EqualTo(BMToken.VarKeyword)
      		from id in ExpressionParsers.IdentifierParser
-     		select (Statement)new VariableDeclaration(id, var.Position);
+     		select (Statement)new VariableDeclaration(id);
 	
 	public static readonly TokenListParser<BMToken, Statement> MultipleVariableDeclarationParser =
 		from var in Token.EqualTo(BMToken.VarKeyword)
 		from ids in ExpressionParsers.IdentifierParser.ManyDelimitedBy(Token.EqualTo(BMToken.Comma), Token.EqualTo(BMToken.Comma))
-		select (Statement)new VariableDeclaration(ids, var.Position);
+		select (Statement)new VariableDeclaration(ids);
 
 	public static readonly TokenListParser<BMToken, Statement> VariableDeclarationParser =
 		from dec in MultipleVariableDeclarationParser.Or(SingleVariableDeclarationParser)

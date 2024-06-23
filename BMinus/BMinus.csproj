@@ -8,7 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Pegasus" Version="4.1.0" />
       <PackageReference Include="Superpower" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Grammar\math.g" />
+      <PegGrammar Include="Grammar\math.g" />
+      <None Remove="Grammar\bminus.g" />
+      <PegGrammar Include="Grammar\bminus.g" />
     </ItemGroup>
 
 </Project>

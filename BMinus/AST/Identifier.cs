@@ -6,7 +6,7 @@ namespace BMinus.AST;
 public class Identifier : Expression
 {
 	public readonly string Value;
-	public Identifier(Token<BMToken> token) : base(token.Position)
+	public Identifier(Token<BMToken> token)
 	{
 		Value = token.Span.ToString();
 	}

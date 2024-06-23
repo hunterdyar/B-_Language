@@ -6,7 +6,7 @@ public class Expression : Statement
 {
 	//return a value
 
-	public Expression(Position position) : base(position)
+	public Expression()
 	{
 	}
 }

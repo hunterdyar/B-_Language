@@ -1,10 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27d104bf_002D3ccd_002D4e70_002Da74b_002Dfcce8412cf2c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="IdentifierTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27d104bf_002D3ccd_002D4e70_002Da74b_002Dfcce8412cf2c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IdentifierTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.IdentifierTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b71edbf4_002D2b14_002D4b7d_002D9378_002D9d8a126d2e24/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b71edbf4_002D2b14_002D4b7d_002D9378_002D9d8a126d2e24/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.DeclarationTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.IdentifierTest&lt;/TestId&gt;&#xD;

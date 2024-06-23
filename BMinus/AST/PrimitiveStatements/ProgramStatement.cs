@@ -7,16 +7,16 @@ public class ProgramStatement : Statement
 {
 	public readonly Statement[] Statements;
 
-	public ProgramStatement(Statement statement) : base(statement.Position)
+	public ProgramStatement(Statement statement)
 	{
 		Statements = new[] { statement };
 	}
-	public ProgramStatement(Statement[] statements, Position position) : base(position)
+	public ProgramStatement(Statement[] statements)
 	{
 		this.Statements = statements;
 	}
 
-	public ProgramStatement(List<Statement> statements, Position position) : base(position)
+	public ProgramStatement(List<Statement> statements)
 	{
 		this.Statements = statements.ToArray();
 	}

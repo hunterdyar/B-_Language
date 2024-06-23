@@ -27,7 +27,7 @@ public class BMParser
 		if (string.IsNullOrEmpty(program))
 		{
 			error = "Program string is empty";
-			root = new Nop(new Position());
+			root = new Nop();
 			return false;
 		}
 
@@ -35,7 +35,7 @@ public class BMParser
 		if (!tokenList.HasValue)
 		{
 			error = tokenList.ToString();
-			root = new Nop(new Position());
+			root = new Nop();
 			return false;
 		}
 

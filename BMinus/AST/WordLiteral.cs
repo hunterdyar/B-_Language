@@ -1,4 +1,5 @@
-﻿using BMinus.Parser;
+﻿using System.Globalization;
+using BMinus.Parser;
 using Superpower.Model;
 
 namespace BMinus.AST;
@@ -6,14 +7,18 @@ namespace BMinus.AST;
 public class WordLiteral : Expression
 {
 	private readonly byte[] Value;
-	private readonly Position position;
 
-	public WordLiteral(Token<BMToken> value, int intVal) : base(value.Position)
+	public WordLiteral( int intVal)
 	{
-		this.position = value.Position;
-		string valLit = value.ToString();
 		Value = BitConverter.GetBytes(intVal);
 	}
+	
+
+	public WordLiteral(double dVal)
+	{
+		Value = BitConverter.GetBytes(dVal);
+	}
+	
 
 	public override string ToString()
 	{

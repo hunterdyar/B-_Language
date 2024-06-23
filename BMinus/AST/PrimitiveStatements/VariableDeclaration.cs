@@ -8,17 +8,17 @@ public class VariableDeclaration : Statement
 	public Identifier[] Identifiers => _identifiers;
 	private Identifier[] _identifiers;
 	
-	public VariableDeclaration(Expression[] ids, Position position) : base(position)
+	public VariableDeclaration(Expression[] ids)
 	{
 		if (ids == null || ids.Length == 0)
 		{
-			throw new ArgumentException($"Null or no id's to declare at {position}");
+			throw new ArgumentException($"Null or no id's to declare");
 		}
 
 		_identifiers = ids.Select(e=>e as Identifier).ToArray();
 	}
 
-	public VariableDeclaration(Expression idExpr, Position position) : base(position)
+	public VariableDeclaration(Expression idExpr)
 	{
 		if (idExpr is Identifier id)
 		{
@@ -26,7 +26,7 @@ public class VariableDeclaration : Statement
 		}
 		else
 		{
-			throw new ArgumentException($"{idExpr} is not an identifier. {position}");
+			throw new ArgumentException($"{idExpr} is not an identifier.");
 		}
 	}
 

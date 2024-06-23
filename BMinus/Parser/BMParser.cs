@@ -4,6 +4,7 @@ using System.IO.Compression;
 using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using Superpower;
+using Superpower.Model;
 using Superpower.Parsers;
 using Statement = BMinus.AST.Statement;
 namespace BMinus.Parser;
@@ -26,7 +27,7 @@ public class BMParser
 		if (string.IsNullOrEmpty(program))
 		{
 			error = "Program string is empty";
-			root = null;
+			root = new Nop(new Position());
 			return false;
 		}
 
@@ -34,11 +35,11 @@ public class BMParser
 		if (!tokenList.HasValue)
 		{
 			error = tokenList.ToString();
-			root = null;
+			root = new Nop(new Position());
 			return false;
 		}
 
-		var result = StatementParser.Statement.Parse(tokenList.Value);
+		var result = StatementParser.Parser.Parse(tokenList.Value);
 		root = result;
 		return true;
 	}

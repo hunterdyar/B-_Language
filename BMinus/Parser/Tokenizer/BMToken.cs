@@ -40,4 +40,5 @@ public enum BMToken
 	HexLiteral,
 	[Token(Category = "operator", Example = "=")]
 	Assign,
+	Comma,
 }

@@ -34,6 +34,12 @@ public class Tokenizer
 				.Named("hex digit")
 				.AtLeastOnce())
 			.Select(chrs => new string(chrs));
+
+	public static TextParser<string> Identifier =
+		from first in Character.Letter
+		from rest in Character.LetterOrDigit.Or(Character.EqualTo('_')).Or(Character.EqualTo('-')).Many()
+		select first + rest.ToString();//does char[] go to string?
+
 	public static Tokenizer<BMToken> Instance { get; } =
 		new TokenizerBuilder<BMToken>()
 			.Ignore(Span.WhiteSpace)
@@ -43,10 +49,18 @@ public class Tokenizer
 			.Match(Character.EqualTo(']'), BMToken.RSquareBracket)
 			.Match(Character.EqualTo('*'), BMToken.Times)
 			.Match(Character.EqualTo('+'),BMToken.Plus)
+			.Match(Character.EqualTo('-'), BMToken.Minus)
+			.Match(Character.EqualTo('/'),BMToken.Divide)
 			.Match(Character.EqualTo('('), BMToken.LParen)
 			.Match(Character.EqualTo(')'), BMToken.RParen)
 			.Match(Character.EqualTo('='),BMToken.Assign)
+			.Match(Character.EqualTo(';'),BMToken.EndExpression)
+			.Match(Span.EqualTo("var"), BMToken.VarKeyword)
+			.Match(HexInteger, BMToken.HexLiteral)
 			.Match(StringToken, BMToken.String)
 			.Match(IntegerLiteralToken, BMToken.IntLiteral, requireDelimiters: true)
-			.Match(Identifier.CStyle, BMToken.Identifier, requireDelimiters: true).Build();
+			.Match(Superpower.Parsers.Identifier.CStyle, BMToken.Identifier, requireDelimiters:true)
+		//	.Match(Identifier, BMToken.Identifier, requireDelimiters: false)
+			.Build();//todo my own identifier with -'s
+			
 }

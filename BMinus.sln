@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMinus", "BMinus\BMinus.csproj", "{73E0A0C6-3365-48DF-B5F8-C9B853CAAB5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMinusTests", "BMinusTests\BMinusTests.csproj", "{F59DCEF2-249A-4167-A591-E3A7937EBD25}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73E0A0C6-3365-48DF-B5F8-C9B853CAAB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E0A0C6-3365-48DF-B5F8-C9B853CAAB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E0A0C6-3365-48DF-B5F8-C9B853CAAB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E0A0C6-3365-48DF-B5F8-C9B853CAAB5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F59DCEF2-249A-4167-A591-E3A7937EBD25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F59DCEF2-249A-4167-A591-E3A7937EBD25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F59DCEF2-249A-4167-A591-E3A7937EBD25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59DCEF2-249A-4167-A591-E3A7937EBD25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

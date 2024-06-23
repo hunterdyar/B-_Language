@@ -1,6 +1,4 @@
-﻿using BMinus.Parser;
-using Superpower.Model;
-
+﻿
 namespace BMinus.AST;
 
 public abstract class BinOp : Expression
@@ -18,13 +16,13 @@ public abstract class BinOp : Expression
 		return $"({Left.ToString()} {OpAsString} {Right.ToString()} )";
 	}
 
-	public static BinOp GetBinaryOp(Expression left, Token<BMToken> token, Expression right)
+	public static BinOp GetBinaryOp(Expression left, string op, Expression right)
 	{
-		switch (token.Kind)
+		switch (op)
 		{
-			case BMToken.Plus:
+			case "+":
 				return new AddExpr(left, right);
-			case BMToken.Minus:
+			case "-":
 				return new SubtractExpr(left, right);
 			default:
 				throw new ArgumentException("bad token");

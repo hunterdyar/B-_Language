@@ -1,11 +1,7 @@
-﻿using Superpower.Model;
-
-namespace BMinus.AST;
+﻿namespace BMinus.AST;
 
 public class Statement
 {
-	public Position Position;
-
 	public Statement()
 	{
 	}

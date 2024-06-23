@@ -1,14 +1,12 @@
-﻿using BMinus.Parser;
-using Superpower.Model;
-
+﻿
 namespace BMinus.AST;
 
 public class Identifier : Expression
 {
 	public readonly string Value;
-	public Identifier(Token<BMToken> token)
+	public Identifier(string id)
 	{
-		Value = token.Span.ToString();
+		Value = id;
 	}
 
 	public override string ToString()

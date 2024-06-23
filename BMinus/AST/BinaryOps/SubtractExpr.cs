@@ -1,6 +1,4 @@
-﻿using Superpower.Model;
-
-namespace BMinus.AST;
+﻿namespace BMinus.AST;
 
 public class SubtractExpr : BinOp
 {

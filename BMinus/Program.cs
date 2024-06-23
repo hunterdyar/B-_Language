@@ -3,15 +3,13 @@
 using Ara3D.Parakeet;
 using BMinus.AST;
 using BMinus.Barakeet;
-using BMinus.Parser;
 
 
 ParserInput input = new ParserInput("var  a;a=1+2;");
 try
 {
 	var p = BMinusGrammar.Instance.Parse(input.Text);
-	var tree = p.Node.ToParseTree();
-	 
+	var tree = SyntaxTreeBuilder.WalkStatement(p.Node.ToParseTree());
 	Console.WriteLine(tree);
 }
 catch (ParserException e)

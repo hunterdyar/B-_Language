@@ -1,6 +1,4 @@
-﻿using Superpower.Model;
-
-namespace BMinus.AST.PrimitiveStatements;
+﻿namespace BMinus.AST.PrimitiveStatements;
 
 public class Assignment : Statement
 {

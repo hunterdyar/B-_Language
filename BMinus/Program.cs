@@ -1,10 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Ara3D.Parakeet;
+using BMinus.Barakeet;
 using BMinus.Parser;
 
-var tokens = Tokenizer.Instance.Tokenize("1 * (2+3)");
+ParserInput input = new ParserInput("var a;a=1+2");
+var p = BMinusGrammar.Instance.Parse(input.Text);
+var tree = p.Node.ToParseTree();
 
-foreach (var token in tokens)
-{
-	Console.WriteLine(token.Kind);	
-}
+Console.WriteLine(tree);

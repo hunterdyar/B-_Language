@@ -23,16 +23,15 @@ public class StatementParser
 		from dec in MultipleVariableDeclarationParser.Or(SingleVariableDeclarationParser)
 		select dec;
 	
-	// public static readonly TokenListParser<BMToken, Statement> AssignmentParser =
-	// 		from id in ExpressionParsers.IdentifierParser
-	// 		from eq in Token.EqualTo(BMToken.Assign)
-	// 		from exp in ExpressionParsers.ExpressionParser
-	// 		select (Statement)new Assignment(id, exp, eq.Position);
+	public static readonly TokenListParser<BMToken, Statement> AssignmentParser =
+			from id in ExpressionParsers.IdentifierParser
+			from eq in Token.EqualTo(BMToken.Assign)
+			from exp in ExpressionParsers.ExpressionParser
+			select (Statement)new Assignment(id, exp, eq.Position);
 
 	public static readonly TokenListParser<BMToken, Statement> StmntParser =
-		from s in VariableDeclarationParser
-		// from s in AssignmentParser.Or(VariableDeclarationParser)
-		select s;
+		from a in AssignmentParser
+		select a; 
 	
 	public static readonly TokenListParser<BMToken, Statement> Parser = 
 		from p in StmntParser

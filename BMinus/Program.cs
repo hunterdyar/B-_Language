@@ -5,7 +5,7 @@ using BMinus.AST;
 using BMinus.Barakeet;
 
 
-ParserInput input = new ParserInput("var  a;a=1+2;");
+ParserInput input = new ParserInput("var  a;a=b+c;");
 try
 {
 	var p = BMinusGrammar.Instance.Parse(input.Text);

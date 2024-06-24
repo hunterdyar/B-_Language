@@ -23,22 +23,25 @@ public class BMinusGrammar : BMinusTokenGrammar
 	public Rule Statement => Node((Assignment | VariableDeclaration) + AdvanceOnFail);
 	public Rule VariableDeclaration => Node(DeclarationKeyword + ListOfAtLeastOne(Identifier, Comma.Optional()));
 	public Rule Assignment => Node(Identifier + AssignmentChar + Expression);
+
+	public Rule Block => BracedList(Statement, Break);
 	
 	//Expressions
-
 	public Rule LeafExpression => 
 		Literal 
 		| ParenthesizedExpression
 		| Identifier 
 	;
 
-	public Rule PrefixOperation => PrefixOperator + LeafExpression;
-	public Rule PostfixOperation => Expression + PostfixOperator;
+	public Rule PrefixOperation => Node(PrefixOperator + LeafExpression);
+	public Rule PostfixOperation => Node(Expression + PostfixOperator);
 	public Rule ParenthesizedExpression => Parenthesized(Expression);
-	public Rule BinaryOperation => Node(BinaryOperator + AdvanceOnFail+ Expression);
+	public Rule BinaryOperation => Node(BinaryOperator + Expression);
+	public Rule OuterExpression => Node(Recursive(nameof(InnerExpression)));
 	public Rule InnerExpression => PrefixOperation | PostfixOperation | LeafExpression;
-	public Rule Expression => Node(Recursive(nameof(InnerExpression)));
-	public Rule Block => BracedList(Statement,Break);
+	public Rule Expression => OuterExpression;
+	
+
 	
 	//Program
 	public Rule Program => Node(ListOfAtLeastOne(WS + Statement+AdvanceOnFail,Break)+EndOfInput);

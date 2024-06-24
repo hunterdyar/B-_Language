@@ -12,11 +12,10 @@ public class BMinusGrammar : BMinusTokenGrammar
 	//Generic
 	public override Rule WS => Named((SpaceChars | Comment)).ZeroOrMore();
 	public Rule PrefixOperator => Node(Symbols("!", "-", "+", "~"));
-	public Rule PostfixOperator => Node(Symbols("++", "--") | Indexer | FunctionArgs | BinaryOperation);
+	public Rule PostfixOperator => Node(Symbols("++", "--") | Indexer | BinaryOperation);
 	//todo: order of precedence?
 	public Rule Comment => Named(CppStyleComment | CStyleBlockComment);
-	public Rule FunctionArgs => Node(ParenthesizedList(Expression));
-
+	// public Rule FunctionArgs => Node(ParenthesizedList(Expression));
 
 	//Fragments
 	public Rule Indexer => Node(Bracketed(Expression));
@@ -33,11 +32,12 @@ public class BMinusGrammar : BMinusTokenGrammar
 		| Identifier 
 	;
 
+	public Rule PrefixOperation => PrefixOperator + LeafExpression;
+	public Rule PostfixOperation => Expression + PostfixOperator;
 	public Rule ParenthesizedExpression => Parenthesized(Expression);
 	public Rule BinaryOperation => Node(BinaryOperator + AdvanceOnFail+ Expression);
-	public Rule InnerExpression => PrefixOperator.ZeroOrMore() + LeafExpression + PostfixOperator.ZeroOrMore();
-	public Rule OuterExpression => InnerExpression;
-	public Rule Expression => Node(Recursive(nameof(OuterExpression)));
+	public Rule InnerExpression => PrefixOperation | PostfixOperation | LeafExpression;
+	public Rule Expression => Node(Recursive(nameof(InnerExpression)));
 	public Rule Block => BracedList(Statement,Break);
 	
 	//Program

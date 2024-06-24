@@ -33,10 +33,14 @@ public class VariableDeclaration : Statement
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.Append("var ");
-		foreach (var id in _identifiers)
+		for (var i = 0; i < _identifiers.Length; i++)
 		{
+			var id = _identifiers[i];
 			sb.Append(id.Value);
-			sb.Append(",");
+			if (i < _identifiers.Length-1)
+			{
+				sb.Append(",");
+			}
 		}
 
 		return sb.ToString();

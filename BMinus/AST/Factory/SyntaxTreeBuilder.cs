@@ -89,6 +89,8 @@ public static class SyntaxTreeBuilder
 				
 				//return postfix other.
 				break;
+			case "PrefixOperator":
+				return PrefixOp.GetPrefixOp(WalkExpression(node.Children[1]), node.Children[0].Contents);
 		}
 
 		return null;

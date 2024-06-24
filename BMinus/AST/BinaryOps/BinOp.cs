@@ -13,7 +13,7 @@ public abstract class BinOp : Expression
 	}
 	public override string ToString()
 	{
-		return $"({Left.ToString()} {OpAsString} {Right.ToString()} )";
+		return $"({Left.ToString()} {OpAsString} {Right.ToString()})";
 	}
 
 	public static BinOp GetBinaryOp(Expression left, string op, Expression right)

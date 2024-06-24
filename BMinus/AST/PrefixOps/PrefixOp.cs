@@ -20,8 +20,7 @@ public class PrefixOp : Expression
 			case "!":
 				return new Bang(right);
 		}
-
-
+		
 		throw new ArgumentException($"invalid prefix '{op}'");
 	}
 }

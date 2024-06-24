@@ -39,8 +39,9 @@ public class Tests
 				return;
 			}
 
-			
-			var tree = SyntaxTreeBuilder.WalkStatement(p.Node.ToParseTree());
+			var t = p.Node.ToParseTree();
+			Console.WriteLine(t);
+			var tree = SyntaxTreeBuilder.WalkStatement(t);
 			if(tree == null){Assert.Fail();}
 			Assert.That(tree?.ToString(), Is.EqualTo(expected));
 		}
@@ -70,8 +71,8 @@ public class Tests
     }
 
 	[Test]
-	[TestCase("b = !a", "b = !(a)")]
-	[TestCase("b =!(1+2)", "b = -(1 + 2)")]
+	[TestCase("b = !a", "b = !a")]
+	[TestCase("b =!(1+2)", "b = !(1 + 2)")]
 
 	public void PrefixOperatorTest(string test, string expected)
 	{

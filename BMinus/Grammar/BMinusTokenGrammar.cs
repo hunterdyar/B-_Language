@@ -6,9 +6,9 @@ namespace BMinus.Barakeet;
 public class BMinusTokenGrammar : BaseCommonGrammar
 {
 	//Keywords and Symbols
-	public Rule Break => new CharRule(';');
+	public Rule Break => Sym(";");
 	public Rule DeclarationKeyword => Keyword("var");
-	public Rule AssignmentChar => new CharRule('=');
+	public Rule AssignmentChar => Sym("=");
 	public Rule AdvanceOnFail => new OnFail(AdvanceToEnd);
 	public Rule EscapedLiteralChar => Named('\\' + AnyChar);
 	public Rule StringLiteralChar => Named(EscapedLiteralChar | "\"\"" | AnyChar.Except('"'));
@@ -39,5 +39,8 @@ public class BMinusTokenGrammar : BaseCommonGrammar
 		"=", "<", ">", "<=", ">=", "==", "!=",
 		"??", "?="
 	));
-	
+
+	public Rule RecoverEos => OnFail(
+		CharLiteralChar.Except(Break).ZeroOrMore()
+		+ (Break | EndOfInput) | AdvanceToEnd);
 }

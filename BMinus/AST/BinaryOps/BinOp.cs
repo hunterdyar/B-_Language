@@ -25,7 +25,7 @@ public abstract class BinOp : Expression
 			case "-":
 				return new SubtractExpr(left, right);
 			default:
-				throw new ArgumentException("bad token");
+				throw new ArgumentException($"bad token: {op}");
 		}
 	}
 }

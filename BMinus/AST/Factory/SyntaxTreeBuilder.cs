@@ -20,8 +20,8 @@ public static class SyntaxTreeBuilder
 			case "Statement":
 				return WalkStatement(node.Children[0]);
 			case "Expression":
+				Console.WriteLine("Ooops! Expression as statement");
 				return WalkExpression(node.Children[0]);
-			
 			case "Assignment":
 				return new Assignment(WalkExpression(node.Children[0]), WalkExpression(node.Children[1]));
 			case "VariableDeclaration":
@@ -30,8 +30,9 @@ public static class SyntaxTreeBuilder
 				{
 					identifiers.Add(new Identifier(c.Contents));
 				}
-
 				return new VariableDeclaration(identifiers.ToArray());
+			case "ExpressionStatement":
+				return WalkExpression(node.Children[0]);
 			default:
 				break;
 		}
@@ -44,6 +45,9 @@ public static class SyntaxTreeBuilder
 		switch (node.Type)
 		{
 			case "Expression":
+				MustHaveChildrenCount(node, 1);
+				return WalkExpression(node.Children[0]);
+			case "InnerExpression":
 				if (node.Children.Count == 1)
 				{
 					return WalkExpression(node.Children[0]);
@@ -51,29 +55,40 @@ public static class SyntaxTreeBuilder
 				{
 					if (node.Children[0].Type == "PrefixOperator")
 					{
-						return null;
+						return PrefixOp.GetPrefixOp(WalkExpression(node.Children[1]), node.Children[0].Contents);
 					}
 
-					if (node.Children[1].Type == "PostfixOperator")
+					if (node.Children[1].Type == "InfixOperation")
 					{
 						var post = node.Children[1];
 						var left = WalkExpression(node.Children[0]);
 						var op = post.Contents;
 						var rightNode = post.Children[0];
-						if (rightNode != null && rightNode.Type == "BinaryOperation")
+						if (rightNode != null && rightNode.Type == "BinaryOperator")
 						{
-							op = rightNode.Children[0].Contents;
-							var right = WalkExpression(rightNode.Children[1]);
-							return BinOp.GetBinaryOp(left, op, right);
+							op = rightNode.Contents;
+							
 						}
-						//return PostOp.GetPostOp()
-						return null;
+
+						var right = WalkExpression(node.Children[1].Children[1]);
+						return BinOp.GetBinaryOp(left, op, right);
 					}
-				}else if (node.Children.Count == 3)
+					if (node.Children[1].Type == "PostfixOperation")
+                    {
+                    	var post = node.Children[1];
+                    	var left = WalkExpression(node.Children[0]);
+                    	var op = post.Contents;
+                    	var rightNode = post.Children[0];
+                    	//return PostOp.GetPostOp()
+	                    throw new NotImplementedException("Postfix Operator Parsing not implemented");
+                    	return null;
+                    }
+				}else
 				{
 					//pre = 0,
 					//expr = 1,
 					//post = 2
+					throw new Exception($"i don't know what to do with an expression with {node.Children.Count} children.");
 					return null;
 				}
 				break;
@@ -82,7 +97,8 @@ public static class SyntaxTreeBuilder
 			case "IntegerLiteral":
 				return new WordLiteral(int.Parse(node.Contents));
 			case "PostfixOperator":
-				if (node.Children[1].Type == "BinaryOperation")
+				MustHaveChildrenCount(node, 2);
+				if (node.Children[1].Type == "InfixOperation")
 				{
 					return BinOp.GetBinaryOp(WalkExpression(node.Children[0]),node.Children[1].Children[0].Contents,WalkExpression(node.Children[1]));
 				}
@@ -91,8 +107,22 @@ public static class SyntaxTreeBuilder
 				break;
 			case "PrefixOperator":
 				return PrefixOp.GetPrefixOp(WalkExpression(node.Children[1]), node.Children[0].Contents);
+			case "ParenthesizedExpression":
+				MustHaveChildrenCount(node, 1);
+				return WalkExpression(node.Children[0]);
 		}
 
+		throw new Exception($"I can't handle this node: {node}");
 		return null;
 	}
+
+	private static void MustHaveChildrenCount(ParserTreeNode node, int i)
+	{
+		if (node.Children.Count != i)
+		{
+			throw new Exception($"Bad number of children in node! got {node.Children.Count}, expected {i}");
+		}
+	}
+
+	
 }

@@ -8,6 +8,6 @@ public class Negate : PrefixOp
 
 	public override string ToString()
 	{
-		return "-(" + Right.ToString() + ")";
+		return "-" + Right.ToString() + "";
 	}
 }

@@ -8,6 +8,6 @@ public class Bang : PrefixOp
 
 	public override string ToString()
 	{
-		return "!(" + Right.ToString() + ")";
+		return "!" + Right.ToString() + "";
 	}
 }

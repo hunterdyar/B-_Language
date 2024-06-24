@@ -77,5 +77,14 @@ public class Tests
 	public void PrefixOperatorTest(string test, string expected)
 	{
 		var x = new ParseTest(test, expected);
+	}
+
+	[Test]
+	[TestCase("1+2+3;", "((1+2)+3)")]
+	[TestCase("a?1:0;", "a ? 1 : 0")]
+
+	public void InfixOperatorTest(string test, string expected)
+	{
+		var x = new ParseTest(test, expected);
 	}	
 }

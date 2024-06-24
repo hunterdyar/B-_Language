@@ -64,14 +64,20 @@ public static class SyntaxTreeBuilder
 						var left = WalkExpression(node.Children[0]);
 						var op = post.Contents;
 						var rightNode = post.Children[0];
-						if (rightNode != null && rightNode.Type == "BinaryOperator")
+						if (rightNode != null)
 						{
 							op = rightNode.Contents;
-							
+							if (rightNode.Type == "BinaryOperator")
+							{
+								var right = WalkExpression(node.Children[1].Children[1]);
+								return BinOp.GetBinaryOp(left, op, right);
+							}
+							else if (rightNode.Type == "TernaryOperator")
+							{
+								var consequence = WalkExpression((node.Children[1].Children[1]));
+								var alternative = WalkExpression(node.Children[1].Children[2]);
+							}
 						}
-
-						var right = WalkExpression(node.Children[1].Children[1]);
-						return BinOp.GetBinaryOp(left, op, right);
 					}
 					if (node.Children[1].Type == "PostfixOperation")
                     {

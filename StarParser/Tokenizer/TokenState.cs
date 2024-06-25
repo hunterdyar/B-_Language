@@ -8,5 +8,5 @@ public enum TokenState
 	Identifier,
 	Integer,
 	HexInteger,
-	Conditional,
+	String,
 }

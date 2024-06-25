@@ -45,7 +45,6 @@ public enum TokenType
 	DefaultKeyword,
 	BreakKeyword,
 	ReturnKeyword,
-
 	Address,
 	Indirection,
 	String,

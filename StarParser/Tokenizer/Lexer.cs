@@ -70,6 +70,16 @@ public class Lexer
 		((TokenType.LessThan, TokenType.LessThan), TokenType.ShiftLeft),
 
 	};
+
+	public Token GetToken(int position)
+	{
+		if (position >= _tokens.Count)
+		{
+			return new Token(TokenType.End,"");
+		}
+
+		return _tokens[position];
+	}
 	
 	public Lexer(string source)
 	{

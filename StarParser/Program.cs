@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Text;
+using StarParser.Parser;
 using StarParser.Tokenizer;
 
 Console.WriteLine("Lexing!");
@@ -24,3 +25,5 @@ for (int i = 0; i < l.Tokens.Count; i++)
 	}
 }
 Console.WriteLine(sb.ToString());
+
+var root = Parser.Parse(l);

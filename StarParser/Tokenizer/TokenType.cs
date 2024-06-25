@@ -49,4 +49,5 @@ public enum TokenType
 	Address,
 	Indirection,
 	String,
+	End,
 }

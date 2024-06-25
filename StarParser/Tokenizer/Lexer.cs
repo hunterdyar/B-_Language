@@ -113,6 +113,7 @@ public class Lexer
 			EatInteger();
 		}
 
+		//Todo: This can get replaced after we do 'get next token', for stream ocnsuming.  it checks if the added token is in a 'haspairs' dict, getnext into the buffer, and if it replaces, replace.
 		MergePairTokens();
 	}
 

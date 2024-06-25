@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using System.Xml.XPath;
 
@@ -9,11 +10,10 @@ namespace StarParser.Tokenizer;
 public class Lexer
 {
 	private int _pos;
-	public List<Token> Tokens => _tokens;
-	private List<Token> _tokens = new List<Token>();
+	private List<Token> _tokenBuffer = new List<Token>();
 	private readonly string _source;
 	private TokenState _state = TokenState.Entry;
-	private string _buffer;
+	private Token EOSToken => new Token(TokenType.End, "");
 
 	private (string, TokenType)[] _keywords = new[]
 	{
@@ -71,89 +71,134 @@ public class Lexer
 
 	};
 
-	public Token GetToken(int position)
+	private void ParseOneOrMore()
 	{
-		if (position >= _tokens.Count)
+		var tokenAdded = false;
+		while (!tokenAdded)
 		{
-			return new Token(TokenType.End,"");
-		}
-
-		return _tokens[position];
-	}
-	
-	public Lexer(string source)
-	{
-		_buffer = "";
-		this._source = source;
-		this._pos = 0;
-		if (string.IsNullOrEmpty(source))
-		{
-			throw new LexerException("Empty source string to lex.");
-		}
-		
-		while (_pos < source.Length && _state != TokenState.Error && _state!= TokenState.Complete)
-		{
-			var current = _source[_pos];
+			if (_pos >= _source.Length)
+			{
+				_state = TokenState.Complete;
+				break;
+			}
 			EatWhitespace();
 			if (_pos >= _source.Length)
 			{
 				_state = TokenState.Complete;
 				break;
 			}
-			EatSingleCharacters();
-			if (_pos >= _source.Length)
+
+			if (EatSingleCharacters())
 			{
-				_state = TokenState.Complete;
-				break;
+				tokenAdded = true;
+				continue;
 			}
-			EatIdentifier();
+
 			if (_pos >= _source.Length)
 			{
 				_state = TokenState.Complete;
 				break;
 			}
 
-			EatString();
+			if (EatIdentifier())
+			{
+				tokenAdded = true;
+				continue;
+			}
+
 			if (_pos >= _source.Length)
 			{
 				_state = TokenState.Complete;
 				break;
 			}
 
-			EatInteger();
+			if (EatString())
+			{
+				tokenAdded = true;
+				continue;
+			}
+
+			if (_pos >= _source.Length)
+			{
+				_state = TokenState.Complete;
+				break;
+			}
+
+			if (EatInteger())
+			{
+				tokenAdded = true;
+			}
+
+			if (_state == TokenState.Error || _state == TokenState.Complete)
+			{
+				break;
+			}
 		}
+	}
 
-		//Todo: This can get replaced after we do 'get next token', for stream ocnsuming.  it checks if the added token is in a 'haspairs' dict, getnext into the buffer, and if it replaces, replace.
+	public Token NextToken()
+	{
+		ParseOneOrMore();
+		if (_state == TokenState.Complete && _tokenBuffer.Count == 0)
+		{
+			return EOSToken;
+		}
 		MergePairTokens();
+		if (_tokenBuffer.Count > 0)
+		{
+			var t = _tokenBuffer[0];
+			_tokenBuffer.RemoveAt(0);
+			return t;
+		}
+		else
+		{
+			//todo: could be in error state.
+			return EOSToken;
+		}
+	}
+	
+	public Lexer(string source)
+	{
+		this._source = source;
+		this._pos = 0;
+		if (string.IsNullOrEmpty(source))
+		{
+			throw new LexerException("Empty source string to lex.");
+		}
 	}
 
 	private void MergePairTokens()
 	{
-		
-		for (int i = 1; i < _tokens.Count; i++)
+		if (_tokenBuffer.Count == 0)
 		{
-			foreach (var merge in _merges)
+			return;
+		}
+		var a = _tokenBuffer[0];
+		foreach (var merge in _merges)
+		{
+			if (a.TokenType == merge.Item1.Item1)
 			{
-				if (_tokens[i].TokenType == merge.Item1.Item2)
+				ParseOneOrMore();
+				if (_tokenBuffer.Count > 2)
 				{
-					var a = _tokens[i - 1];
-					var b = _tokens[i];
-					if (a.TokenType == merge.Item1.Item1)
+					var b = _tokenBuffer[1];
+					if (b.TokenType == merge.Item1.Item2)
 					{
-						_tokens.RemoveAt(i);
-						_tokens[i - 1] = new Token(merge.Item2, a.Literal + b.Literal);
+						_tokenBuffer.RemoveAt(1);
+						_tokenBuffer[0] = new Token(merge.Item2, a.Literal + b.Literal);
+						//MergePairTokens();//Keep merging until we cannot merge anymore.
 					}
 				}
 			}
 		}
 	}
 
-	private void EatIdentifier()
+	private bool EatIdentifier()
 	{
 		var first = _source[_pos];
 		if (!char.IsLetter(first))
 		{
-			return;
+			return false;
 		}
 		else
 		{
@@ -164,7 +209,7 @@ public class Lexer
 			Advance();
 			if (_state == TokenState.Complete)
 			{
-				return;
+				return false;
 			}
 			char c = _source[_pos];
 			while (char.IsLetter(c) || char.IsDigit(c) || c == '_')
@@ -180,13 +225,13 @@ public class Lexer
 			if (CheckIdentifierIsKeyword(id))
 			{
 				_state = TokenState.Entry;
-				return;
+				return false;
 			}
 
 			var t = new Token(TokenType.Identifier, id);
-			_tokens.Add(t);
+			_tokenBuffer.Add(t);
 			_state = TokenState.Entry;
-			return;
+			return true;
 		}
 	}
 
@@ -197,7 +242,7 @@ public class Lexer
 			if (id == pair.Item1)
 			{
 				var t = new Token(pair.Item2, id);
-				_tokens.Add(t);
+				_tokenBuffer.Add(t);
 				return true;
 			}
 		}
@@ -205,12 +250,12 @@ public class Lexer
 		return false;
 	}
 
-	private void EatString()
+	private bool EatString()
 	{
 		var first = _source[_pos];
 		if (first != '\"')
 		{
-			return;
+			return false;
 		}
 		else
 		{
@@ -246,17 +291,17 @@ public class Lexer
 			Consume('"');
 			var id = _source.Substring(start, length);
 			var t = new Token(TokenType.String, id);
-			_tokens.Add(t);
+			_tokenBuffer.Add(t);
 			_state = TokenState.Entry;
-			return;
+			return true;
 		}
 	}
-	private void EatInteger()
+	private bool EatInteger()
 	{
 		var first = _source[_pos];
 		if (!char.IsDigit(first))
 		{
-			return;
+			return false;
 		}
 		else
 		{
@@ -286,9 +331,9 @@ public class Lexer
 
 				var hexID = _source.Substring(start, length);
 				var ht = new Token(TokenType.HexLiteral, hexID);
-				_tokens.Add(ht);
+				_tokenBuffer.Add(ht);
 				_state = TokenState.Entry;
-				return;
+				return true;
 			}
 			while (char.IsDigit(c) || c == '.')
 			{
@@ -305,9 +350,9 @@ public class Lexer
 
 			var id = _source.Substring(start, length);
 			var t = new Token(TokenType.IntLiteral, id);
-			_tokens.Add(t);
+			_tokenBuffer.Add(t);
 			_state = TokenState.Entry;
-			return;
+			return true;
 		}
 	}
 
@@ -331,18 +376,20 @@ public class Lexer
 		return char.MinValue;
 	}
 
-	private void EatSingleCharacters()
+	private bool EatSingleCharacters()
 	{
 		foreach (var r in _singleCharRules)
 		{
 			if (r.Item1(_source[_pos]))
 			{
 				Token t = new Token(r.Item2, _source[_pos].ToString());
-				_tokens.Add(t);
+				_tokenBuffer.Add(t);
 				Advance();
-				break;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	private void EatWhitespace()

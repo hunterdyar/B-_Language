@@ -11,16 +11,15 @@ Console.WriteLine("Lexing!");
 //then, write a backtracking recursive descent parser.
 //why backtracking? fuck you, that's why.
 
-var input = "(a)";
+var input = "f(a){var b = 0!=2}";
 var l = new Lexer(input);
 StringBuilder sb = new StringBuilder();
-for (int i = 0; i < l.Tokens.Count; i++)
+var t = l.NextToken();
+while (t.TokenType != TokenType.End)
 {
-	sb.Append(l.Tokens[i]);
-	if (i < l.Tokens.Count - 1)
-	{
-		sb.Append(", ");
-	}
+	sb.Append(t.ToString());
+	sb.Append(", ");
+	t = l.NextToken();
 }
 Console.WriteLine(sb.ToString());
 Console.WriteLine("Parsing!");

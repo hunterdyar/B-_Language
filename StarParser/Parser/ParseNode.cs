@@ -6,7 +6,7 @@ namespace StarParser.Parser;
 public abstract class ParseNode
 {
 	public static Lexer Lexer;
-	public Token Get(int i) => Lexer.GetToken(i);
+	public Token Get(int i) => new Token(TokenType.End,"THis just to remove error so compiles.");
 	public bool IsValid;
 
 	public virtual Func<Statement> GetASTNode { get; init; }

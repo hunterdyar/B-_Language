@@ -162,6 +162,10 @@ public class Lexer
 			int length = 1;
 
 			Advance();
+			if (_state == TokenState.Complete)
+			{
+				return;
+			}
 			char c = _source[_pos];
 			while (char.IsLetter(c) || char.IsDigit(c) || c == '_')
 			{

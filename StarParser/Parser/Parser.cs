@@ -1,4 +1,5 @@
 ﻿using BMinus.AST;
+using BMinus.AST.PrimitiveStatements;
 using StarParser.Tokenizer;
 
 namespace StarParser.Parser;
@@ -12,21 +13,22 @@ public class Parser
 		MatchToken(TokenType.LParen),
 		Identifier,
 		MatchToken(TokenType.RParen)
-	});
+	},(x)=>new ProgramStatement(x));
 
-	public static ParseNode Identifier => new ParseNodeLeaf()
+	public static ParseNode Identifier => new ParseNodeLeaf
 	{
-		CreateASTNode = (t) => new Identifier(t.Literal),
 		CanCreateNode = (t) => t.TokenType == TokenType.Identifier
 	};
 
-	public static ParseNode MatchToken(TokenType i) => new ParseNodeLeaf()
+	public static ParseNode MatchToken(TokenType t) => new ParseNodeLeaf()
 	{
-		CanCreateNode = (t) => t.TokenType == i
+		CanCreateNode = (x) => x.TokenType == t,
 	};
 
 	public static ParseNode Parse(Lexer lexer)
-	{ 
+	{
+		//making this static is ugly.
+		ParseNode.Lexer = lexer;
 		StartNode.Parse(0, out var c);
 		//if c != length...
 		return StartNode;

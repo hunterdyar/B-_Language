@@ -5,9 +5,11 @@ namespace StarParser.Parser;
 
 public abstract class ParseNode
 {
-	public Lexer Lexer;
+	public static Lexer Lexer;
 	public Token Get(int i) => Lexer.GetToken(i);
 	public bool IsValid;
+
+	public virtual Func<Statement> GetASTNode { get; init; }
 	//It should take the entire token state! Not called in from above. That way we don't need a "isValid" check
 	public abstract bool Parse(int nextToken, out int consumed);
 }
@@ -16,9 +18,12 @@ public class ParseNodeLeaf : ParseNode
 {
 	public Func<Token, bool> CanCreateNode;
 	public Func<Token, Statement> CreateASTNode;
+	public override Func<Statement> GetASTNode => ()=>_statement;
 	private Statement _statement;
+	private Token token;
 	public override bool Parse(int token, out int consumed)
 	{
+		this.token = Get(token);
 		IsValid = CanCreateNode(Get(token));
 		if (IsValid)
 		{
@@ -28,11 +33,18 @@ public class ParseNodeLeaf : ParseNode
 		consumed = 1;
 		return IsValid;
 	}
+
+	public ParseNodeLeaf()
+	{
+		
+	}
 }
 
 public class ParseNodeChoice : ParseNodeRule
 {
 	private ParseNode firstValidNode;
+	public override Func<Statement> GetASTNode => firstValidNode.GetASTNode;
+
 	public override bool Parse(int token, out int consumed)
 	{
 		IsValid = false;
@@ -59,11 +71,13 @@ public class ParseNodeChoice : ParseNodeRule
 public class ParseNodeSequence : ParseNodeRule
 {
 	public Func<List<Statement>, Statement> CreateASTNode;
-	private Statement _statement;
+	private List<Statement> _sequence = new List<Statement>();
+	public override Func<Statement> GetASTNode => ()=>CreateASTNode(_sequence);
+
 	public override bool Parse(int token, out int consumed)
 	{
 		IsValid = true;
-		List<Statement> sequence = new List<Statement>();
+		_sequence = new List<Statement>();
 		int t = token;
 		consumed = 0;
 		foreach (var c in Children)
@@ -74,21 +88,26 @@ public class ParseNodeSequence : ParseNodeRule
 				consumed += eat;
 				return false;
 			}
+			else
+			{
+				_sequence.Add(c.GetASTNode());
+			}
 			t++;
 		}
 
-		_statement = CreateASTNode(sequence);
 		return true;
 	}
 
-	public ParseNodeSequence(ParseNode[] children) : base(children)
+	public ParseNodeSequence(ParseNode[] children, Func<List<Statement>,Statement> getAst) : base(children)
 	{
+		this.CreateASTNode = getAst;
 	}
 }
 
 public class ZeroOrMore : ParseNodeRule
 {
-	private List<ParseNode> children = new List<ParseNode>();
+	public List<ParseNode> Children => _children;
+	private List<ParseNode> _children = new List<ParseNode>();
 	public Func<ParseNode> GetParseNode;
 	public ZeroOrMore(ParseNode[] children) : base(children)
 	{
@@ -104,7 +123,7 @@ public class ZeroOrMore : ParseNodeRule
 			var n = GetParseNode();
 			if (n.Parse(token, out int eat))
 			{
-				children.Add(n);
+				_children.Add(n);
 				consumed += eat;
 			}
 			else

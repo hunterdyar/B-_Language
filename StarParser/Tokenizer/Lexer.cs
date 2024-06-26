@@ -51,6 +51,7 @@ public class Lexer
 		('-', TokenType.Plus),
 		('&',TokenType.And),//a & b is bitwise and. &id is adress-of, and && is conditional and?
 		('*', TokenType.Asterisk),//a*b is times, *a is indirection (pointer dereference)
+		('/',TokenType.Divide),
 		('?',TokenType.QuestionMark),//for ternary
 		('%',TokenType.Mod)
 	}.Select< (char, TokenType),

@@ -33,6 +33,7 @@ public enum TokenType
 	Plus,
 	Increment,
 	Minus,
+	Divide,
 	Decrement,
 	AssignmentPlus,
 	AssignmentMinus,

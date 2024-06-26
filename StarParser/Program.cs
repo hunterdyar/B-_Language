@@ -9,7 +9,7 @@ using StarParser.Tokenizer;
 //then, write a backtracking recursive descent parser.
 //why backtracking? fuck you, that's why.
 
-var input = "b=2*3+1;";
+var input = "b=1+2*3+4;";
 var l = new Lexer(input);
 Console.WriteLine("Parsing!");
 var root = Parser.Parse(l);

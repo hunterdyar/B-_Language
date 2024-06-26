@@ -35,9 +35,14 @@ public partial class Parser
 				s = null;
 				return false;
 			}
+
+			InfixState.From(lex);
+		}
+		else
+		{
+			InfixState = lex.Clone();
 		}
 
-		InfixState = lex;
 
 		if (TryExpression(lex, out Expression left))
 		{

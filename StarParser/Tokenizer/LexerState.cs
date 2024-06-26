@@ -7,6 +7,7 @@ public class LexerState
 {
 	private LexerWrapper _lexer;
 	private int _pos;
+	public TokenType PeekType => Peek().TokenType;
 	public LexerState(LexerWrapper lexer, int pos = 0)
 	{
 		_lexer = lexer;
@@ -51,5 +52,13 @@ public class LexerState
 		}
 
 		return false;
+	}
+
+	public void OptionalConsume(TokenType token)
+	{
+		if (Peek().TokenType == token)
+		{
+			Advance();
+		}
 	}
 }

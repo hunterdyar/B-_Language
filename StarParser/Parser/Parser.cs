@@ -1,4 +1,5 @@
-﻿using BMinus.AST;
+﻿using Ara3D.Utils;
+using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using StarParser.Tokenizer;
 
@@ -22,17 +23,19 @@ public static partial class Parser
 		var b = lex.Clone();
 		if (TryAssignment(b, out var assignment))
 		{
+			var e = b.Consume(TokenType.EndStatement);
 			lex.From(b);
 			statement = assignment;
-			return true;
+			return e;
 		}
 		
 		var a = lex.Clone();
 		if (TryIdentifier(a, out var id))
 		{
+			var end = a.Consume(TokenType.EndStatement);
 			statement = id;
 			lex.From(a);
-			return true;
+			return end;
 		}
 		statement = null;
 		return false;
@@ -77,15 +80,17 @@ public static partial class Parser
 		return false;
 	}
 
+	
 	public static bool TryProgram(LexerState lex, out Statement statement)
 	{
-		List<Statement> statements = new List<Statement>();
-		while (TryCreateStatement(lex, out var s))
+		if (ParserUtility.OneOrMore(TryCreateStatement, lex, out var statements))
 		{
-			statements.Add(s);
+			statement = new ProgramStatement(statements);
+			return true;
 		}
-		statement = new ProgramStatement(statements);
-		return statements.Any();
+
+		statement = null;
+		return false;
 	}
 }
 

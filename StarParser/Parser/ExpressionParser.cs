@@ -10,6 +10,7 @@ public partial class Parser
 		var a = lex.Clone();
 		if (TryLiteral(a, out s))
 		{
+			lex.From(a);
 			return true;
 		}
 

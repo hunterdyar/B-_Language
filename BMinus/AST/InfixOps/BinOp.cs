@@ -24,8 +24,11 @@ public abstract class BinOp : Expression
 				return new AddExpr(left, right);
 			case "-":
 				return new SubtractExpr(left, right);
+			case "*":
+				return new TimesOp(left, right);
 			default:
 				throw new ArgumentException($"bad token: {op}");
 		}
 	}
+	
 }

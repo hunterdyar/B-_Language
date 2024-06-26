@@ -32,4 +32,18 @@ public class Token
 
 		return TokenType.ToString();
 	}
+
+	public static bool IsInfixOp(TokenType opTokenType)
+	{
+		switch(opTokenType)
+		{
+			case TokenType.Plus:
+			case TokenType.Minus: 
+				case TokenType.Asterisk:
+				case TokenType.Mod:
+					return true;
+		}
+
+		return false;
+	}
 }

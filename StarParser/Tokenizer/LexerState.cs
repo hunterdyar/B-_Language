@@ -61,4 +61,9 @@ public class LexerState
 			Advance();
 		}
 	}
+
+	public bool SameAs(LexerState lex)
+	{
+		return _pos == lex._pos && _lexer == lex._lexer;
+	}
 }

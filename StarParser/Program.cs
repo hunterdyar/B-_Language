@@ -23,7 +23,3 @@ while (t.TokenType != TokenType.End)
 }
 Console.WriteLine(sb.ToString());
 Console.WriteLine("Parsing!");
-var root = Parser.Parse(l);
-Console.WriteLine(root);
-var ast = root.GetASTNode();
-Console.WriteLine(ast);

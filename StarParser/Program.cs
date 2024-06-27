@@ -1,24 +1,16 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Diagnostics;
-using System.Text;
-using StarParser.Parser;
+﻿using StarParser.Parser;
 using StarParser.Tokenizer;
 
-//first, write a normal tokenizer
-//then, write a backtracking recursive descent parser.
-//why backtracking? fuck you, that's why.
+var input = "a = a*b+c;";
+Console.WriteLine("B-");
 
-var input = "12;a;";
-// var l = new Lexer(input);
-Console.WriteLine("Parsing!");
-
-Parser.TryParse(input, out var statement, out var err, out var errPos);
+Parser p = new Parser(new Lexer(input));
+var statement = p.Parse();
 if (statement != null)
 {
 	Console.WriteLine(statement);
 }
 else
 {
-	Console.WriteLine(err);
+	Console.WriteLine("oopsy");
 }

@@ -5,7 +5,7 @@ public class Assignment : Statement
 	public Identifier Identifier;
 	public Expression ValueExpr;
 
-	public Assignment(Expression id, Expression valueExpr)
+	public Assignment(Statement id, Expression valueExpr)
 	{
 		if (id is Identifier idexp)
 		{

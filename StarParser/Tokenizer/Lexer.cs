@@ -210,7 +210,10 @@ public class Lexer
 			Advance();
 			if (_state == TokenState.Complete)
 			{
-				return false;
+				//a single-letter identifier
+				var ft = new Token(TokenType.Identifier, first.ToString());
+				_tokenBuffer.Add(ft);
+				return true;
 			}
 			char c = _source[_pos];
 			while (char.IsLetter(c) || char.IsDigit(c) || c == '_')

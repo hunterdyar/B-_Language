@@ -1,7 +1,3 @@
-using Ara3D.Parakeet;
-using BMinus.AST;
-using BMinus.Barakeet;
-
 namespace BMinusTests;
 
 public class Tests
@@ -26,24 +22,24 @@ public class Tests
 			// var actual = s.ToString();
 			// Actual = actual;
 			// Assert.AreEqual(expected, actual);
-			var p = BMinusGrammar.Instance.Parse(test);
-			if (p == null)
-			{
-				Assert.Fail($"Unable to parse {test}");
-				return;
-			}
+			// var p = BMinusGrammar.Instance.Parse(test);
+			// if (p == null)
+			// {
+			// 	Assert.Fail($"Unable to parse {test}");
+			// 	return;
+			// }
 			
-			if (!p.AtEnd())
-			{
-				Assert.Fail();
-				return;
-			}
-
-			var t = p.Node.ToParseTree();
-			Console.WriteLine(t);
-			var tree = SyntaxTreeBuilder.WalkStatement(t);
-			if(tree == null){Assert.Fail();}
-			Assert.That(tree?.ToString(), Is.EqualTo(expected));
+			// if (!p.AtEnd())
+			// {
+			// 	Assert.Fail();
+			// 	return;
+			// }
+			//
+			// var t = p.Node.ToParseTree();
+			// Console.WriteLine(t);
+			// var tree = SyntaxTreeBuilder.WalkStatement(t);
+			// if(tree == null){Assert.Fail();}
+			// Assert.That(tree?.ToString(), Is.EqualTo(expected));
 		}
 		
 	}

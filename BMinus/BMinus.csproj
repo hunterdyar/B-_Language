@@ -7,9 +7,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Ara3D.Parakeet.Cst" Version="1.4.3" />
-      <PackageReference Include="Ara3D.Parakeet.Grammars" Version="1.4.3" />
-    </ItemGroup>
-
 </Project>

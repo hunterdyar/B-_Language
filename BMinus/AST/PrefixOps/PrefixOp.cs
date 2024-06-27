@@ -1,6 +1,4 @@
-﻿using Ara3D.Parakeet;
-
-namespace BMinus.AST;
+﻿namespace BMinus.AST;
 
 public class PrefixOp : Expression
 {

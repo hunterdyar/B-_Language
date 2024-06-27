@@ -84,4 +84,14 @@ public class Tests
 	{
 		var x = new ParseTest(test, expected);
 	}
+
+	[Test]
+	[TestCase("if(a){b;}", "if(a){b;}")]
+	[TestCase("if(a){b;}else{c;}", "if(a){b;} else {c;}")]
+	[TestCase("if(a){b;}else if(c){d;}", "if(a){b;} else if(c){d;}")]
+
+	public void IfTest(string test, string expected)
+	{
+		var x = new ParseTest(test, expected);
+	}
 }

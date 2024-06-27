@@ -23,6 +23,7 @@ public class Lexer
 		("extrn", TokenType.ExternKeyword),
 		("global", TokenType.ExternKeyword),
 		("if",TokenType.IfKeyword),
+		("else", TokenType.ElseKeyword),
 		("while",TokenType.WhileKeyword),
 		("switch",TokenType.SwitchKeyword),
 		("case", TokenType.CaseKeyword),

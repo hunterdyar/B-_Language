@@ -17,6 +17,7 @@ public enum TokenType
 	VarDeclKeyword,
 	ExternKeyword,
 	IfKeyword,
+	ElseKeyword,
 	WhileKeyword,
 	SwitchKeyword,
 	Bang,

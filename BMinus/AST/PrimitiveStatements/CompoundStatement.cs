@@ -2,11 +2,11 @@
 
 namespace BMinus.AST.PrimitiveStatements;
 
-public class StatementBlock : Statement
+public class CompoundStatement : Statement
 {
 	public readonly List<Statement> Statements;
 
-	public StatementBlock(List<Statement> statements)
+	public CompoundStatement(List<Statement> statements)
 	{
 		Statements = statements;
 	}

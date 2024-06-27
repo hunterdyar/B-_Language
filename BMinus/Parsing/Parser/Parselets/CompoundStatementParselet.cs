@@ -4,7 +4,7 @@ using BMinus.Tokenizer;
 
 namespace BMinus.Parser.Parselets;
 
-public class StatementBlockParselet : IPrefixParselet
+public class CompoundStatementParselet : IPrefixParselet
 {
 	public Statement Parse(Parser parser, Token token)
 	{
@@ -15,8 +15,7 @@ public class StatementBlockParselet : IPrefixParselet
 			{
 				//eat a statement inside the braces{a;b;}
 				var s = parser.ParseStatement();
-				//todo: this is matched with parseProgram. move to "parseexpressionsequence" generic fn.
-				if (s is not StatementBlock)
+				if (Parser.StatementRequiresSemicolon(s))
 				{
 					parser.Consume(TokenType.EndStatement);
 				}
@@ -30,6 +29,6 @@ public class StatementBlockParselet : IPrefixParselet
 			parser.Match(TokenType.RBrace);
 		}
 		
-		return new StatementBlock(statements);
+		return new CompoundStatement(statements);
 	}
 }

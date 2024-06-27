@@ -22,10 +22,11 @@ public class Parser
 		Register(TokenType.IntLiteral, new LiteralParselet());
 		Register(TokenType.HexLiteral, new LiteralParselet());
 		Register(TokenType.String, new LiteralParselet());
-		Register(TokenType.LBrace, new StatementBlockParselet());
+		Register(TokenType.LBrace, new CompoundStatementParselet());
 		Register(TokenType.VarDeclKeyword, new VariableDeclarationParselet());
 		Register(TokenType.QuestionMark, new TernaryParselet());
 		Register(TokenType.LParen, new ParenthesizedExpressionParselet());
+		Register(TokenType.IfKeyword, new IfStatementParselet());
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());
 		
@@ -70,7 +71,7 @@ public class Parser
 			{
 				rootStatements.Add(s);
 				//you don't need a ; after a }.
-				if (!(s is StatementBlock || s is FunctionDeclaration))
+				if (StatementRequiresSemicolon(s))
 				{
 					Consume(TokenType.EndStatement);
 				}
@@ -189,6 +190,17 @@ public class Parser
 		}
 
 		return 0;
+	}
+
+	public static bool StatementRequiresSemicolon(Statement s)
+	{
+		var t = s.GetType();
+		return !(
+			    t ==typeof(IfStatement)
+		        || t == typeof(CompoundStatement)
+				|| t == typeof(IfElseStatement)
+			    || t == typeof(FunctionDeclaration)
+				);
 	}
 
 

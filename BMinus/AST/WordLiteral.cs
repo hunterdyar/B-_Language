@@ -25,10 +25,17 @@ public class WordLiteral : Expression
 			{
 				Value = BitConverter.GetBytes(v);
 			}
+		}else if (t == 's')
+		{
+			throw new NotImplementedException("String Literals not implemented yet");
+		}
+		else if (t == 'h')
+		{
+			throw new NotImplementedException("Hex Literals not implemented yet");
 		}
 		else
 		{
-			throw new ArgumentException($"Unable to parse {s} as an integer");
+			throw new ArgumentException($"Unable to parse {s} as a literal.");
 		}
 	}
 

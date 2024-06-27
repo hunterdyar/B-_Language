@@ -313,10 +313,17 @@ public class Lexer
 			int start = _pos;
 			int length = 1;
 			Advance();
+			if (_state == TokenState.Complete)
+			{
+				//we forgot the ; and the stream ended, but thhe error should be that; this part should still parse.
+				var tf = new Token(TokenType.IntLiteral, first.ToString());
+				_tokenBuffer.Add(tf);
+				return true;
+			}
 			char c = _source[_pos];
 			if (first == '0' && c == 'x' || c == 'X')
 			{
-				Advance();//past 0
+				Advance();//past x
 				length++;
 				_state = TokenState.HexInteger;
 				c = _source[_pos];

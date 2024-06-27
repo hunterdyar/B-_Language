@@ -19,7 +19,9 @@ public class Parser
 		//prefixe dict. Thest can start statements.
 		Register(TokenType.Identifier, new IdentifierParselet());
 		Register(TokenType.Assignment, new AssignParselet());
-
+		Register(TokenType.IntLiteral, new LiteralParselet());
+		Register(TokenType.HexLiteral, new LiteralParselet());
+		Register(TokenType.String, new LiteralParselet());
 		//prefix
 		
 		//postfix
@@ -127,6 +129,10 @@ public class Parser
 		var token = LookAhead(0);
 		if (token.TokenType != expected)
 		{
+			if (token.TokenType == TokenType.End)
+			{
+				throw new ParseException("Unexpected End-Of-Input. ");
+			}
 			if (expected == TokenType.EndStatement)
 			{
 				throw new ParseException($"Unexpected token {token.TokenType}");

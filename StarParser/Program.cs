@@ -1,7 +1,9 @@
 ﻿using StarParser.Parser;
 using StarParser.Tokenizer;
 
-var input = "a = a*b+c;";
+var input = """
+            a = 1+2*3-0+1+2+2;
+            """;
 Console.WriteLine("B-");
 
 Parser p = new Parser(new Lexer(input));

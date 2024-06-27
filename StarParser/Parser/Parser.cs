@@ -22,6 +22,10 @@ public class Parser
 		Register(TokenType.IntLiteral, new LiteralParselet());
 		Register(TokenType.HexLiteral, new LiteralParselet());
 		Register(TokenType.String, new LiteralParselet());
+		Register(TokenType.LBrace, new StatementBlockParselet());
+		//infix
+		Register(TokenType.LParen, new FunctionParselet());
+		
 		//prefix
 		
 		//postfix
@@ -61,7 +65,11 @@ public class Parser
 			if (s != null)
 			{
 				rootStatements.Add(s);
-				Consume(TokenType.EndStatement);
+				//you don't need a ; after a }.
+				if (!(s is StatementBlock || s is FunctionDeclaration))
+				{
+					Consume(TokenType.EndStatement);
+				}
 			}
 			else
 			{

@@ -2,7 +2,8 @@
 using StarParser.Tokenizer;
 
 var input = """
-            a = 1+2*3-0+1+2+2;
+            main(a){a;}
+            main(12+2);
             """;
 Console.WriteLine("B-");
 

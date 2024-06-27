@@ -1,5 +1,5 @@
-using StarParser.Parser;
-using StarParser.Tokenizer;
+using BMinus.Parser;
+using BMinus.Tokenizer;
 
 namespace BMinusTests;
 

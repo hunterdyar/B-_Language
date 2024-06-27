@@ -5,7 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using System.Xml.XPath;
 
-namespace StarParser.Tokenizer;
+namespace BMinus.Tokenizer;
 
 public class Lexer
 {

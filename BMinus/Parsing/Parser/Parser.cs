@@ -1,9 +1,9 @@
 ﻿using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
-using StarParser.Parser.Parselets;
-using StarParser.Tokenizer;
+using BMinus.Parser.Parselets;
+using BMinus.Tokenizer;
 
-namespace StarParser.Parser;
+namespace BMinus.Parser;
 
 public class Parser
 {

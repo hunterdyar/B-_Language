@@ -1,8 +1,8 @@
 ﻿using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
-using StarParser.Tokenizer;
+using BMinus.Tokenizer;
 
-namespace StarParser.Parser.Parselets;
+namespace BMinus.Parser.Parselets;
 
 //a = b = c is parsed as a = (b = c)
 public class AssignParselet : IInfixParselet

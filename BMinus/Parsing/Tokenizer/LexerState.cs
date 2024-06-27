@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 
-namespace StarParser.Tokenizer;
+namespace BMinus.Tokenizer;
 
 //wraps a lexer, so it never has to lex multiple times, and lets the parser backtrack between states.
 public class LexerState

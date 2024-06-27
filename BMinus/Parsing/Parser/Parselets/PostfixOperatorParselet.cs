@@ -1,8 +1,8 @@
 ﻿
 using BMinus.AST;
-using StarParser.Tokenizer;
+using BMinus.Tokenizer;
 
-namespace StarParser.Parser.Parselets;
+namespace BMinus.Parser.Parselets;
 
 public class PostfixOperatorParselet : IInfixParselet
 {

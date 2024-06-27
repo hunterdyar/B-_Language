@@ -1,8 +1,8 @@
 ﻿using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
-using StarParser.Tokenizer;
+using BMinus.Tokenizer;
 
-namespace StarParser.Parser.Parselets;
+namespace BMinus.Parser.Parselets;
 
 public class VariableDeclarationParselet : IPrefixParselet
 {

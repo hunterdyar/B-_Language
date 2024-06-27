@@ -1,4 +1,6 @@
-﻿namespace StarParser.Tokenizer;
+﻿using Superpower.Model;
+
+namespace StarParser.Tokenizer;
 
 public class LexerWrapper
 {

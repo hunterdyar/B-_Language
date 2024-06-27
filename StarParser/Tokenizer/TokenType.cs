@@ -1,5 +1,7 @@
-﻿namespace StarParser.Tokenizer;
+﻿using Superpower.Display;
 
+namespace StarParser.Tokenizer;
+// using Token = Superpower.Parsers.Token;
 public enum TokenType
 {
 	Identifier,
@@ -14,6 +16,8 @@ public enum TokenType
 	Comma,
 	Colon,
 	QuestionMark,
+
+	[Token(Category = "symbol", Example = ";")]
 	EndStatement,
 	VarDeclKeyword,
 	ExternKeyword,

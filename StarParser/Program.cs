@@ -2,13 +2,23 @@
 
 using System.Diagnostics;
 using System.Text;
+using StarParser.Parser;
 using StarParser.Tokenizer;
 
 //first, write a normal tokenizer
 //then, write a backtracking recursive descent parser.
 //why backtracking? fuck you, that's why.
 
-var input = "b=1+2*3+4;";
-var l = new Lexer(input);
+var input = "12;a;";
+// var l = new Lexer(input);
 Console.WriteLine("Parsing!");
 
+Parser.TryParse(input, out var statement, out var err, out var errPos);
+if (statement != null)
+{
+	Console.WriteLine(statement);
+}
+else
+{
+	Console.WriteLine(err);
+}

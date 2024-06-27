@@ -16,7 +16,22 @@ public class WordLiteral : Expression
 	{
 		Value = BitConverter.GetBytes(dVal);
 	}
-	
+
+	public WordLiteral(char t, string s)
+	{
+		if (t == 'i')
+		{
+			if (int.TryParse(s, out var v))
+			{
+				Value = BitConverter.GetBytes(v);
+			}
+		}
+		else
+		{
+			throw new ArgumentException($"Unable to parse {s} as an integer");
+		}
+	}
+
 
 	public override string ToString()
 	{

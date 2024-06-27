@@ -53,8 +53,9 @@ public class Tests
     }
 
 	[Test]
-	[TestCase("b = !a", "b = !a")]
-	[TestCase("b =!(1+2)", "b = !(1 + 2)")]
+	[TestCase("b = !a;", "b = !a")]
+	[TestCase("b =!(1+2);", "b = !(1 + 2)")]
+	[TestCase("((((a))));", "a")]
 
 	public void PrefixOperatorTest(string test, string expected)
 	{
@@ -62,7 +63,7 @@ public class Tests
 	}
 
 	[Test]
-	[TestCase("1+2+3;", "((1+2)+3)")]
+	[TestCase("1+2+3;", "((1 + 2) + 3)")]
 	[TestCase("a?1:0;", "a ? 1 : 0")]
 
 	public void InfixOperatorTest(string test, string expected)

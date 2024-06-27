@@ -24,11 +24,14 @@ public class Parser
 		Register(TokenType.String, new LiteralParselet());
 		Register(TokenType.LBrace, new StatementBlockParselet());
 		Register(TokenType.VarDeclKeyword, new VariableDeclarationParselet());
+		Register(TokenType.QuestionMark, new TernaryParselet());
+		Register(TokenType.LParen, new ParenthesizedExpressionParselet());
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());
 		
 		//prefix
-		
+		Register(TokenType.Bang, new PrefixOpParselet());
+		Register(TokenType.Minus, new PrefixOpParselet());
 		//postfix
 		
 		//math

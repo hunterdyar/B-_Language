@@ -216,7 +216,7 @@ public class Lexer
 				return true;
 			}
 			char c = _source[_pos];
-			while (char.IsLetter(c) || char.IsDigit(c) || c == '_')
+			while (char.IsLetter(c) || char.IsDigit(c) || c == '_' || c == '.')//page 3 of btut.pdf, dot's are allowed in variable names.
 			{
 				length++;
 				Advance();
@@ -257,20 +257,20 @@ public class Lexer
 	private bool EatString()
 	{
 		var first = _source[_pos];
-		if (first != '\"')
+		if (first != '\'')
 		{
 			return false;
 		}
 		else
 		{
-			Consume('"');//past the first "
+			Consume('\'');//past the first '
 			_state = TokenState.String;
 			int start = _pos;
 			int length = 1;
 			Advance();
 			char c = _source[_pos];
 			bool escape = true;
-			while (c != '"' || escape)
+			while (c != '\'' || escape)
 			{
 				if (c == '\\')
 				{

@@ -1,3 +1,6 @@
+using StarParser.Parser;
+using StarParser.Tokenizer;
+
 namespace BMinusTests;
 
 public class Tests
@@ -13,33 +16,16 @@ public class Tests
 			Actual = "";
 			Expected = expected;
 			Test = test;
-			// var p = BMParser.TryParse(test,out var s, out var e);
-			// if (!p)
-			// {
-			// 	Assert.Fail(e);
-			// }
-			//
-			// var actual = s.ToString();
-			// Actual = actual;
-			// Assert.AreEqual(expected, actual);
-			// var p = BMinusGrammar.Instance.Parse(test);
-			// if (p == null)
-			// {
-			// 	Assert.Fail($"Unable to parse {test}");
-			// 	return;
-			// }
+
+			Parser p = new Parser(new Lexer(test));
+			Actual = p.Parse().ToString();
+			if (Actual == null)
+			{
+				Assert.Fail($"Unable to parse {test}."+p.ToString());
+			}
+
+			Assert.That(Actual, Is.EqualTo(expected));
 			
-			// if (!p.AtEnd())
-			// {
-			// 	Assert.Fail();
-			// 	return;
-			// }
-			//
-			// var t = p.Node.ToParseTree();
-			// Console.WriteLine(t);
-			// var tree = SyntaxTreeBuilder.WalkStatement(t);
-			// if(tree == null){Assert.Fail();}
-			// Assert.That(tree?.ToString(), Is.EqualTo(expected));
 		}
 		
 	}
@@ -49,8 +35,8 @@ public class Tests
 	}
 	
 	[Test]
-	[TestCase("a=1", "a = 1")]
-	[TestCase("a=1+2", "a = (1 + 2)")]
+	[TestCase("a=1;", "a = 1")]
+	[TestCase("a=1+2;", "a = (1 + 2)")]
 	public void AssignmentTest(string test, string expected)
 	{
 		var x = new ParseTest(test, expected);
@@ -58,9 +44,9 @@ public class Tests
 	
 	[Test]
 	[TestCase("var a;", "var a")]
-	[TestCase("var a, b, c", "var a,b,c")]
 	[TestCase("var a, b, c;", "var a,b,c")]
-	[TestCase("var a,bee,;", "var a,bee")]
+	[TestCase("var a, b, c;", "var a,b,c")]
+	[TestCase("var a,bee;", "var a,bee")]
 	public void DeclarationTest(string test, string expected)
     {
     	var x = new ParseTest(test,expected);

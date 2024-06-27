@@ -2,7 +2,7 @@
 
 namespace BMinus.AST.PrimitiveStatements;
 
-public class FunctionCall : Statement
+public class FunctionCall : Expression
 {
 	public readonly Identifier FunctionName;
 	public Expression[] Arguments;//shit, is this 

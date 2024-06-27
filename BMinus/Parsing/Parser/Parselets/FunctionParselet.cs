@@ -39,8 +39,7 @@ public class FunctionParselet : IInfixParselet
 			}
 			return new FunctionDeclaration(id, parameters, block); // func identity(){}
 
-		}else if (parser.Peek(TokenType.EndStatement))
-		{
+		}else {
 			var arguments = args.Select((x => x as Expression)).Where(x => x != null).ToList();
 			if (arguments.Count != args.Count)
 			{

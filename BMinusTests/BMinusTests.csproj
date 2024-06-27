@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BMinus\BMinus.csproj" />
+      <ProjectReference Include="..\StarParser\StarParser.csproj" />
     </ItemGroup>
 
 </Project>

@@ -40,6 +40,7 @@ public enum TokenType
 	ShiftLeft,
 	ShiftRight,
 	And,
+	Or,
 	Mod,
 	GoToKeyword,
 	CaseKeyword,

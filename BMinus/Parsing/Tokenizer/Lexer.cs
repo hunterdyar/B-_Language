@@ -55,7 +55,8 @@ public class Lexer
 		('*', TokenType.Asterisk),//a*b is times, *a is indirection (pointer dereference)
 		('/',TokenType.Divide),
 		('?',TokenType.QuestionMark),//for ternary
-		('%',TokenType.Mod)
+		('%',TokenType.Mod),
+		('|',TokenType.Or)
 	}.Select< (char, TokenType),
 	(Func<char,bool>, TokenType)>(x => ((char c)=> { return (x.Item1 == c); }, x.Item2)).ToList();
 

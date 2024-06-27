@@ -94,4 +94,6 @@ public class Tests
 	{
 		var x = new ParseTest(test, expected);
 	}
+	
+	//todo: test labels and gotos. make sure that the colon doesn't break ternarys. may need to move that logic into lexer so whitespace can differentiate.
 }

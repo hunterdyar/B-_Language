@@ -18,6 +18,7 @@ public class StatementBlock : Statement
 		foreach (var statement in Statements)
 		{
 			sb.Append(statement.ToString());
+			sb.Append(';');
 		}
 
 		sb.Append('}');

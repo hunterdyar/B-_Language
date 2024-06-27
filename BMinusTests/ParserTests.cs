@@ -68,5 +68,19 @@ public class Tests
 	public void InfixOperatorTest(string test, string expected)
 	{
 		var x = new ParseTest(test, expected);
-	}	
+	}
+
+	[Test]
+	[TestCase("main(){}", "main(){}")]
+	[TestCase("main(a){}", "main(a){}")]
+	[TestCase("main(a,b,c){}", "main(a,b,c){}")]
+	[TestCase("main(){a;}", "main(){a;}")]
+	[TestCase("main();","main()")]
+	[TestCase("main(1);", "main(1)")]
+	[TestCase("main(1+2);", "main((1 + 2))")]
+	[TestCase("a(b(c));", "a(b(c))")]
+	public void FuctionTest(string test, string expected)
+	{
+		var x = new ParseTest(test, expected);
+	}
 }

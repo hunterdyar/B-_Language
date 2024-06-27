@@ -24,6 +24,11 @@ public class StatementBlockParselet : IPrefixParselet
 				
 			} while (!parser.Match(TokenType.RBrace));//match consume on match
 		}
+		else
+		{
+			//empty {} is valid
+			parser.Match(TokenType.RBrace);
+		}
 		
 		return new StatementBlock(statements);
 	}

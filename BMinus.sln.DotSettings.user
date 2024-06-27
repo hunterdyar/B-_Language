@@ -20,5 +20,6 @@
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.AssignmentTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.DeclarationTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.PrefixOperatorTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.FuctionTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -7,26 +7,28 @@ public class VariableDeclaration : Statement
 	public Identifier[] Identifiers => _identifiers;
 	private Identifier[] _identifiers;
 	
-	public VariableDeclaration(Expression[] ids)
+	public VariableDeclaration(Identifier[] ids)
 	{
 		if (ids == null || ids.Length == 0)
 		{
-			throw new ArgumentException($"Null or no id's to declare");
+			throw new ArgumentException($"Null or no id's to declare?");
 		}
 
-		_identifiers = ids.Select(e=>e as Identifier).ToArray();
+		_identifiers = ids;
+	}
+	public VariableDeclaration(List<Identifier> ids)
+	{
+		if (ids == null || ids.Count == 0)
+		{
+			throw new ArgumentException($"Null or no id's to declare?");
+		}
+
+		_identifiers = ids.ToArray();
 	}
 
-	public VariableDeclaration(Expression idExpr)
+	public VariableDeclaration(Identifier id)
 	{
-		if (idExpr is Identifier id)
-		{
-			_identifiers = new[] { id };
-		}
-		else
-		{
-			throw new ArgumentException($"{idExpr} is not an identifier.");
-		}
+		_identifiers = new[] { id };
 	}
 
 	public override string ToString()

@@ -23,6 +23,7 @@ public class Parser
 		Register(TokenType.HexLiteral, new LiteralParselet());
 		Register(TokenType.String, new LiteralParselet());
 		Register(TokenType.LBrace, new StatementBlockParselet());
+		Register(TokenType.VarDeclKeyword, new VariableDeclarationParselet());
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());
 		

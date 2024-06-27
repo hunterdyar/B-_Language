@@ -1,7 +1,8 @@
 ﻿using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
-using StarParser.Tokenizer;
-namespace StarParser.Parser.Parselets;
+using BMinus.Tokenizer;
+
+namespace BMinus.Parser.Parselets;
 
 public class FunctionParselet : IInfixParselet
 {

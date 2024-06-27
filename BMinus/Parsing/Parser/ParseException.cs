@@ -1,4 +1,4 @@
-﻿namespace StarParser.Parser;
+﻿namespace BMinus.Parser;
 
 public class ParseException : Exception
 {

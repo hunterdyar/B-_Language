@@ -1,4 +1,4 @@
-﻿namespace StarParser.Tokenizer;
+﻿namespace BMinus.Tokenizer;
 public enum TokenType
 {
 	Identifier,

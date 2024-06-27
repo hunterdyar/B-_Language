@@ -1,8 +1,8 @@
 ﻿using BMinus.AST;
-using StarParser;
-using StarParser.Tokenizer;
+using BMinus.Tokenizer;
+using BMinus;
 
-namespace StarParser.Parser.Parselets;
+namespace BMinus.Parser.Parselets;
 
 public interface IInfixParselet
 {

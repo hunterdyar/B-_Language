@@ -1,5 +1,5 @@
 ﻿
-namespace StarParser.Tokenizer;
+namespace BMinus.Tokenizer;
 
 public class LexerWrapper
 {

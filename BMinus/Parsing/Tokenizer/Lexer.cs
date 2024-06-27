@@ -5,7 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using System.Xml.XPath;
 
-namespace StarParser.Tokenizer;
+namespace BMinus.Tokenizer;
 
 public class Lexer
 {
@@ -19,7 +19,8 @@ public class Lexer
 	{
 		("auto", TokenType.VarDeclKeyword),
 		("var", TokenType.VarDeclKeyword),
-		("extern", TokenType.ExternKeyword),
+		("extern", TokenType.ExternKeyword),//okay so it's extrn not extern but i kept mistyping it so...
+		("extrn", TokenType.ExternKeyword),
 		("global", TokenType.ExternKeyword),
 		("if",TokenType.IfKeyword),
 		("while",TokenType.WhileKeyword),

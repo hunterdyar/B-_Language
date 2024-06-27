@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace StarParser.Tokenizer;
+namespace BMinus.Tokenizer;
 
 public class LexerException: Exception
 {

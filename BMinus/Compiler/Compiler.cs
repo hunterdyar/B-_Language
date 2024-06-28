@@ -47,12 +47,16 @@ public class Compiler
 			var left = assignment.Identifier;
 			int leftID = 0;//todo
 			CompileExpression(assignment.ValueExpr,EAX);
-			Emit(OpCode.SetReg, 0, EAX);
+			//if isLocal
+			Emit(OpCode.SetLocal, leftID, EAX);
+			//else
+			//Emit(OpCode.SetGlobal, leftID, EAX);
+
 		}else if(statement is ExternDeclaration externDeclaration)
 		{
 			foreach (var var in externDeclaration.Identifiers)
 			{
-				//add identifier to our identifiers mapping
+				//add identifier to our variable resolution system.
 			}
 		}else if (statement is FunctionCall fn)
 		{
@@ -65,24 +69,19 @@ public class Compiler
 			//getFunctionID = fn.FunctionName;
 			int fnVal = 0;
 			Emit(OpCode.Call, fnVal);
-			
+			//entering a frame sets base stackPointer, etc.
 			//after the function is done, we will return to this location of this frame.
-			//Let's clean up the stack, as this instruction set was responsible for adding to the stack.
-			//This presumes we can reach into the stack.
-			foreach (var arg in fn.Arguments)
-			{
-				Emit(OpCode.Pop);
-			}
+			//Runtime frames will clean the stack when we leave them.
 		}else if (statement is FunctionDeclaration fnDec)
 		{
 			//set a function prototype frame ID for name
 			//create a new frame
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
 			//we don't need to use globals, we can use local frame environment...
+			Emit(OpCode.Return);//Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
 		}else if(statement is GoTo gotoStatement)
 		{
 			//todo: a temporary instruction type would be fine. THen we finish compiling, and we search for the label, etc.
-			
 			//dynamic goto's are not supported, this is compile time.
 			// string label = temporary LabelValue.
 			//destination = getdestination

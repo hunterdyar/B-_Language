@@ -16,6 +16,6 @@ public enum OpCode : byte
 	GoTo,//jumps to frame (op1), instruction pointer (op2)
 	Jump,//Jumps to instruction pointer (op1) in current frame
 	JumpNotEq,//EAX, reads EAX, then does jump(op1,op2) if .. op3? hmmmm
-	Return,//puts op1 in EAX and leaves frame.
+	Return,//puts op1 in D and leaves frame.
 	Call, //Pushes a new frame with instructions from frameprototype op1. arguments should be on stack.
 }

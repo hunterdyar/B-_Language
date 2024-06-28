@@ -1,6 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Dynamic;
-using BMinus.Compiler;
+﻿using BMinus.Compiler;
+using BMinus.VirtualMachine;
 
 namespace BMinus.Environment;
 
@@ -9,27 +8,45 @@ namespace BMinus.Environment;
 /// </summary>
 public class Environment
 {
-	private List<int> _heap = new List<int>(2048); //initiate with some breathing room before we hitch to grow the internal array
-	//list of frame primitives
-	//list of constants, if we use those; otherwise the initial heap state
-	public void SetHeap(int pointer, int value)
-	{
-		while (pointer > _heap.Count+1)
-		{
-			_heap.Add(0);
-		}
+	public Frame GetFramePrototype(int i) => _framePrototypes[i];
+	private Frame[] _framePrototypes;
+	public MemoryManager Memory => _memory;
+	private MemoryManager _memory;
 
-		_heap[pointer] = value;
+	//dictionaries are temp till i do other stuff.
+	private Dictionary<int, int> _globals = new Dictionary<int, int>();
+	private Dictionary<int, int> _heap = new Dictionary<int, int>();
+	public Environment(Frame[] framePrototypes)
+	{
+		_memory = new MemoryManager();
+		_framePrototypes = framePrototypes;
+		
 	}
 
-	public bool GetHeap(int pointer, out int value)
+	public int GetGlobal(int loc)
 	{
-		if (pointer < 0 || pointer >= _heap.Count)
+		if (_globals.TryGetValue(loc, out var val))
 		{
-			value = 0;
-			return false;
+			return val;
 		}
-		value = _heap[pointer];
-		return true;
+
+		throw new VMException($"Unable to get global {loc}");
+	}
+
+	public void SetGlobal(int pos, int val)
+	{
+		if (_globals.ContainsKey(pos))
+		{
+			_globals[pos] = val;
+		}
+		else
+		{
+			_globals.Add(pos,val);
+		}
+	}
+
+	public InstructionLocation GetLabel(int labelID)
+	{
+		return new InstructionLocation(0, 0);
 	}
 }

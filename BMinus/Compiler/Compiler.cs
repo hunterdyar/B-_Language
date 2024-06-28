@@ -2,7 +2,7 @@
 using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using BMinus.Models;
-
+using VM = BMinus.VirtualMachine.VirtualMachine;
 namespace BMinus.Compiler;
 
 public class Compiler
@@ -12,11 +12,7 @@ public class Compiler
 	private int _currentFrame;
 
 	//shorthands for register indices. can move to VM as static.
-	public int EAX => 0;//accumulator, result of operations.
-	public int A => 1;//general
-	public int B => 2;//general
-	public int C => 3;//count
-	public int D => 4;
+
 	//environment
 	//frames
 	private List<Frame> _frames = new List<Frame>();
@@ -26,6 +22,7 @@ public class Compiler
 		Root = s;
 		_frames.Add(new Frame(0));//global frame.
 		_currentFrame = 0;
+		Compile(Root);
 	}
 	
 	public void Compile(Statement statement)
@@ -46,9 +43,9 @@ public class Compiler
 		{
 			var left = assignment.Identifier;
 			int leftID = 0;//todo
-			CompileExpression(assignment.ValueExpr,EAX);
+			CompileExpression(assignment.ValueExpr, VM.EAX);
 			//if isLocal
-			Emit(OpCode.SetLocal, leftID, EAX);
+			Emit(OpCode.SetLocal, leftID, VM.EAX);
 			//else
 			//Emit(OpCode.SetGlobal, leftID, EAX);
 
@@ -123,23 +120,23 @@ public class Compiler
 			//ends with a pointer to the location of the character.
 		}else if (expression is BinMathOp binMathOp)
 		{
-			CompileExpression(binMathOp.Left, A);
-			CompileExpression(binMathOp.Right, B);
+			CompileExpression(binMathOp.Left, VM.A);
+			CompileExpression(binMathOp.Right, VM.B);
 			Emit(OpCode.Arithmetic, (int)binMathOp.Op, register);//leaves result in EAX
 		}else if (expression is CompareOp compareOp)
 		{
-			CompileExpression(compareOp.Left, A);
-			CompileExpression(compareOp.Right, B);
+			CompileExpression(compareOp.Left, VM.A);
+			CompileExpression(compareOp.Right, VM.B);
 			Emit(OpCode.Compare, (int)compareOp.Op, register);
 		}else if (expression is TernaryOp ternary)
 		{
 			//ternary's are if's, except they leave a value in the register.
-			CompileExpression(ternary.Condition, EAX);
+			CompileExpression(ternary.Condition, VM.EAX);
 			var j_nq = Emit(OpCode.JumpNotEq, 0);
-			CompileExpression(ternary.Consequence, A);
+			CompileExpression(ternary.Consequence, VM.A);
 			var la = TopLocation();
 			var j_skipAlt = Emit(OpCode.Jump);
-			CompileExpression(ternary.Alternative, B);
+			CompileExpression(ternary.Alternative, VM.B);
 			var lb = TopLocation();
 			UpdateOperands(j_nq, j_skipAlt.FrameIndex, j_skipAlt.InstructionIndex);//+1?
 			UpdateOperands(j_skipAlt, lb.FrameIndex, lb.InstructionIndex);
@@ -190,4 +187,9 @@ public class Compiler
 	}
 	
 	#endregion
+
+	public Environment.Environment GetEnvironment()
+	{
+		return new Environment.Environment(_frames.ToArray());
+	}
 }

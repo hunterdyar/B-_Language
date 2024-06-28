@@ -4,7 +4,7 @@ public class Frame
 {
 	public int FrameID;//this indexes to function names.
 	public List<Instruction> Instructions = new List<Instruction>();
-
+	public int IP = -1;
 	public Frame(int frameId)
 	{
 		FrameID = frameId;
@@ -39,5 +39,29 @@ public class Frame
 
 	#region Runtime
 
+	public int GetLocal(int pos)
+	{
+		return 0;
+	}
+
+	public void SetLocal(int pos, int val)
+	{
+		
+	}
+
 	#endregion
+
+	public Frame Clone()
+	{
+		return new Frame(FrameID)
+		{
+			Instructions = this.Instructions,
+			IP = this.IP,
+		};
+	}
+
+	public void SetIP(int ip)
+	{
+		this.IP = ip;
+	}
 }

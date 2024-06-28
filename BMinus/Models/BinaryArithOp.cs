@@ -1,6 +1,6 @@
 ﻿namespace BMinus.Models;
 
-public enum BinaryArith
+public enum BinaryArithOp
 {
 	Add,
 	Subtract,

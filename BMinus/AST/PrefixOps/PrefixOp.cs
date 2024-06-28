@@ -1,12 +1,15 @@
-﻿namespace BMinus.AST;
+﻿using BMinus.Models;
+
+namespace BMinus.AST;
 
 public class PrefixOp : Expression
 {
 	public readonly Expression Right;
-
-	public PrefixOp(Expression right)
+	public readonly UnaryPrefixOp Op;
+	public PrefixOp(Expression right, UnaryPrefixOp op)
 	{
 		this.Right = right;
+		Op = op;
 	}
 	public static PrefixOp GetPrefixOp(Expression right, string op)
 	{
@@ -14,11 +17,11 @@ public class PrefixOp : Expression
 		{
 			case "-":
 				//check if right is literal (optimize!)
-				return new Negate(right);
+				return new PrefixOp(right, UnaryPrefixOp.Negate);
 			case "!":
-				return new Bang(right);
+				return new PrefixOp(right, UnaryPrefixOp.Not);
 		}
 		
-		throw new ArgumentException($"invalid prefix '{op}'");
+		throw new ArgumentException($"Unable to create prefix expression with op: '{op}'");
 	}
 }

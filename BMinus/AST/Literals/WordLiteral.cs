@@ -4,7 +4,8 @@ namespace BMinus.AST;
 
 public class WordLiteral : Expression
 {
-	private readonly byte[] Value;
+	public readonly byte[] Value;
+	public int ValueAsInt => BitConverter.ToInt32(Value);
 
 	public WordLiteral( int intVal)
 	{
@@ -42,6 +43,7 @@ public class WordLiteral : Expression
 			throw new ArgumentException($"Unable to parse {s} as a literal.");
 		}
 	}
+
 
 
 	public override string ToString()

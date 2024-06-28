@@ -4,26 +4,26 @@ namespace BMinus.AST;
 
 public class BinMathOp : BinOp
 {
-	public readonly BinaryArith Op;
+	public readonly BinaryArithOp Op;
 	public override string OpAsString => ComparisonToString(Op);
-	public BinMathOp(Expression left, BinaryArith op, Expression right) : base(left, right)
+	public BinMathOp(Expression left, BinaryArithOp op, Expression right) : base(left, right)
 	{
 		this.Op = op;
 	}
 
-	public static string ComparisonToString(BinaryArith op)
+	public static string ComparisonToString(BinaryArithOp op)
 	{
 		switch (op)
 		{
-			case BinaryArith.Add:
+			case BinaryArithOp.Add:
 				return "+";
-			case BinaryArith.Subtract:
+			case BinaryArithOp.Subtract:
 				return "-";
-			case BinaryArith.Multiply:
+			case BinaryArithOp.Multiply:
 				return "*";
-			case BinaryArith.Divide:
+			case BinaryArithOp.Divide:
 				return "/";
-			case BinaryArith.Remainder:
+			case BinaryArithOp.Remainder:
 				return "%";
 		}
 		throw new Exception($"Huh? comparison is {op}");

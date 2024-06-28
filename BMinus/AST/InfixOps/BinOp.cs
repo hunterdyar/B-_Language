@@ -23,15 +23,15 @@ public abstract class BinOp : Expression
 		switch (op)
 		{
 			case "+":
-				return new BinMathOp(left,BinaryArith.Add, right);
+				return new BinMathOp(left,BinaryArithOp.Add, right);
 			case "-":
-				return new BinMathOp(left, BinaryArith.Subtract, right);
+				return new BinMathOp(left, BinaryArithOp.Subtract, right);
 			case "*":
-				return new BinMathOp(left, BinaryArith.Multiply, right);
+				return new BinMathOp(left, BinaryArithOp.Multiply, right);
 			case "/":
-				return new BinMathOp(left, BinaryArith.Divide, right);
+				return new BinMathOp(left, BinaryArithOp.Divide, right);
 			case "%":
-				return new BinMathOp(left, BinaryArith.Remainder, right);
+				return new BinMathOp(left, BinaryArithOp.Remainder, right);
 			case "==":
 				return new CompareOp(left, Comparison.Equals, right);
 			case ">":

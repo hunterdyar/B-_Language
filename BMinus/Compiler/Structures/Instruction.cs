@@ -26,4 +26,28 @@ public struct Instruction
 		OperandA = operandA;
 		OperandB = operandB;
 	}
+
+	public Instruction(OpCode op, params int[] operands)
+	{
+		this.Op = op;
+		if (operands.Length > 0)
+		{
+			OperandA = operands[0];
+		}
+
+		if (operands.Length > 1)
+		{
+			OperandB = operands[1];
+		}
+	}
+
+	public void SetA(int a)
+	{
+		OperandA = a;
+	}
+
+	public void SetB(int b)
+	{
+		OperandA = b;
+	}
 }

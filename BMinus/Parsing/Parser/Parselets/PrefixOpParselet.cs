@@ -12,18 +12,6 @@ public class PrefixOpParselet : IPrefixParselet
 		{
 			throw new ParseException($"cannot use prefix operator {token.Literal} on {right}");
 		}
-		switch (token.TokenType)
-		{
-			case TokenType.Bang:
-				return new Bang(rightExpr);
-			case TokenType.Minus:
-				return new Negate(rightExpr);
-			case TokenType.Plus:
-				//todo: hmmm
-				return rightExpr;
-		}
-
-		throw new ParseException($"Bad prefix operator {token.TokenType}.");
-
+		return PrefixOp.GetPrefixOp(rightExpr, token.Literal);
 	}
 }

@@ -8,13 +8,19 @@ namespace BMinus.Parser;
 public class Parser
 {
 	private LexerState _lexer;
+	private LexerWrapper _lexWrapper;
 	private List<Token> _readTokens = new List<Token>();
 	private Dictionary<TokenType, IPrefixParselet> _prefixParselets = new Dictionary<TokenType, IPrefixParselet>();
 	private Dictionary<TokenType, IInfixParselet> _infixParselets = new Dictionary<TokenType, IInfixParselet>();
 
 	public Parser(Lexer lexer)
 	{
-		_lexer = new LexerState(new LexerWrapper(lexer));
+		//lexer's don't keep a list of their tokens, but the wrapper does.
+		//the state provides an access to the wrapper that we can easily and (more) cheaply clone for backtracking
+		//i am no longer backtracking, but haven't factored it out yet.
+		_lexWrapper = new LexerWrapper(lexer);
+		_lexer = new LexerState(_lexWrapper);
+		
 		
 		//prefixe dict. Thest can start statements.
 		Register(TokenType.Identifier, new IdentifierParselet());

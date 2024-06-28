@@ -51,5 +51,6 @@ public enum TokenType
 	Indirection,
 	String,
 	CharLiteral,
+	Label,
 	End,
 }

@@ -226,7 +226,7 @@ public class Lexer
 			Advance();
 			if (_state == TokenState.Complete)
 			{
-				//a single-letter identifier
+				//a single-letter identifier that ends the input stream
 				var ft = new Token(TokenType.Identifier, first.ToString());
 				_tokenBuffer.Add(ft);
 				return true;
@@ -248,6 +248,14 @@ public class Lexer
 				return false;
 			}
 
+			if (Peek() == ':')
+			{
+				Consume(':');
+				var l = new Token(TokenType.Label, id);
+				_tokenBuffer.Add(l);
+				_state = TokenState.Entry;
+				return true;
+			}
 			var t = new Token(TokenType.Identifier, id);
 			_tokenBuffer.Add(t);
 			_state = TokenState.Entry;

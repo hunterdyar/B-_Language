@@ -27,6 +27,9 @@ public class Parser
 		Register(TokenType.QuestionMark, new TernaryParselet());
 		Register(TokenType.LParen, new ParenthesizedExpressionParselet());
 		Register(TokenType.IfKeyword, new IfStatementParselet());
+		Register(TokenType.CharLiteral, new CharLiteralParselet());
+		Register(TokenType.SwitchKeyword, new SwitchParselet());
+		
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());
 		

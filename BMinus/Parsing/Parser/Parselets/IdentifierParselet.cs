@@ -8,12 +8,7 @@ public class IdentifierParselet : IPrefixParselet
 {
 	public Statement Parse(Parser parser, Token token)
 	{
-		if (parser.Peek(TokenType.Colon))
-		{
-			parser.Consume();
-			//todo... ternary?
-			return new Label(token.Literal);
-		}else if (parser.Peek(TokenType.RBrace))
+		if (parser.Peek(TokenType.RBrace))
 		{
 			var indexer = parser.ParseStatement();
 			if (!(indexer is Expression index))

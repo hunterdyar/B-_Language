@@ -1,4 +1,4 @@
-﻿using BMinus.AST.Enums;
+﻿using BMinus.Models;
 
 namespace BMinus.AST;
 
@@ -28,10 +28,8 @@ public class CompareOp : BinOp
 				return "<=";
 			case Comparison.NotEquals:
 				return "!=";
-			
 		}
-
-
+		
 		throw new Exception($"Huh? comparison is {op}");
 	}
 }

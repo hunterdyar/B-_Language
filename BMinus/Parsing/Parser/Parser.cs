@@ -21,7 +21,6 @@ public class Parser
 		_lexWrapper = new LexerWrapper(lexer);
 		_lexer = new LexerState(_lexWrapper);
 		
-		
 		//prefixe dict. Thest can start statements.
 		Register(TokenType.Identifier, new IdentifierParselet());
 		Register(TokenType.Assignment, new AssignParselet());

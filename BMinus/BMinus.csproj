@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <Folder Include="Parsing\" />
+      <Folder Include="VirtualMachine\" />
     </ItemGroup>
 
 </Project>

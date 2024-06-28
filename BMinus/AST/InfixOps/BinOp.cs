@@ -1,4 +1,6 @@
 ﻿
+using BMinus.Models;
+
 namespace BMinus.AST;
 
 public abstract class BinOp : Expression
@@ -21,11 +23,25 @@ public abstract class BinOp : Expression
 		switch (op)
 		{
 			case "+":
-				return new AddExpr(left, right);
+				return new BinMathOp(left,BinaryArith.Add, right);
 			case "-":
-				return new SubtractExpr(left, right);
+				return new BinMathOp(left, BinaryArith.Subtract, right);
 			case "*":
-				return new TimesOp(left, right);
+				return new BinMathOp(left, BinaryArith.Multiply, right);
+			case "/":
+				return new BinMathOp(left, BinaryArith.Divide, right);
+			case "%":
+				return new BinMathOp(left, BinaryArith.Remainder, right);
+			case "==":
+				return new CompareOp(left, Comparison.Equals, right);
+			case ">":
+				return new CompareOp(left, Comparison.GreaterThan, right);
+			case ">=":
+				return new CompareOp(left, Comparison.GreaterThanOrEqual, right);
+			case "<":
+				return new CompareOp(left, Comparison.LessThan, right);
+			case "<=":
+				return new CompareOp(left, Comparison.LessThanOrEqual, right);
 			default:
 				throw new ArgumentException($"bad token: {op}");
 		}

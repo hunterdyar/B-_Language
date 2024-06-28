@@ -1,6 +1,6 @@
 ﻿using BMinus.Tokenizer;
 
-namespace BMinus.AST.Enums;
+namespace BMinus.Models;
 
 public enum Comparison
 {

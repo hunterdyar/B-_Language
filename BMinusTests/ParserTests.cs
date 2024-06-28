@@ -18,7 +18,8 @@ public class Tests
 			Test = test;
 
 			Parser p = new Parser(new Lexer(test));
-			Actual = p.Parse().ToString();
+			var tree = p.Parse();
+			Actual = tree.ToString();
 			if (Actual == null)
 			{
 				Assert.Fail($"Unable to parse {test}."+p.ToString());

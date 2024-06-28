@@ -12,11 +12,11 @@ public class Compiler
 	private int _currentFrame;
 
 	//shorthands for register indices.
-	public short EAX => 0;//accumulator
-	public short A => 1;//general
-	public short B => 2;//general
-	public short C => 3;//count
-	public short D => 4;
+	public int EAX => 0;//accumulator
+	public int A => 1;//general
+	public int B => 2;//general
+	public int C => 3;//count
+	public int D => 4;
 	//environment
 	//frames
 	private List<Frame> _frames = new List<Frame>();
@@ -48,35 +48,25 @@ public class Compiler
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="expression">Expression to generate instruction to put into environment</param>
-	/// <param name="register">which register</param>
-	/// <param name="toRegister">true for registers, false for stack</param>
-	public void CompileExpression(Expression expression, int register = 0, bool toRegister = true)
+	/// <param name="expression">Generate a value that that gets put into a register or onto the stack.</param>
+	/// <param name="register">which register, or -1 for on the stack.</param>
+	public void CompileExpression(Expression expression, int register = 0)
 	{
 		if(expression is WordLiteral wordLiteral)
 		{
-			
 			//add to register? 
 			//add instruction, push wordLiteral.GetValue.
 		}else if (expression is BinMathOp binMathOp)
 		{
 			CompileExpression(binMathOp.Left, A);
 			CompileExpression(binMathOp.Right, B);
-			Emit(OpCode.Arithmetic, (short)binMathOp.Op);//leaves result in EAX
-			if (toRegister)
-			{
-				if (register != 0)//0 is eax
-				{
-					Emit(OpCode.MoveReg, 0, 1);//move data from register op0 to register op1, 
-				}
-				
-			}
+			Emit(OpCode.Arithmetic, (short)binMathOp.Op, register);//leaves result in EAX
 		}
 	}
 
 	#region Helpers
 
-	private void Emit(OpCode code, params short[] operands)
+	private void Emit(OpCode code, params int[] operands)
 	{
 		if (operands.Length == 0)
 		{

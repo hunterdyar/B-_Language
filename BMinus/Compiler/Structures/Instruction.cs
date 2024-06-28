@@ -3,8 +3,8 @@
 public struct Instruction
 {
 	public OpCode Op;
-	public short OperandA;
-	public short OperandB;
+	public int OperandA;
+	public int OperandB;
 
 	public Instruction(OpCode op)
 	{
@@ -13,14 +13,14 @@ public struct Instruction
 		OperandB = 0;
 	}
 
-	public Instruction(OpCode op, short operand)
+	public Instruction(OpCode op, int operand)
 	{
 		this.Op = op;
 		OperandA = operand;
 		OperandB = 0;
 	}
 
-	public Instruction(OpCode op, short operandA, short operandB)
+	public Instruction(OpCode op, int operandA, int operandB)
 	{
 		this.Op = op;
 		OperandA = operandA;

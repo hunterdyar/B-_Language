@@ -32,6 +32,10 @@ public class WordLiteral : Expression
 		else if (t == 'h')
 		{
 			throw new NotImplementedException("Hex Literals not implemented yet");
+		}else if (t == 'c')
+		{
+			//'hi'
+			throw new NotImplementedException("Char Literals not implemented yet");
 		}
 		else
 		{

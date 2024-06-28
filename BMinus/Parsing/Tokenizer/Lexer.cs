@@ -14,7 +14,8 @@ public class Lexer
 	private readonly string _source;
 	private TokenState _state = TokenState.Entry;
 	private Token EOSToken => new Token(TokenType.End, "");
-
+	private const char StringToken = '\"';
+	private const char CharToken = '\'';
 	private (string, TokenType)[] _keywords = new[]
 	{
 		("auto", TokenType.VarDeclKeyword),
@@ -116,7 +117,19 @@ public class Lexer
 				break;
 			}
 
-			if (EatString())
+			if (EatString(StringToken, TokenType.String))
+			{
+				tokenAdded = true;
+				continue;
+			}
+
+			if (_pos >= _source.Length)
+			{
+				_state = TokenState.Complete;
+				break;
+			}
+
+			if (EatString(CharToken, TokenType.CharLiteral))
 			{
 				tokenAdded = true;
 				continue;
@@ -257,23 +270,23 @@ public class Lexer
 		return false;
 	}
 
-	private bool EatString()
+	private bool EatString(char enclosing, TokenType tt)
 	{
 		var first = _source[_pos];
-		if (first != '\'')
+		if (first != enclosing)
 		{
 			return false;
 		}
 		else
 		{
-			Consume('\'');//past the first '
+			Consume(enclosing);//past the first '
 			_state = TokenState.String;
 			int start = _pos;
 			int length = 1;
 			Advance();
 			char c = _source[_pos];
 			bool escape = true;
-			while (c != '\'' || escape)
+			while (c != enclosing || escape)
 			{
 				if (c == '\\')
 				{
@@ -295,9 +308,9 @@ public class Lexer
 				c = _source[_pos];
 			}
 
-			Consume('"');
+			Consume(enclosing);
 			var id = _source.Substring(start, length);
-			var t = new Token(TokenType.String, id);
+			var t = new Token(tt, id);
 			_tokenBuffer.Add(t);
 			_state = TokenState.Entry;
 			return true;

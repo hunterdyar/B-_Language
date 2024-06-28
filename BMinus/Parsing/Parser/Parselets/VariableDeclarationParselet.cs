@@ -14,6 +14,18 @@ public class VariableDeclarationParselet : IPrefixParselet
 			do
 			{
 				var idTok = parser.Consume(TokenType.Identifier);
+				if (parser.Peek(TokenType.LBrace))
+				{
+					parser.Consume(TokenType.LBrace);
+					var vSizeS = parser.ParseStatement();
+					if (!(vSizeS is Expression vSize))
+					{
+						throw new ParseException("Vectors must be declared with valid expression for their size");
+					}
+
+					parser.Consume(TokenType.RBrace);
+					variables.Add(new VectorIdentifier(idTok.Literal,vSize));
+				}
 				variables.Add(new Identifier(idTok.Literal));
 			} while (parser.Match(TokenType.Comma));
 		}

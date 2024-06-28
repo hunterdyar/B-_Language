@@ -6,7 +6,7 @@ public class VariableDeclaration : Statement
 {
 	public Identifier[] Identifiers => _identifiers;
 	private Identifier[] _identifiers;
-	
+
 	public VariableDeclaration(Identifier[] ids)
 	{
 		if (ids == null || ids.Length == 0)
@@ -14,8 +14,10 @@ public class VariableDeclaration : Statement
 			throw new ArgumentException($"Null or no id's to declare?");
 		}
 
+		//todo: is this a hack that will bite us? MAYBE
 		_identifiers = ids;
 	}
+
 	public VariableDeclaration(List<Identifier> ids)
 	{
 		if (ids == null || ids.Count == 0)

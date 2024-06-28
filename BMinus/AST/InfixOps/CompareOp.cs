@@ -18,9 +18,20 @@ public class CompareOp : BinOp
 		{
 			case Comparison.Equals:
 				return "==";
+			case Comparison.GreaterThan:
+				return ">";
+			case Comparison.LessThan:
+				return "<";
+			case Comparison.GreaterThanOrEqual:
+				return ">=";
+			case Comparison.LessThanOrEqual:
+				return "<=";
+			case Comparison.NotEquals:
+				return "!=";
+			
 		}
 
 
-		throw new Exception($"WHat comparison is {op}");
+		throw new Exception($"Huh? comparison is {op}");
 	}
 }

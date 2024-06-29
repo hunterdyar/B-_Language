@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Net.Sockets;
+using System.Runtime.Intrinsics.X86;
 using BMinus.AST;
 using BMinus.Compiler;
+using BMinus.Environment;
 using BMinus.Models;
 using Microsoft.VisualBasic;
 
@@ -101,7 +103,7 @@ public class VirtualMachine
 				Env.SetGlobal(op.OperandA, GetRegister(op.OperandB));
 				return;
 			case OpCode.GetLocal:
-				_register[op.OperandB] = CurrentFrame.GetLocal(op.OperandA);
+				SetRegister(op.OperandB,CurrentFrame.GetLocal(op.OperandA));
 				return;
 			case OpCode.SetLocal:
 				CurrentFrame.SetLocal(op.OperandA, GetRegister(op.OperandB));
@@ -122,6 +124,16 @@ public class VirtualMachine
 				var f = prototype.Clone();
 				_frames.Push(f);
 				return;
+			case OpCode.CallBuiltin:
+				var builtin = op.OperandA;
+				var argCount = op.OperandB;
+				var args = new int[argCount];
+				for (int i = argCount - 1; i >= 0; i--)
+				{
+					args[i] = Pop();
+				}
+				Builtins.CallBuiltin(builtin,args);
+				break;
 			case OpCode.Halt:
 				return;
 			case OpCode.Jump:
@@ -151,11 +163,15 @@ public class VirtualMachine
 				LeaveFrame();
 				return;
 			case OpCode.Pop:
-				SetRegister(0,GetRegister(S));
+				SetRegister(EAX,Pop());
 				return;
 		}
 	}
 
+	private int Pop()
+	{
+		return GetRegister(S);
+	}
 	private void LeaveFrame()
 	{
 		//clear the stack
@@ -172,6 +188,7 @@ public class VirtualMachine
 		{
 			_stack[_sp] = val;
 			_sp++;
+			return;
 		}
 
 		_register[reg] = val;
@@ -182,7 +199,7 @@ public class VirtualMachine
 		if (reg < 0)
 		{
 			_sp--;
-			return _stack[_sp+1];
+			return _stack[_sp];
 		}
 
 		return _register[reg];

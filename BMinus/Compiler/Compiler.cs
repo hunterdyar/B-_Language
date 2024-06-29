@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
+using BMinus.Environment;
 using BMinus.Models;
 using VM = BMinus.VirtualMachine.VirtualMachine;
 namespace BMinus.Compiler;
@@ -22,7 +23,7 @@ public class Compiler
 	public Compiler(Statement s)
 	{
 		Root = s;
-		_subroutines.Add("",Frame);//the global frame.
+		_subroutines.Add("",new SubroutineDefinition(0));//the global frame.
 		_frames.Push("");
 		Compile(Root);
 	}
@@ -65,10 +66,17 @@ public class Compiler
 			}
 		}else if (statement is FunctionCall fn)
 		{
+			var name = fn.FunctionName.Value;
+			
 			//compile and put onto the stack in order. 
 			foreach (var arg in fn.Arguments)
 			{
 				CompileExpression(arg,-1);
+			}
+
+			if (Builtins.IsBuiltin(name, out var index))
+			{
+				Emit(OpCode.CallBuiltin,index, fn.Arguments.Length);
 			}
 
 			//getFunctionID = fn.FunctionName;

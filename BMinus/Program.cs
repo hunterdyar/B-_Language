@@ -5,7 +5,7 @@ using BMinus.VirtualMachine;
 
 Console.WriteLine("hi");
 
-string test = "auto a;a = 1+3;a;";
+string test = "auto a;a = 1+3;putchar(a);";
 Parser p = new Parser(new Lexer(test));
 var tree = p.Parse();
 Compiler c = new Compiler(tree);

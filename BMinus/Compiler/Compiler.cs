@@ -14,6 +14,7 @@ public class Compiler
 	//shorthands for register indices. can move to VM as static.
 
 	//environment
+	private List<string> _globals = new List<string>();
 	//functions, basically
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
 	
@@ -48,21 +49,48 @@ public class Compiler
 			int leftID = 0;//todo
 			CompileExpression(assignment.ValueExpr, VM.EAX);
 			//if isLocal
-			Emit(OpCode.SetLocal, leftID, VM.EAX);
-			//else
-			//Emit(OpCode.SetGlobal, leftID, EAX);
+			if (Frame.FrameID == 0)
+			{
+				Emit(OpCode.SetGlobal, leftID, VM.EAX);
+			}
+			else
+			{
+				Emit(OpCode.SetLocal, leftID, VM.EAX);
+			}
 
 		}else if (statement is VariableDeclaration varDeclaration)
 		{
 			foreach (var identifier in varDeclaration.Identifiers)
 			{
-				Frame.AddLocal(identifier.Value);
+				if (Frame.FrameID == 0)
+				{
+					Frame.AddExtern(identifier.Value, _globals.Count);
+					_globals.Add(identifier.Value);
+				}
+				else
+				{
+					Frame.AddLocal(identifier.Value);
+				}
 			}
 		} else if(statement is ExternDeclaration externDeclaration)
 		{
 			foreach (var var in externDeclaration.Identifiers)
 			{
 				//add identifier to our variable resolution system.
+				if (Frame.FrameID == 0)
+				{
+					throw new CompilerException($"Extern keyword is invalid at top level.");
+				}
+
+				int index = _globals.IndexOf(var.Value);
+				if (index != -1)
+				{
+					Frame.AddExtern(var.Value, index);
+				}
+				else
+				{
+					throw new CompilerException($"Unable to resolve extern {var.Value}");
+				}
 			}
 		}else if (statement is FunctionCall fn)
 		{
@@ -168,13 +196,19 @@ public class Compiler
 			//get position?
 		}else if (expression is Identifier identifier)
 		{
-			if (Frame.TryGetLocal(identifier.Value, out int index))
+			if (Frame.TryResolveID(identifier.Value, out int index, out Scope scope))
 			{
-				Emit(OpCode.GetLocal, index, register);
+				if (scope == Scope.Local || scope == Scope.Argument)
+				{
+					Emit(OpCode.GetLocal, index, register);
+				}else if (scope == Scope.Global)
+				{
+					Emit(OpCode.GetGlobal, index, register);
+				}
 				return;
 			}
-			//todo: globals.
-			//get heap value, and put into register.
+
+			throw new CompilerException($"Unble to resolve variable {identifier.Value}. Has it been declared?");
 		}
 	}
 	

@@ -1,5 +1,6 @@
 ﻿using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
+using BMinus.Models;
 
 namespace BMinus.Compiler;
 
@@ -7,6 +8,8 @@ namespace BMinus.Compiler;
 public class SubroutineDefinition
 {
 	public Dictionary<string, int> Locals = new Dictionary<string, int>();
+	public Dictionary<string, int> Externs = new Dictionary<string, int>();
+
 	public int FrameID;
 	public List<Instruction> Instructions = new List<Instruction>();
 	
@@ -51,5 +54,29 @@ public class SubroutineDefinition
 	public bool TryGetLocal(string name, out int index)
 	{
 		return Locals.TryGetValue(name, out index);
+	}
+
+	public void AddExtern(string name, int externIndex)
+	{
+		Externs.Add(name, externIndex);
+	}
+
+	public bool TryResolveID(string name, out int index, out Scope scope)
+	{
+		if (Locals.TryGetValue(name, out index))
+		{
+			scope = Scope.Local;
+			return true;
+		}
+
+		if (Externs.TryGetValue(name, out index))
+		{
+			scope = Scope.Global;
+			return true;
+		}
+
+		index = -1;
+		scope = Scope.None;
+		return false;
 	}
 }

@@ -6,7 +6,6 @@ using BMinus.AST;
 using BMinus.Compiler;
 using BMinus.Environment;
 using BMinus.Models;
-using Microsoft.VisualBasic;
 
 namespace BMinus.VirtualMachine;
 using Environment = Environment.Environment;

@@ -3,7 +3,7 @@ using BMinus.AST.PrimitiveStatements;
 
 namespace BMinus.Compiler;
 
-//aka 'compile-time frame'.
+//aka 'compile-time'.
 public class SubroutineDefinition
 {
 	public Dictionary<string, int> Locals = new Dictionary<string, int>();

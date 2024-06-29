@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Data.SqlTypes;
+using System.Runtime.Serialization;
 using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using BMinus.Models;
@@ -8,20 +9,21 @@ namespace BMinus.Compiler;
 public class Compiler
 {
 	public readonly Statement Root;
-	private int _currentFrame;
 
 	//shorthands for register indices. can move to VM as static.
 
 	//environment
 	//functions, basically
-	private SubroutineDefinition Frame => _frames[_currentFrame];
-	private List<SubroutineDefinition> _frames = new List<SubroutineDefinition>();
-
+	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
+	
+	private readonly Dictionary<string,SubroutineDefinition> _subroutines = new Dictionary<string, SubroutineDefinition>();
+	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
+	private Stack<string> _frames = new Stack<string>();
 	public Compiler(Statement s)
 	{
 		Root = s;
-		_frames.Add(new SubroutineDefinition(0));//global frame.
-		_currentFrame = 0;
+		_subroutines.Add("",Frame);//the global frame.
+		_frames.Push("");
 		Compile(Root);
 	}
 	
@@ -78,6 +80,13 @@ public class Compiler
 			//Runtime frames will clean the stack when we leave them.
 		}else if (statement is FunctionDeclaration fnDec)
 		{
+			var name = fnDec.Identifier.Value;
+			if (_subroutines.ContainsKey(name))
+			{
+				throw new CompilerException($"A function named {name} already exists");
+			}
+			_subroutines.Add(name,new SubroutineDefinition(_subroutines.Count));
+			_frames.Push(name);
 			//set a function prototype frame ID for name
 			//create a new frame
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
@@ -180,9 +189,9 @@ public class Compiler
 		}
 	}
 
-	private SubroutineDefinition GetFrame(int index)
+	private SubroutineDefinition GetFrame(string name)
 	{
-		return _frames[index];
+		return _subroutines[name];
 	}
 	
 	private InstructionLocation TopLocation()
@@ -192,7 +201,8 @@ public class Compiler
 
 	private void UpdateOperands(InstructionLocation original, params int[] newOps)
 	{
-		var f = GetFrame(original.FrameIndex);
+		var kvp = _subroutines.First(x => x.Value.FrameID == original.FrameIndex);
+		var f = kvp.Value;
 		f.UpdateOperands(original,newOps);
 	}
 	
@@ -205,12 +215,17 @@ public class Compiler
 
 	public Frame[] GetFrames()
 	{
-		var frames = new Frame[_frames.Count];
-		for (int i = 0; i < _frames.Count; i++)
+		var frames = new Frame[_subroutines.Count];
+		foreach (var subroutine in _subroutines)
 		{
-			frames[i] = new Frame(_frames[i]);
+			frames[subroutine.Value.FrameID] = new Frame(subroutine.Value);
 		}
 
+		if (frames.Any(x => x == null))
+		{
+			throw new CompilerException("Multiple functions with same name?");
+		}
+		
 		return frames;
 	}
 }

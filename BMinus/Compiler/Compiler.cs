@@ -15,6 +15,7 @@ public class Compiler
 
 	//environment
 	private List<string> _globals = new List<string>();
+
 	//functions, basically
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
 	
@@ -105,12 +106,17 @@ public class Compiler
 			if (Builtins.IsBuiltin(name, out var index))
 			{
 				Emit(OpCode.CallBuiltin,index, fn.Arguments.Length);
+				return;
 			}
 
 			//getFunctionID = fn.FunctionName;
-			
-			int fnVal = 0;
-			Emit(OpCode.Call, fnVal);
+
+			if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition sub))
+			{
+				throw new CompilerException($"Unable to find function {fn.FunctionName}");
+			}
+			Emit(OpCode.Call, sub.FrameID);
+			return;
 			//entering a frame sets base stackPointer, etc.
 			//after the function is done, we will return to this location of this frame.
 			//Runtime frames will clean the stack when we leave them.
@@ -121,13 +127,21 @@ public class Compiler
 			{
 				throw new CompilerException($"A function named {name} already exists");
 			}
-			_subroutines.Add(name,new SubroutineDefinition(_subroutines.Count));
-			_frames.Push(name);
 			//set a function prototype frame ID for name
 			//create a new frame
+
+			_subroutines.Add(name,new SubroutineDefinition(_subroutines.Count));
+			_frames.Push(name);
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
-			//we don't need to use globals, we can use local frame environment...
+			foreach (var parameter in fnDec.Parameters)
+			{
+				Frame.AddLocal(parameter.Value);
+			}
+			
+			Compile(fnDec.Statement);
 			Emit(OpCode.Return);//Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
+			_frames.Pop();
+			return;
 		}else if(statement is GoTo gotoStatement)
 		{
 			//todo: a temporary instruction type would be fine. THen we finish compiling, and we search for the label, etc.
@@ -137,6 +151,7 @@ public class Compiler
 			//if we are not in the current frame, we need to clean the stack?
 			//shit.
 			Emit(OpCode.GoTo, 0, 0);//
+			return;
 		}else if (statement is IfStatement ifStatement)
 		{
 			
@@ -147,6 +162,7 @@ public class Compiler
 		}else if (statement is Nop nop)
 		{
 			Emit(OpCode.Nop);
+			return;
 		}
 	}
 
@@ -252,7 +268,7 @@ public class Compiler
 
 	public Environment.Environment GetEnvironment()
 	{
-		return new Environment.Environment(GetFrames());
+		return new Environment.Environment(_globals,GetFrames());
 	}
 
 	public Frame[] GetFrames()

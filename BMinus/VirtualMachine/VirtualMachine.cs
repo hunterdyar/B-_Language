@@ -43,7 +43,11 @@ public class VirtualMachine
 
 	private Stack<Frame> _frames;
 	private Frame CurrentFrame => _frames.Peek();
-	public VirtualMachine(Environment env)
+	/// <summary>
+	/// Whether the VM should print execution time (or other metrics) into the console.
+	/// </summary>
+	private bool _report;
+	public VirtualMachine(Environment env, bool report = false)
 	{
 		this.Env = env;
 		_register = new int[8];
@@ -52,6 +56,7 @@ public class VirtualMachine
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
 		_state = VMState.Ready;
+		_report = report;
 	}
 
 	public void Run()
@@ -71,8 +76,11 @@ public class VirtualMachine
 			RunOne();
 		}
 		_stopwatch.Stop();
-		Console.Write('\n');
-		Console.WriteLine($"B- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
+		if (_report)
+		{
+			Console.Write('\n');
+			Console.WriteLine($"B- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
+		}
 	}
 	private void RunOne()
 	{

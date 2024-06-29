@@ -4,6 +4,12 @@ public class MemoryManager
 {
 	private List<int> _heap = new List<int>(2048); //initiate with some breathing room before we hitch to grow the internal array
 
+	public MemoryManager(List<string> initialVariables)
+	{
+		//set size to initialvariables, at least.
+		//store names in out lookup table used for debugging.
+	}
+
 	//list of frame primitives
 	//list of constants, if we use those; otherwise the initial heap state
 	public void SetHeap(int pointer, int value)

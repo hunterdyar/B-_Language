@@ -16,11 +16,10 @@ public class Environment
 	//dictionaries are temp till i do other stuff.
 	private Dictionary<int, int> _globals = new Dictionary<int, int>();
 	private Dictionary<int, int> _heap = new Dictionary<int, int>();
-	public Environment(Frame[] framePrototypes)
+	public Environment(List<string> globals, Frame[] framePrototypes)
 	{
-		_memory = new MemoryManager();
+		_memory = new MemoryManager(globals);
 		_framePrototypes = framePrototypes;
-		
 	}
 
 	public int GetGlobal(int loc)

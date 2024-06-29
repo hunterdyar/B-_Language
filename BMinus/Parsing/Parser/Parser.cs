@@ -152,7 +152,7 @@ public class Parser
 		{
 			if (token.TokenType == TokenType.End)
 			{
-				throw new ParseException("Unexpected End-Of-Input. ");
+				throw new ParseException($"Unexpected End-Of-Input. Expeced {expected}.");
 			}
 			if (expected == TokenType.EndStatement)
 			{

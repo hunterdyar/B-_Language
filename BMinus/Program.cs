@@ -5,7 +5,7 @@ using BMinus.Tokenizer;
 using BMinus.VirtualMachine;
 
 
-string test = "auto a;a = 1+3;putchar(a);";
+string test = "auto a;a = 1+3*2;putchar(a);";
 Stopwatch _stopwatch = Stopwatch.StartNew();
 Parser p = new Parser(new Lexer(test));
 var tree = p.Parse();

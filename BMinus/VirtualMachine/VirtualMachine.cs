@@ -73,7 +73,7 @@ public class VirtualMachine
 			return;
 		}
 		CurrentFrame.IP++;
-		if (CurrentFrame.IP >= CurrentFrame.Instructions.Count)
+		if (CurrentFrame.IP >= CurrentFrame.Instructions.Length)
 		{
 			if (_frames.Count > 0)
 			{

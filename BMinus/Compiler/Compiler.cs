@@ -8,19 +8,19 @@ namespace BMinus.Compiler;
 public class Compiler
 {
 	public readonly Statement Root;
-	private Frame Frame => _frames[_currentFrame];
 	private int _currentFrame;
 
 	//shorthands for register indices. can move to VM as static.
 
 	//environment
-	//frames
-	private List<Frame> _frames = new List<Frame>();
+	//functions, basically
+	private SubroutineDefinition Frame => _frames[_currentFrame];
+	private List<SubroutineDefinition> _frames = new List<SubroutineDefinition>();
 
 	public Compiler(Statement s)
 	{
 		Root = s;
-		_frames.Add(new Frame(0));//global frame.
+		_frames.Add(new SubroutineDefinition(0));//global frame.
 		_currentFrame = 0;
 		Compile(Root);
 	}
@@ -49,7 +49,13 @@ public class Compiler
 			//else
 			//Emit(OpCode.SetGlobal, leftID, EAX);
 
-		}else if(statement is ExternDeclaration externDeclaration)
+		}else if (statement is VariableDeclaration varDeclaration)
+		{
+			foreach (var identifier in varDeclaration.Identifiers)
+			{
+				Frame.AddLocal(identifier.Value);
+			}
+		} else if(statement is ExternDeclaration externDeclaration)
 		{
 			foreach (var var in externDeclaration.Identifiers)
 			{
@@ -64,6 +70,7 @@ public class Compiler
 			}
 
 			//getFunctionID = fn.FunctionName;
+			
 			int fnVal = 0;
 			Emit(OpCode.Call, fnVal);
 			//entering a frame sets base stackPointer, etc.
@@ -91,12 +98,10 @@ public class Compiler
 		}else if (statement is Label label)
 		{
 			//Create label
+			
 		}else if (statement is Nop nop)
 		{
 			Emit(OpCode.Nop);
-		}else if (statement is VariableDeclaration variableDeclaration)
-		{
-			//this is not extern, but local.
 		}
 	}
 
@@ -115,6 +120,8 @@ public class Compiler
 		}else if (expression is StringLiteral stringLiteral)
 		{
 			//strings are stored on the heap and accessed through pointers.
+			//so we need to do pointers+arrays before we do strings
+			
 			//push each character of the array on the stack,
 			//set each consecutive position of memory with the characters.
 			//ends with a pointer to the location of the character.
@@ -144,10 +151,13 @@ public class Compiler
 			//get position?
 		}else if (expression is Identifier identifier)
 		{
-			//get identifierID from lookup.
-			int value = 0;
+			if (Frame.TryGetLocal(identifier.Value, out int index))
+			{
+				Emit(OpCode.GetLocal, index, register);
+				return;
+			}
+			//todo: globals.
 			//get heap value, and put into register.
-			Emit(OpCode.GetLocal, value, register);
 		}
 	}
 	
@@ -170,7 +180,7 @@ public class Compiler
 		}
 	}
 
-	private Frame GetFrame(int index)
+	private SubroutineDefinition GetFrame(int index)
 	{
 		return _frames[index];
 	}
@@ -190,6 +200,17 @@ public class Compiler
 
 	public Environment.Environment GetEnvironment()
 	{
-		return new Environment.Environment(_frames.ToArray());
+		return new Environment.Environment(GetFrames());
+	}
+
+	public Frame[] GetFrames()
+	{
+		var frames = new Frame[_frames.Count];
+		for (int i = 0; i < _frames.Count; i++)
+		{
+			frames[i] = new Frame(_frames[i]);
+		}
+
+		return frames;
 	}
 }

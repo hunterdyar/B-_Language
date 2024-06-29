@@ -1,4 +1,5 @@
 ﻿using BMinus.Models;
+using BMinus.Parser;
 
 namespace BMinus.AST;
 
@@ -23,5 +24,23 @@ public class PrefixOp : Expression
 		}
 		
 		throw new ArgumentException($"Unable to create prefix expression with op: '{op}'");
+	}
+
+	public override string ToString()
+	{
+		return UnaryPrefixOpToString(this.Op) + Right.ToString();
+	}
+
+	public static string UnaryPrefixOpToString(UnaryPrefixOp op)
+	{
+		switch (op)
+		{
+			case UnaryPrefixOp.Negate:
+				return "-";
+			case UnaryPrefixOp.Not:
+				return "!";
+		}
+
+		throw new ParseException($"Bad unary prefix op {op}, shouldn't be trying to stringify it here.");
 	}
 }

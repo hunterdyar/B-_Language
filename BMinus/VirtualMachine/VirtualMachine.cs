@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.Intrinsics.X86;
 using BMinus.AST;
@@ -34,6 +35,8 @@ public class VirtualMachine
 	/// Frame Pointer
 	/// </summary>
 	private int fp = 0;
+
+	private readonly Stopwatch _stopwatch = new Stopwatch();
 	/// <summary>
 	/// Instruction Pointer
 	/// </summary>
@@ -54,6 +57,7 @@ public class VirtualMachine
 
 	public void Run()
 	{
+		_stopwatch.Restart();
 		if (_state == VMState.Ready)
 		{
 			_state = VMState.Running;
@@ -67,6 +71,9 @@ public class VirtualMachine
 		{
 			RunOne();
 		}
+		_stopwatch.Stop();
+		Console.Write('\n');
+		Console.WriteLine($"B- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
 	}
 	private void RunOne()
 	{

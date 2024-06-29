@@ -50,4 +50,9 @@ public struct Instruction
 	{
 		OperandA = b;
 	}
+
+	public override string ToString()
+	{
+		return $"{Op} - {OperandA} | {OperandB}";
+	}
 }

@@ -1,8 +1,8 @@
 ﻿namespace BMinus.Environment;
-
+using VM = VirtualMachine.VirtualMachine;
 public static class Builtins
 {
-	public delegate int Builtin(params int[] args);
+	public delegate int Builtin(VM vm, params int[] args);
 
 	public static bool IsBuiltin(string name, out int index)
 	{
@@ -10,9 +10,9 @@ public static class Builtins
 		return index >= 0;//-1 when can't find.
 	}
 
-	public static void CallBuiltin(int builtIndex, params int[] args)
+	public static void CallBuiltin(VM vm, int builtIndex, params int[] args)
 	{
-		_builtins[builtIndex].Item2.Invoke(args);
+		_builtins[builtIndex].Item2.Invoke(vm,args);
 	}
 	
 	private static readonly List<(string, Builtin)> _builtins = new List<(string, Builtin)>()
@@ -20,13 +20,12 @@ public static class Builtins
 		("putchar",Putchar)
 	};
 
-	public static int Putchar(params int[] args)
+	public static int Putchar(VM vm, params int[] args)
 	{
 		foreach (int i in args)
 		{
-			Console.Write(i);
+			vm.VMConsole.Append(i);
 		}
-
-		return 0;
+		return 1;
 	}
 }

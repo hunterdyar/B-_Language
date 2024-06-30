@@ -1,5 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27d104bf_002D3ccd_002D4e70_002Da74b_002Dfcce8412cf2c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IdentifierTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27d104bf_002D3ccd_002D4e70_002Da74b_002Dfcce8412cf2c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="IdentifierTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.IdentifierTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.DeclarationTest&lt;/TestId&gt;&#xD;
@@ -29,6 +29,6 @@
     &lt;TestId&gt;NUnit3x::F59DCEF2-249A-4167-A591-E3A7937EBD25::net8.0::BMinusTests.Tests.FuctionTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c23f02b8_002Db145_002D496e_002Db77b_002D7a2d8aa8199e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Test1 #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c23f02b8_002Db145_002D496e_002Db77b_002D7a2d8aa8199e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1 #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

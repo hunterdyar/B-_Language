@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.Intrinsics.X86;
+using System.Text;
 using BMinus.AST;
 using BMinus.Compiler;
 using BMinus.Environment;
@@ -47,6 +48,9 @@ public class VirtualMachine
 	/// Whether the VM should print execution time (or other metrics) into the console.
 	/// </summary>
 	private bool _report;
+
+	public StringBuilder VMConsole => _vmConsole;
+	private StringBuilder _vmConsole;
 	public VirtualMachine(Environment env, bool report = false)
 	{
 		this.Env = env;
@@ -57,6 +61,7 @@ public class VirtualMachine
 		_frames.Push(env.GetFramePrototype(0));
 		_state = VMState.Ready;
 		_report = report;
+		_vmConsole = new StringBuilder();
 	}
 
 	public void Run()
@@ -78,8 +83,8 @@ public class VirtualMachine
 		_stopwatch.Stop();
 		if (_report)
 		{
-			Console.Write('\n');
-			Console.WriteLine($"B- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
+			VMConsole.Append("\n");
+			VMConsole.AppendLine($"---\nB- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
 		}
 	}
 	private void RunOne()
@@ -146,7 +151,7 @@ public class VirtualMachine
 				{
 					args[i] = Pop();
 				}
-				Builtins.CallBuiltin(builtin,args);
+				Builtins.CallBuiltin(this,builtin,args);
 				break;
 			case OpCode.Halt:
 				return;

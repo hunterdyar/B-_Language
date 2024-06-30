@@ -19,10 +19,13 @@ public class VirtualMachine
 	public static readonly int D = 4;
 	public static readonly int S = -1;
 	public const int StackSize = 2048;
-
+	
 	public VMState State => _state;
 	private VMState _state = VMState.Ready;
 	public Environment Env;
+	public VMRunner Runner => _runner;
+	private VMRunner _runner;
+	
 	//Compiler gives us a compiler object, which is NOT really bytecode,
 	//as we will have initial heap state (constants) and frame prototypes as objects.
 	private int[] _register;
@@ -44,15 +47,24 @@ public class VirtualMachine
 
 	private Stack<Frame> _frames;
 	private Frame CurrentFrame => _frames.Peek();
+
 	/// <summary>
 	/// Whether the VM should print execution time (or other metrics) into the console.
 	/// </summary>
 	private bool _report;
 
-	public StringBuilder VMConsole => _vmConsole;
-	private StringBuilder _vmConsole;
-	public VirtualMachine(Environment env, bool report = false)
+	
+	public VirtualMachine(Environment env, VMRunner? runner = null, bool report = false)
 	{
+		if (runner == null)
+		{
+			_runner = new VMRunner();
+		}
+		else
+		{
+			_runner = runner;
+		}
+
 		this.Env = env;
 		_register = new int[8];
 		_stack = new int[StackSize];
@@ -61,7 +73,6 @@ public class VirtualMachine
 		_frames.Push(env.GetFramePrototype(0));
 		_state = VMState.Ready;
 		_report = report;
-		_vmConsole = new StringBuilder();
 	}
 
 	public void Run()
@@ -80,13 +91,36 @@ public class VirtualMachine
 		{
 			RunOne();
 		}
+		
 		_stopwatch.Stop();
 		if (_report)
 		{
-			VMConsole.Append("\n");
-			VMConsole.AppendLine($"---\nB- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
+			_runner.VMConsole.Append("\n");
+			_runner.VMConsole.AppendLine($"---\nB- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
 		}
+		_runner.OnRunComplete();
 	}
+
+	public void StepOver()
+	{
+		if (_state != VMState.Stepping)
+		{
+			if (_state == VMState.Ready)
+			{
+				_state = VMState.Stepping;
+			}
+			else
+			{
+				throw new VMException($"Can't step, state is {_state}");
+			}
+		}
+		
+		RunOne();
+		_runner.OnStep();
+		
+		_stopwatch.Stop();
+	}
+	
 	private void RunOne()
 	{
 		if (_state != VMState.Running)

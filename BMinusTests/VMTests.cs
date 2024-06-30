@@ -33,17 +33,10 @@ public class VMTests
 	}
 	public static void RunTestOnOutput(string program, string expectedOutput)
 	{
-		using(var output = new ConsoleOutput()){
 			//run test
-			Parser p = new Parser(new Lexer(program));
-			var tree = p.Parse();
-			Compiler c = new Compiler(tree);
-			var env = c.GetEnvironment();
-			VirtualMachine vm = new VirtualMachine(env);
-			vm.Run();
-
-			Assert.That(output.GetOuput(), Is.EqualTo(expectedOutput));
-		}
+			VMRunner runner = new VMRunner();
+			var result = runner.RunProgram(program);
+			Assert.That(result, Is.EqualTo(expectedOutput));
 	}
 
 	[Test]
@@ -51,17 +44,16 @@ public class VMTests
 	[TestCase("a=2+2;", "4")]
 	[TestCase("a=2+2*2;", "6")]
 	[TestCase("a=2;a=3;a=4;a=6;", "6")]
-
-	public static void TestVarA(string p, string e)
+	public static void IntTestVarA(string p, string e)
 	{
-		p = "auto a;" + p + "putchar(a);";
+		p = "auto a;" + p + "putint(a);";
 		RunTestOnOutput(p,e);
 	}
 
 	[Test]
 	[TestCase("""
 		main(){
-			putchar(1);
+			putint(1);
 		};
 		main();
 	""", "1")]

@@ -17,7 +17,7 @@ namespace BMinus.Compiler;
 
 public class Compiler
 {
-	public readonly Statement Root;
+	public Statement Root;
 	//shorthands for register indices. can move to VM as static.
 
 	//environment
@@ -30,10 +30,16 @@ public class Compiler
 	private readonly Dictionary<string, InstructionLocation> _labels = new Dictionary<string, InstructionLocation>();
 	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
 	private Stack<string> _frames = new Stack<string>();
-	public Compiler(Statement s)
+	
+	public void NewCompile(Statement s)
 	{
+		_frames.Clear();
+		_labels.Clear();
+		_subroutines.Clear();
+		_globals.Clear();
+		
 		Root = s;
-		_subroutines.Add("",new SubroutineDefinition("",0));//the global frame.
+		_subroutines.Add("", new SubroutineDefinition("", 0)); //the global frame.
 		_frames.Push("");
 		Compile(Root);
 	}

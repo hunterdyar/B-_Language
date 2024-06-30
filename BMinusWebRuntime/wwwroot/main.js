@@ -13,7 +13,8 @@ setModuleImports('main.js', {
         location: {
             href: () => globalThis.window.location.href
         }
-    }
+    },
+    onOutput: onOutput
 });
 
 const config = getConfig();
@@ -23,12 +24,15 @@ document.getElementById('execute').onclick = ()=>{
     var textarea = document.getElementById('input')
     var p = textarea.value;
     console.log("Running Program",p)
-    var output = exports.BMinusRuntime.RunProgram(p);
-        output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
-    document.getElementById('out').innerHTML = output;
+    exports.BMinusRuntime.RunProgram(p);
+
     var data = exports.BMinusRuntime.GetGlobals();
     console.log(data);
 };
 
+function onOutput(output){
+    output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    document.getElementById('out').innerHTML = output;
+}
 
 await dotnet.run();

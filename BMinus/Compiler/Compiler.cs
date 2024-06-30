@@ -7,10 +7,17 @@ using BMinus.Models;
 using VM = BMinus.VirtualMachine.VirtualMachine;
 namespace BMinus.Compiler;
 
+//todo: B allows you to declare functions above or below where you use them. and externals. which is good!
+//but we can't compile in a single pass. 
+//In frame 0, we need to do a pass with no recursion for variable declarations and for function declarations, and add them.
+//we don't compile them yet, because recursion would still break.
+//or we go through the entire compilation, and if a function is not found, we don't throw an error, we just add it to a list of operations that need an updated operand for function names.
+//at the end, we go through this list, and update the operands or throw the error. that feels faster in my head.
+//we will need to do this for functions, labels, and externs.
+
 public class Compiler
 {
 	public readonly Statement Root;
-
 	//shorthands for register indices. can move to VM as static.
 
 	//environment
@@ -20,6 +27,7 @@ public class Compiler
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
 	
 	private readonly Dictionary<string,SubroutineDefinition> _subroutines = new Dictionary<string, SubroutineDefinition>();
+	private readonly Dictionary<string, InstructionLocation> _labels = new Dictionary<string, InstructionLocation>();
 	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
 	private Stack<string> _frames = new Stack<string>();
 	public Compiler(Statement s)
@@ -158,7 +166,7 @@ public class Compiler
 		}else if (statement is Label label)
 		{
 			//Create label
-			
+			_labels.Add(label.LabelID,Frame.GetTopInstructionLocation());
 		}else if (statement is Nop nop)
 		{
 			Emit(OpCode.Nop);

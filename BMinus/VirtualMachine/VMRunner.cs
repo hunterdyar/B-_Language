@@ -20,6 +20,7 @@ public class VMRunner
 	private StringBuilder _vmConsole = new StringBuilder();
 	public VMState VMState => GetVMState();
 	public Action<string> OnOutputChange { get; set; }
+	public Action<int[]> OnRegistersChange { get; set; }
 
 	private VMState GetVMState()
 	{
@@ -50,6 +51,7 @@ public class VMRunner
 
 			string o = _vmConsole.ToString();
 			OnOutputChange?.Invoke(o);
+			OnRegistersChange?.Invoke(_vm.Register);
 			return VMConsole.ToString();
 		}
 		catch (Exception e)
@@ -99,7 +101,7 @@ public class VMRunner
 
 	public void OnStep()
 	{
-		
+		OnRegistersChange?.Invoke(_vm.Register);
 	}
 
 	public void OnRunComplete()

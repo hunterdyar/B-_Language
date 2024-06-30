@@ -14,7 +14,8 @@ setModuleImports('main.js', {
             href: () => globalThis.window.location.href
         }
     },
-    onOutput: onOutput
+    onOutput: onOutput,
+    onRegister: onRegister
 });
 
 const config = getConfig();
@@ -42,16 +43,29 @@ document.getElementById('step').onclick = ()=>{
     //if state is stepping, step
         exports.BMinusRuntime.Step();
     }else{
-        //can't step, VM is 
+        //can't step, VM is
         console.log("can't step. VM is in state "+s);
     }
     //console.log(data);
 };
 
 function onOutput(output){
-	console.log("js onoutput.");
     output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
     document.getElementById('out').innerHTML = output;
+}
+
+const reg = [
+    document.getElementById("regx"),
+    document.getElementById("rega"),
+    document.getElementById("regb"),
+    document.getElementById("regc"),
+    document.getElementById("regd"),
+];
+function onRegister(data){
+    console.log(data)
+    for (var r=0;r<reg.length;r++){
+        reg[r].innerText = data[r];
+    }
 }
 
 await dotnet.run();

@@ -14,6 +14,7 @@ public partial class BMinusRuntime
 	{
 		_runner = new VMRunner();
 		_runner.OnOutputChange += SendOutput;
+		_runner.OnRegistersChange += SendRegisters;
 	}
 	
 	
@@ -53,6 +54,9 @@ public partial class BMinusRuntime
 	
 	[JSImport("onOutput", "main.js")]
 	public static partial void SendOutput(string newLine);
+
+	[JSImport("onRegister", "main.js")]
+	public static partial void SendRegisters(int[] registers);
 
 
 	[JSImport("window.location.href", "main.js")]

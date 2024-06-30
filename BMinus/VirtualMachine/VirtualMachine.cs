@@ -28,6 +28,7 @@ public class VirtualMachine
 	
 	//Compiler gives us a compiler object, which is NOT really bytecode,
 	//as we will have initial heap state (constants) and frame prototypes as objects.
+	public int[] Register => _register;
 	private int[] _register;
 	private int[] _stack;
 	/// <summary>

@@ -34,6 +34,7 @@ public class Parser
 		Register(TokenType.IfKeyword, new IfStatementParselet());
 		Register(TokenType.CharLiteral, new CharLiteralParselet());
 		Register(TokenType.SwitchKeyword, new SwitchParselet());
+		Register(TokenType.ExternKeyword, new ExternDeclarationParselet());
 		
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());

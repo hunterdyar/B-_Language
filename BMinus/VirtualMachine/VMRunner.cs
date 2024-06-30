@@ -40,7 +40,12 @@ public class VMRunner
 		_vmConsole.Clear();
 		try
 		{
-			Compile(program);
+			var c =Compile(program);
+			if (!c)
+			{
+				Console.WriteLine("Compile Error");
+				return "Compiler Error";
+			}
 			_vm.Run();
 			_runtimeWatch.Stop();
 			if (report)
@@ -61,7 +66,7 @@ public class VMRunner
 		}
 	}
 
-	public void Compile(string program)
+	public bool Compile(string program)
 	{
 		_vmConsole.Clear();
 		try
@@ -74,12 +79,17 @@ public class VMRunner
 			var env = _compiler.GetEnvironment();
 			_vm = new VirtualMachine(env, this);
 			_env = _vm.Env;
+			return true;
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e);
 			_vmConsole.Append(e.Message);
+			OnOutputChange?.Invoke(e.Message);
+			return false;
 		}
+
+		return false;
 	}
 	public void Step()
 	{
@@ -106,7 +116,6 @@ public class VMRunner
 
 	public void OnRunComplete()
 	{
-		_vmConsole.AppendLine("complete!");
 		OnOutputChange?.Invoke(_vmConsole.ToString());
 	}
 }

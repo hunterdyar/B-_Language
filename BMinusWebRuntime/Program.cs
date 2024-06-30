@@ -17,7 +17,6 @@ public partial class BMinusRuntime
 		_runner.OnRegistersChange += SendRegisters;
 	}
 	
-	
 	[JSExport]
 	public static void RunProgram(string program)
 	{

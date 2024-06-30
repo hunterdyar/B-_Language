@@ -23,11 +23,10 @@ document.getElementById('execute').onclick = ()=>{
     var textarea = document.getElementById('input')
     var p = textarea.value;
     console.log("Running Program",p)
-    var output = exports.MyClass.RunProgram(p);
+    var output = exports.BMinusRuntime.RunProgram(p);
         output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
     document.getElementById('out').innerHTML = output;
-    var data = exports.MyClass.GetGlobals();
-    console.log("data");
+    var data = exports.BMinusRuntime.GetGlobals();
     console.log(data);
 };
 

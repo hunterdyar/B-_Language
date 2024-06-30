@@ -8,9 +8,9 @@ using BMinus.Parser;
 using BMinus.Tokenizer;
 using BMinus.VirtualMachine;
 using Env = BMinus.Environment.Environment;
-Console.WriteLine("Hello, Browser!");
+Console.WriteLine("Initialized");
 
-public partial class MyClass
+public partial class BMinusRuntime
 {
 	private static Env _lastEnv;
 	

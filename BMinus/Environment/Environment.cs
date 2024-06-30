@@ -14,6 +14,7 @@ public class Environment
 	private MemoryManager _memory;
 
 	//dictionaries are temp till i do other stuff.
+	public Dictionary<int, int> Globals => _globals;
 	private Dictionary<int, int> _globals = new Dictionary<int, int>();
 	private Dictionary<int, int> _heap = new Dictionary<int, int>();
 	public Environment(List<string> globals, Frame[] framePrototypes)
@@ -48,4 +49,5 @@ public class Environment
 	{
 		return new InstructionLocation(0, 0);
 	}
+	
 }

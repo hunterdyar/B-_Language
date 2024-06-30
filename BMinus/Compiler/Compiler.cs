@@ -33,7 +33,7 @@ public class Compiler
 	public Compiler(Statement s)
 	{
 		Root = s;
-		_subroutines.Add("",new SubroutineDefinition(0));//the global frame.
+		_subroutines.Add("",new SubroutineDefinition("",0));//the global frame.
 		_frames.Push("");
 		Compile(Root);
 	}
@@ -138,7 +138,7 @@ public class Compiler
 			//set a function prototype frame ID for name
 			//create a new frame
 
-			_subroutines.Add(name,new SubroutineDefinition(_subroutines.Count));
+			_subroutines.Add(name,new SubroutineDefinition(name,_subroutines.Count));
 			_frames.Push(name);
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
 			foreach (var parameter in fnDec.Parameters)
@@ -279,6 +279,7 @@ public class Compiler
 		return new Environment.Environment(_globals,GetFrames());
 	}
 
+	//todo: move this to environment, clone at runtime...
 	public Frame[] GetFrames()
 	{
 		var frames = new Frame[_subroutines.Count];

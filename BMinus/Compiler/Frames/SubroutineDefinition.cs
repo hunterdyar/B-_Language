@@ -11,10 +11,12 @@ public class SubroutineDefinition
 	public Dictionary<string, int> Externs = new Dictionary<string, int>();
 
 	public int FrameID;
+	public readonly string Name;
 	public List<Instruction> Instructions = new List<Instruction>();
 	
-	public SubroutineDefinition(int id)
+	public SubroutineDefinition(string name,int id)
 	{
+		this.Name = name;
 		FrameID = id;
 	}
 	/// <summary>

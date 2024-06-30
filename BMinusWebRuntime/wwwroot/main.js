@@ -26,7 +26,9 @@ document.getElementById('execute').onclick = ()=>{
     var output = exports.MyClass.RunProgram(p);
         output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
     document.getElementById('out').innerHTML = output;
-
+    var data = exports.MyClass.GetGlobals();
+    console.log("data");
+    console.log(data);
 };
 
 

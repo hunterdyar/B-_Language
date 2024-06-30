@@ -63,5 +63,25 @@ public class VMTests
 		RunTestOnOutput(p, e);
 	}
 	
+	[Test]
+	[TestCase("""
+	          	main(){
+	          		putint(1);
+	          	};
+	          	main();
+	          """)]
+	public static void StepTest(string p)
+	{
+		VMRunner runner = new VMRunner();
+		runner.Compile(p);
+		runner.Step();
+		runner.Step();
+		runner.Step();
+		runner.Step();
+		runner.Step();
+		runner.Step();
+
+	}
+	
 	//test that it fails on unclosed a "
 }

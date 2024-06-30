@@ -47,14 +47,8 @@ public class VirtualMachine
 
 	private Stack<Frame> _frames;
 	private Frame CurrentFrame => _frames.Peek();
-
-	/// <summary>
-	/// Whether the VM should print execution time (or other metrics) into the console.
-	/// </summary>
-	private bool _report;
-
 	
-	public VirtualMachine(Environment env, VMRunner? runner = null, bool report = false)
+	public VirtualMachine(Environment env, VMRunner? runner = null)
 	{
 		if (runner == null)
 		{
@@ -72,13 +66,13 @@ public class VirtualMachine
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
 		_state = VMState.Ready;
-		_report = report;
 	}
 
 	public void Run()
 	{
 		_stopwatch.Restart();
-		if (_state == VMState.Ready)
+		//ready, or partway stepping (now should resume and run to end).
+		if (_state == VMState.Ready || _state == VMState.Stepping)
 		{
 			_state = VMState.Running;
 		}
@@ -93,11 +87,6 @@ public class VirtualMachine
 		}
 		
 		_stopwatch.Stop();
-		if (_report)
-		{
-			_runner.VMConsole.Append("\n");
-			_runner.VMConsole.AppendLine($"---\nB- Execution Finished in {_stopwatch.ElapsedMilliseconds}ms");
-		}
 		_runner.OnRunComplete();
 	}
 
@@ -108,6 +97,10 @@ public class VirtualMachine
 			if (_state == VMState.Ready)
 			{
 				_state = VMState.Stepping;
+			}else if (_state == VMState.Complete)
+			{
+				_runner.OnRunComplete();
+				return;
 			}
 			else
 			{
@@ -117,13 +110,11 @@ public class VirtualMachine
 		
 		RunOne();
 		_runner.OnStep();
-		
-		_stopwatch.Stop();
 	}
 	
 	private void RunOne()
 	{
-		if (_state != VMState.Running)
+		if (_state != VMState.Running && _state != VMState.Stepping)
 		{
 			return;
 		}

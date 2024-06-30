@@ -17,15 +17,26 @@ public static class Builtins
 	
 	private static readonly List<(string, Builtin)> _builtins = new List<(string, Builtin)>()
 	{
-		("putchar",Putchar)
+		("putchar",Putchar),
+		("putint",PutInt)
 	};
 
 	public static int Putchar(VM vm, params int[] args)
 	{
 		foreach (int i in args)
 		{
-			vm.VMConsole.Append(i);
+			vm.Runner.Append(System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(i)));
 		}
+		return 1;
+	}
+
+	public static int PutInt(VM vm, params int[] args)
+	{
+		foreach (int i in args)
+		{
+			vm.Runner.Append(i.ToString());
+		}
+
 		return 1;
 	}
 }

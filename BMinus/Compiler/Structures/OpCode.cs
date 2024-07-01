@@ -15,7 +15,8 @@ public enum OpCode : byte
 	Compare,//A,B -> register op2. op1 is operator
 	GoTo,//jumps to frame (op1), instruction pointer (op2)
 	Jump,//Jumps to instruction pointer (op1) in current frame
-	JumpNotEq,//EAX, reads EAX, then does jump(op1,op2) if .. op3? hmmmm
+	JumpNotZero,//reads X, then does jump(op1,op2) if .. x is nonzero.
+	JumpZero, //reads X, then does jump(op1, op2) if x is zero.
 	Return,//puts op1 in D and leaves frame.
 	Call, //Pushes a new frame with instructions from frameprototype op1. arguments should be on stack.
 	CallBuiltin//calls c# code with stack as params. op1 is index of builtin, op2 is num of arguments to pop from stack.

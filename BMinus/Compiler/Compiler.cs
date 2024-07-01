@@ -166,9 +166,31 @@ public class Compiler
 			//shit.
 			Emit(OpCode.GoTo, 0, 0);//
 			return;
+		}else if (statement is IfElseStatement ifElseStatement)
+		{
+			//note we check if/else before checking the bare if.
+			CompileExpression(ifElseStatement.Condition, VM.X);
+			var jumpCons = Emit(OpCode.JumpZero, 9999, 9999);
+			
+			//these two are the consequence together.
+			Compile(ifElseStatement.Consequence);
+			var jumpAlt = Emit(OpCode.Jump, 9999, 9999);
+			
+			var prealt = Frame.GetTopInstructionLocation();
+			
+			//this is the alt
+			Compile(ifElseStatement.Alternative);
+			
+			var end = Frame.GetTopInstructionLocation();
+			UpdateOperands(jumpCons, prealt.FrameIndex, prealt.InstructionIndex);
+			UpdateOperands(jumpAlt, end.FrameIndex, end.InstructionIndex);
 		}else if (statement is IfStatement ifStatement)
 		{
-			
+			CompileExpression(ifStatement.Condition,VM.X);
+			var jnz = Emit(OpCode.JumpZero, 9999,9999);
+			Compile(ifStatement.Consequence);
+			var top = Frame.GetTopInstructionLocation();
+			UpdateOperands(jnz, top.FrameIndex, top.InstructionIndex);
 		}else if (statement is Label label)
 		{
 			//Create label
@@ -214,7 +236,7 @@ public class Compiler
 		{
 			//ternary's are if's, except they leave a value in the register.
 			CompileExpression(ternary.Condition, VM.X);
-			var j_nq = Emit(OpCode.JumpNotEq, 0);
+			var j_nq = Emit(OpCode.JumpNotZero, 0);
 			CompileExpression(ternary.Consequence, VM.A);
 			var la = TopLocation();
 			var j_skipAlt = Emit(OpCode.Jump);

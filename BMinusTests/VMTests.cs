@@ -51,6 +51,17 @@ public class VMTests
 	}
 
 	[Test]
+	[TestCase("if(0){putint(1);}", "")]
+	[TestCase("if(1){putint(1);}", "1")]
+	[TestCase("if(0){putint(1);}else{putint(2);}", "2")]
+	[TestCase("if(1){putint(1);}else{putint(2);}", "1")]
+
+	public static void IfTest(string p, string e)
+	{
+		RunTestOnOutput(p, e);
+	}
+
+	[Test]
 	[TestCase("""
 		main(){
 			putint(1);

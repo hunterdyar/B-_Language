@@ -199,14 +199,41 @@ public class VirtualMachine
 			case OpCode.Halt:
 				return;
 			case OpCode.Jump:
-				CurrentFrame.SetIP(op.OperandA);
+				//todo: jumps in/out of frame? should remove frame from jumps i guess.
+				CurrentFrame.SetIP(op.OperandB);
 				return;
-			case OpCode.JumpNotEq:
-				throw new NotImplementedException("JNQ not implemented");
+			case OpCode.JumpNotZero:
+				var frame = op.OperandA;
+				var ip = op.OperandB;
+				var condition = GetRegister(X);
+				if (condition != 0)
+				{
+					if (frame != CurrentFrame.FrameID)
+					{
+						throw new VMException("Can't JNZ out of current frame.");
+					}
+					
+					CurrentFrame.SetIP(ip);
+				}
 				return;
-			case OpCode.GoTo:
-				int frame = op.OperandA;
-				int ip = op.OperandB;
+			case OpCode.JumpZero:
+				frame = op.OperandA;
+				ip = op.OperandB;
+				condition = GetRegister(X);
+				if (condition == 0)
+				{
+					if (frame != CurrentFrame.FrameID)
+					{
+						throw new VMException("Can't JNZ out of current frame.");
+					}
+
+					CurrentFrame.SetIP(ip);
+				}
+
+				return;
+			case OpCode.GoTo: 
+				frame = op.OperandA;
+				ip = op.OperandB;
 				if (frame == _frames.Count - 1)
 				{
 					CurrentFrame.SetIP(ip);

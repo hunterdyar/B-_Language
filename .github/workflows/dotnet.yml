@@ -25,12 +25,12 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Rollup JS
-      working-directory: ./BMinusWebRuntime/wwwroot
       uses: actions/setup-node@v4
       with:
         node-version: 20.x
     - run: npm ci
-    - run: rollup --config ./rollup.config.mjs
+    - name: rollup
+    - run: ./BMinusWebRuntime/wwwroot/rollup --config ./rollup.config.mjs
     - name: Restore dependencies
       working-directory: ./BMinusWebRuntime
       run: dotnet restore

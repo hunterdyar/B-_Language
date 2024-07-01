@@ -5,7 +5,7 @@ public class Expression : Statement
 {
 	//return a value
 	
-	public Expression()
+	public Expression() : base()
 	{
 	}
 	

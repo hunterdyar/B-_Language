@@ -6,7 +6,7 @@ public class CompoundStatement : Statement
 {
 	public readonly List<Statement> Statements;
 
-	public CompoundStatement(List<Statement> statements)
+	public CompoundStatement(List<Statement> statements) : base()
 	{
 		Statements = statements;
 	}

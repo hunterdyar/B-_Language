@@ -20,7 +20,6 @@ public class Parser
 		//i am no longer backtracking, but haven't factored it out yet.
 		_lexWrapper = new LexerWrapper(lexer);
 		_lexer = new LexerState(_lexWrapper);
-		
 		//prefixe dict. Thest can start statements.
 		Register(TokenType.Identifier, new IdentifierParselet());
 		Register(TokenType.Assignment, new AssignParselet());
@@ -70,6 +69,7 @@ public class Parser
 
 	public ProgramStatement Parse()
 	{
+		Statement.ResetID();
 		List<Statement> rootStatements = new List<Statement>();
 		bool compete = false;
 		//Parse until we end up with null which we get at EOF or some surviveable error.

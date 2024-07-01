@@ -7,7 +7,7 @@ public class ExternDeclaration : Statement
 	public Identifier[] Identifiers => _identifiers;
 	private Identifier[] _identifiers;
 
-	public ExternDeclaration(Identifier[] ids)
+	public ExternDeclaration(Identifier[] ids) : base()
 	{
 		if (ids == null || ids.Length == 0)
 		{
@@ -17,7 +17,7 @@ public class ExternDeclaration : Statement
 		_identifiers = ids;
 	}
 
-	public ExternDeclaration(List<Identifier> ids)
+	public ExternDeclaration(List<Identifier> ids) : base()
 	{
 		if (ids == null || ids.Count == 0)
 		{
@@ -27,7 +27,7 @@ public class ExternDeclaration : Statement
 		_identifiers = ids.ToArray();
 	}
 
-	public ExternDeclaration(Identifier id)
+	public ExternDeclaration(Identifier id) : base()
 	{
 		_identifiers = new[] { id };
 	}

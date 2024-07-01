@@ -1,9 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Net.Sockets;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using BMinus.AST;
+﻿using System.Diagnostics;
 using BMinus.Compiler;
 using BMinus.Environment;
 using BMinus.Models;

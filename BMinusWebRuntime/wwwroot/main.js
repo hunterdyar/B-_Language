@@ -28,6 +28,7 @@ document.getElementById('execute').onclick = ()=>{
     var textarea = document.getElementById('input')
     var p = textarea.value;
     console.log("Running Program...");
+    clearRegister();
     exports.BMinusRuntime.RunProgram(p);
 
     var data = exports.BMinusRuntime.GetGlobals();
@@ -39,6 +40,7 @@ document.getElementById('step').onclick = ()=>{
     if(s == 5 || s == 4 || s == 3){//uninitiazed, complete, error
         var textarea = document.getElementById('input')
         var p = textarea.value;
+        clearRegister();
         exports.BMinusRuntime.CompileAndStep(p);
     }else if(s == 2){
     //if state is stepping, step
@@ -65,7 +67,26 @@ const reg = [
 function onRegister(data){
 //highlight the registers that changed on that frame.
     for (var r=0;r<reg.length;r++){
+        var changed = data[r] != reg[r].innerText;
         reg[r].innerText = data[r];
+        if(!changed) {
+            if (reg[r].classList.contains('changed')) {
+                reg[r].classList.remove('changed');
+            }
+        }else{
+            if (!reg[r].classList.contains('changed')) {
+                reg[r].classList.add('changed');
+            }
+        }
+    }
+}
+
+function clearRegister(){
+    for (var r=0;r<reg.length;r++){
+        reg[r].innerText = "0";
+        if (reg[r].classList.contains('changed')) {
+            reg[r].classList.remove('changed');
+        }
     }
 }
 
@@ -87,7 +108,7 @@ const stacklist = document.getElementById("stackList");
 const stacksize = document.getElementById("stackSize");
 
 function onStack(ins, opCount){
-    stacksize.innertext = opCount;
+    stacksize.innerText = opCount;
     stacklist.innerHTML = "";
     for(var i = 0;i<ins.length;i++){
         stacklist.innerHTML += "<li>"+ins[i]+"</li>";

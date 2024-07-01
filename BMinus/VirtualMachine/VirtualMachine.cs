@@ -12,7 +12,7 @@ namespace BMinus.VirtualMachine;
 using Environment = Environment.Environment;
 public class VirtualMachine
 {
-	public static readonly int EAX = 0; //accumulator, result of operations.
+	public static readonly int X = 0; //accumulator, result of operations.
 	public static readonly int A = 1; //general
 	public static readonly int B = 2; //general
 	public static readonly int C = 3; //count
@@ -179,7 +179,7 @@ public class VirtualMachine
 				SetRegister(op.OperandB, result);
 				return;
 			case OpCode.Bitwise:
-				//
+				throw new NotImplementedException("Bitwise not implemented in VM.");
 				return;
 			case OpCode.Call:
 				var prototype = Env.GetFramePrototype(op.OperandA);
@@ -202,6 +202,7 @@ public class VirtualMachine
 				CurrentFrame.SetIP(op.OperandA);
 				return;
 			case OpCode.JumpNotEq:
+				throw new NotImplementedException("JNQ not implemented");
 				return;
 			case OpCode.GoTo:
 				int frame = op.OperandA;
@@ -225,7 +226,7 @@ public class VirtualMachine
 				LeaveFrame();
 				return;
 			case OpCode.Pop:
-				SetRegister(EAX,Pop());
+				SetRegister(X,Pop());
 				return;
 		}
 	}

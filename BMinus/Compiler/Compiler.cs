@@ -62,15 +62,15 @@ public class Compiler
 		{
 			var left = assignment.Identifier;
 			int leftID = 0;//todo
-			CompileExpression(assignment.ValueExpr, VM.EAX);
+			CompileExpression(assignment.ValueExpr, VM.X);
 			//if isLocal
 			if (Frame.FrameID == 0)
 			{
-				Emit(OpCode.SetGlobal, leftID, VM.EAX);
+				Emit(OpCode.SetGlobal, leftID, VM.X);
 			}
 			else
 			{
-				Emit(OpCode.SetLocal, leftID, VM.EAX);
+				Emit(OpCode.SetLocal, leftID, VM.X);
 			}
 
 		}else if (statement is VariableDeclaration varDeclaration)
@@ -213,7 +213,7 @@ public class Compiler
 		}else if (expression is TernaryOp ternary)
 		{
 			//ternary's are if's, except they leave a value in the register.
-			CompileExpression(ternary.Condition, VM.EAX);
+			CompileExpression(ternary.Condition, VM.X);
 			var j_nq = Emit(OpCode.JumpNotEq, 0);
 			CompileExpression(ternary.Consequence, VM.A);
 			var la = TopLocation();

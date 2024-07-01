@@ -113,10 +113,13 @@ public class VMRunner
 
 	public void OnStep()
 	{
+		//todo: some faster 'registers don't change' update?
 		if (_vm.RegisterDirty)
 		{
-			OnRegistersChange?.Invoke(_vm.Register);
+		//	OnRegistersChange?.Invoke(_vm.Register);
 		}
+		OnRegistersChange?.Invoke(_vm.Register);
+
 
 		if (_vm.StackDirty)
 		{

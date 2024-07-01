@@ -31,7 +31,10 @@ jobs:
     - name: npm install
       working-directory: ./BMinusWebRuntime/wwwroot
       run: npm ci
-    - name: rollup
+    - name: rollup install
+      working-directory: ./BMinusWebRuntime/wwwroot
+      run: npm install rollup --save-dev
+    - name: rollup run
       working-directory: ./BMinusWebRuntime/wwwroot
       run: rollup --config ./rollup.config.mjs
     - name: Restore dependencies

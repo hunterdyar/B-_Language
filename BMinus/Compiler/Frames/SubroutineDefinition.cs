@@ -41,7 +41,7 @@ public class SubroutineDefinition
 		}
 
 		var old = Instructions[loc.InstructionIndex];
-		Instructions[loc.InstructionIndex] = new Instruction(old.Op, operands);
+		Instructions[loc.InstructionIndex] = new Instruction(old.Op, old.ASTNodeID, operands);
 	}
 
 	public void AddLocal(string id)

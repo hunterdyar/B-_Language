@@ -1,4 +1,5 @@
-﻿using BMinus.Compiler;
+﻿using BMinus.AST;
+using BMinus.Compiler;
 using BMinus.VirtualMachine;
 
 namespace BMinus.Environment;
@@ -17,8 +18,11 @@ public class Environment
 	public Dictionary<int, int> Globals => _globals;
 	private Dictionary<int, int> _globals = new Dictionary<int, int>();
 	private Dictionary<int, int> _heap = new Dictionary<int, int>();
-	public Environment(List<string> globals, Frame[] framePrototypes)
+
+	public readonly Statement AST;
+	public Environment(Statement root, List<string> globals, Frame[] framePrototypes)
 	{
+		AST = root;
 		_memory = new MemoryManager(globals);
 		_framePrototypes = framePrototypes;
 	}

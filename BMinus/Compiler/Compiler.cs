@@ -66,11 +66,11 @@ public class Compiler
 			//if isLocal
 			if (Frame.FrameID == 0)
 			{
-				Emit(OpCode.SetGlobal, leftID, VM.X);
+				Emit(OpCode.SetGlobal, assignment.UID, leftID, VM.X);
 			}
 			else
 			{
-				Emit(OpCode.SetLocal, leftID, VM.X);
+				Emit(OpCode.SetLocal, assignment.UID,leftID, VM.X);
 			}
 
 		}else if (statement is VariableDeclaration varDeclaration)
@@ -119,7 +119,7 @@ public class Compiler
 
 			if (Builtins.IsBuiltin(name, out var index))
 			{
-				Emit(OpCode.CallBuiltin,index, fn.Arguments.Length);
+				Emit(OpCode.CallBuiltin,fn.UID,index, fn.Arguments.Length);
 				return;
 			}
 
@@ -129,7 +129,7 @@ public class Compiler
 			{
 				throw new CompilerException($"Unable to find function {fn.FunctionName}");
 			}
-			Emit(OpCode.Call, sub.FrameID);
+			Emit(OpCode.Call,fn.UID, sub.FrameID);
 			return;
 			//entering a frame sets base stackPointer, etc.
 			//after the function is done, we will return to this location of this frame.
@@ -153,7 +153,7 @@ public class Compiler
 			}
 			
 			Compile(fnDec.Statement);
-			Emit(OpCode.Return);//Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
+			Emit(OpCode.Return, fnDec.UID);//Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
 			_frames.Pop();
 			return;
 		}else if(statement is GoTo gotoStatement)
@@ -164,17 +164,17 @@ public class Compiler
 			//destination = getdestination
 			//if we are not in the current frame, we need to clean the stack?
 			//shit.
-			Emit(OpCode.GoTo, 0, 0);//
+			Emit(OpCode.GoTo, gotoStatement.UID,0, 0);//
 			return;
 		}else if (statement is IfElseStatement ifElseStatement)
 		{
 			//note we check if/else before checking the bare if.
 			CompileExpression(ifElseStatement.Condition, VM.X);
-			var jumpCons = Emit(OpCode.JumpZero, 9999, 9999);
+			var jumpCons = Emit(OpCode.JumpZero, ifElseStatement.UID, 9999, 9999);
 			
 			//these two are the consequence together.
 			Compile(ifElseStatement.Consequence);
-			var jumpAlt = Emit(OpCode.Jump, 9999, 9999);
+			var jumpAlt = Emit(OpCode.Jump, ifElseStatement.UID,9999, 9999);
 			
 			var prealt = Frame.GetTopInstructionLocation();
 			
@@ -187,7 +187,7 @@ public class Compiler
 		}else if (statement is IfStatement ifStatement)
 		{
 			CompileExpression(ifStatement.Condition,VM.X);
-			var jnz = Emit(OpCode.JumpZero, 9999,9999);
+			var jnz = Emit(OpCode.JumpZero, ifStatement.UID,9999,9999);
 			Compile(ifStatement.Consequence);
 			var top = Frame.GetTopInstructionLocation();
 			UpdateOperands(jnz, top.FrameIndex, top.InstructionIndex);
@@ -197,7 +197,7 @@ public class Compiler
 			_labels.Add(label.LabelID,Frame.GetTopInstructionLocation());
 		}else if (statement is Nop nop)
 		{
-			Emit(OpCode.Nop);
+			Emit(OpCode.Nop, nop.UID);
 			return;
 		}
 	}
@@ -211,7 +211,7 @@ public class Compiler
 	{
 		if(expression is WordLiteral wordLiteral)
 		{
-			Emit(OpCode.SetReg,wordLiteral.ValueAsInt, register);
+			Emit(OpCode.SetReg, expression.UID,wordLiteral.ValueAsInt, register);
 			//add to register.
 			//add instruction, push wordLiteral.GetValue.
 		}else if (expression is StringLiteral stringLiteral)
@@ -226,20 +226,20 @@ public class Compiler
 		{
 			CompileExpression(binMathOp.Left, VM.A);
 			CompileExpression(binMathOp.Right, VM.B);
-			Emit(OpCode.Arithmetic, (int)binMathOp.Op, register);//leaves result in EAX
+			Emit(OpCode.Arithmetic, binMathOp.UID,(int)binMathOp.Op, register);//leaves result in EAX
 		}else if (expression is CompareOp compareOp)
 		{
 			CompileExpression(compareOp.Left, VM.A);
 			CompileExpression(compareOp.Right, VM.B);
-			Emit(OpCode.Compare, (int)compareOp.Op, register);
+			Emit(OpCode.Compare, compareOp.UID,(int)compareOp.Op, register);
 		}else if (expression is TernaryOp ternary)
 		{
 			//ternary's are if's, except they leave a value in the register.
 			CompileExpression(ternary.Condition, VM.X);
-			var j_nq = Emit(OpCode.JumpNotZero, 0);
+			var j_nq = Emit(OpCode.JumpNotZero, expression.UID,0);
 			CompileExpression(ternary.Consequence, VM.A);
 			var la = TopLocation();
-			var j_skipAlt = Emit(OpCode.Jump);
+			var j_skipAlt = Emit(OpCode.Jump, expression.UID);
 			CompileExpression(ternary.Alternative, VM.B);
 			var lb = TopLocation();
 			UpdateOperands(j_nq, j_skipAlt.FrameIndex, j_skipAlt.InstructionIndex);//+1?
@@ -252,10 +252,10 @@ public class Compiler
 			{
 				if (scope == Scope.Local || scope == Scope.Argument)
 				{
-					Emit(OpCode.GetLocal, index, register);
+					Emit(OpCode.GetLocal, expression.UID, index, register);
 				}else if (scope == Scope.Global)
 				{
-					Emit(OpCode.GetGlobal, index, register);
+					Emit(OpCode.GetGlobal, expression.UID, index, register);
 				}
 				return;
 			}
@@ -265,18 +265,18 @@ public class Compiler
 	}
 	
 	#region Helpers
-	private InstructionLocation Emit(OpCode code, params int[] operands)
+	private InstructionLocation Emit(OpCode code, uint astNodeID, params int[] operands)
 	{
 		if (operands.Length == 0)
 		{
-			return Frame.AddInstruction(new Instruction(code));
+			return Frame.AddInstruction(new Instruction(code, astNodeID));
 		}else if (operands.Length == 1)
 		{
-			return Frame.AddInstruction(new Instruction(code, operands[0]));
+			return Frame.AddInstruction(new Instruction(code, astNodeID, operands[0]));
 		}
 		else if (operands.Length == 2)
 		{
-			return Frame.AddInstruction(new Instruction(code, operands[0], operands[1]));
+			return Frame.AddInstruction(new Instruction(code, astNodeID, operands[0], operands[1]));
 		}else
 		{
 			throw new CompilerException("Too many operands");
@@ -304,7 +304,7 @@ public class Compiler
 
 	public Environment.Environment GetEnvironment()
 	{
-		return new Environment.Environment(_globals,GetFrames());
+		return new Environment.Environment(Root, _globals,GetFrames());
 	}
 
 	//todo: move this to environment, clone at runtime...

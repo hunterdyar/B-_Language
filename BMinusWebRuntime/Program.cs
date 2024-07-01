@@ -110,6 +110,4 @@ public partial class BMinusRuntime
 	[JSImport("onStack", "main.js")]
 	public static partial void OnStackChange(int[] stack, int totalSize);
 	
-	[JSImport("window.location.href", "main.js")]
-	internal static partial string GetHRef();
 }

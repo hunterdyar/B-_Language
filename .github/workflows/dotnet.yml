@@ -32,7 +32,8 @@ jobs:
       working-directory: ./BMinusWebRuntime/wwwroot
       run: npm ci
     - name: rollup
-      run: ./BMinusWebRuntime/wwwroot/rollup --config ./rollup.config.mjs
+      working-directory: ./BMinusWebRuntime/wwwroot
+      run: rollup --config ./rollup.config.mjs
     - name: Restore dependencies
       working-directory: ./BMinusWebRuntime
       run: dotnet restore

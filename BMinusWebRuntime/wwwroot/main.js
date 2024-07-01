@@ -15,7 +15,9 @@ setModuleImports('main.js', {
         }
     },
     onOutput: onOutput,
-    onRegister: onRegister
+    onRegister: onRegister,
+    onInstruction: onInstruction,
+    onStack: onStack,
 });
 
 const config = getConfig();
@@ -29,7 +31,6 @@ document.getElementById('execute').onclick = ()=>{
     exports.BMinusRuntime.RunProgram(p);
 
     var data = exports.BMinusRuntime.GetGlobals();
-    console.log(data);
 };
 
 document.getElementById('step').onclick = ()=>{
@@ -62,10 +63,36 @@ const reg = [
     document.getElementById("regd"),
 ];
 function onRegister(data){
-    console.log(data)
+//highlight the registers that changed on that frame.
     for (var r=0;r<reg.length;r++){
         reg[r].innerText = data[r];
     }
 }
+
+const instructionOutput = [
+    document.getElementById("insName"),
+    document.getElementById("insOperandA"),
+    document.getElementById("insOperandB"),
+];
+
+function onInstruction(ins, opCount){
+    instructionOutput[0].innerText = ins[0];
+    instructionOutput[1].innerText = ins[1];
+    instructionOutput[2].innerText = ins[2];
+    instructionOutput[1].hidden = opCount <= 0;
+    instructionOutput[2].hidden = opCount <= 1;
+}
+
+const stacklist = document.getElementById("stackList");
+const stacksize = document.getElementById("stackSize");
+
+function onStack(ins, opCount){
+    stacksize.innertext = opCount;
+    stacklist.innerHTML = "";
+    for(var i = 0;i<ins.length;i++){
+        stacklist.innerHTML += "<li>"+ins[i]+"</li>";
+    }
+}
+
 
 await dotnet.run();

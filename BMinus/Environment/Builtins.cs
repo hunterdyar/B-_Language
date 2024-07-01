@@ -21,6 +21,10 @@ public static class Builtins
 		("putint",PutInt)
 	};
 
+	public static string GetBuiltinName(int id)
+	{
+		return _builtins[id].Item1;
+	}
 	public static int Putchar(VM vm, params int[] args)
 	{
 		foreach (int i in args)
@@ -39,4 +43,6 @@ public static class Builtins
 
 		return 1;
 	}
+
+	
 }

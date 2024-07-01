@@ -25,6 +25,9 @@ public class VirtualMachine
 	public Environment Env;
 	public VMRunner Runner => _runner;
 	private VMRunner _runner;
+
+	public Instruction CurrentInstrution => _currentInstruction;
+	private Instruction _currentInstruction = new Instruction(OpCode.Nop);
 	
 	//Compiler gives us a compiler object, which is NOT really bytecode,
 	//as we will have initial heap state (constants) and frame prototypes as objects.
@@ -40,6 +43,10 @@ public class VirtualMachine
 	/// </summary>
 	private int fp = 0;
 
+	public bool StackDirty => _stackDirty;
+	private bool _stackDirty;
+	public bool RegisterDirty => _registerDirty;
+	private bool _registerDirty;
 	private readonly Stopwatch _stopwatch = new Stopwatch();
 	/// <summary>
 	/// Instruction Pointer
@@ -48,7 +55,8 @@ public class VirtualMachine
 
 	private Stack<Frame> _frames;
 	private Frame CurrentFrame => _frames.Peek();
-	
+	public int CurrentStackSize => _sp;
+
 	public VirtualMachine(Environment env, VMRunner? runner = null)
 	{
 		if (runner == null)
@@ -67,6 +75,8 @@ public class VirtualMachine
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
 		_state = VMState.Ready;
+		_registerDirty = false;
+		_stackDirty = false;
 	}
 
 	public void Run()
@@ -112,6 +122,12 @@ public class VirtualMachine
 		RunOne();
 		_runner.OnStep();
 	}
+
+	public void Flush()
+	{
+		_registerDirty = false;
+		_stackDirty = false;
+	}
 	
 	private void RunOne()
 	{
@@ -134,6 +150,7 @@ public class VirtualMachine
 		}
 
 		var op = CurrentFrame.Instructions[CurrentFrame.IP];
+		_currentInstruction = op;
 		switch (op.Op)
 		{
 			case OpCode.Nop:
@@ -233,10 +250,12 @@ public class VirtualMachine
 		{
 			_stack[_sp] = val;
 			_sp++;
+			_stackDirty = true;
 			return;
 		}
 
 		_register[reg] = val;
+		_registerDirty = true;
 	}
 
 	private int GetRegister(int reg)
@@ -244,6 +263,7 @@ public class VirtualMachine
 		if (reg < 0)
 		{
 			_sp--;
+			_stackDirty = true;
 			return _stack[_sp];
 		}
 
@@ -288,5 +308,20 @@ public class VirtualMachine
 
 		throw new VMException($"Bad arithmetic operator {op}");
 
+	}
+
+	public static string RegisterName(int reg)
+	{
+		if (reg < 0)
+		{
+			return "Stack";
+		}
+		return new[]{"X", "A", "B", "C", "D"}[reg];
+	}
+
+	public int[] GetStackArray(int max)
+	{
+		int size = _sp > max ? max : _sp;
+		return new ArraySegment<int>(_stack, _sp-size, size).ToArray();
 	}
 }

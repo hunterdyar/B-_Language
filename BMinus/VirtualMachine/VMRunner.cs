@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using BMinus.Compiler;
 using BMinus.Tokenizer;
 
 namespace BMinus.VirtualMachine;
@@ -21,6 +22,8 @@ public class VMRunner
 	public VMState VMState => GetVMState();
 	public Action<string> OnOutputChange { get; set; }
 	public Action<int[]> OnRegistersChange { get; set; }
+	public Action<Instruction> OnCurrentInstructionChange { get; set; }
+	public Action<int[],int> OnStackChange { get; set; }
 
 	private VMState GetVMState()
 	{
@@ -96,7 +99,6 @@ public class VMRunner
 		if (_vm != null)
 		{
 			_vm.StepOver();
-
 		}
 		else
 		{
@@ -111,11 +113,22 @@ public class VMRunner
 
 	public void OnStep()
 	{
-		OnRegistersChange?.Invoke(_vm.Register);
+		if (_vm.RegisterDirty)
+		{
+			OnRegistersChange?.Invoke(_vm.Register);
+		}
+
+		if (_vm.StackDirty)
+		{
+			OnStackChange?.Invoke(_vm.GetStackArray(10),_vm.CurrentStackSize);
+		}
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution);
+		_vm.Flush();
 	}
 
 	public void OnRunComplete()
 	{
 		OnOutputChange?.Invoke(_vmConsole.ToString());
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution);
 	}
 }

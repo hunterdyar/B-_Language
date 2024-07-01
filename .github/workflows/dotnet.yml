@@ -30,7 +30,7 @@ jobs:
         node-version: 20.x
     - run: npm ci
     - name: rollup
-    - run: ./BMinusWebRuntime/wwwroot/rollup --config ./rollup.config.mjs
+      run: ./BMinusWebRuntime/wwwroot/rollup --config ./rollup.config.mjs
     - name: Restore dependencies
       working-directory: ./BMinusWebRuntime
       run: dotnet restore

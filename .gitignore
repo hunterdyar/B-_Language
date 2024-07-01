@@ -3,3 +3,4 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+BMinusWebRuntime/wwwroot/node_modules

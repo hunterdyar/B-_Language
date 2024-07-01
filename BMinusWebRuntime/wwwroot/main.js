@@ -2,14 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 import {dotnet} from './_framework/dotnet.js'
-import CodeFlask from './codeflask.module.js';
-
-const inputDiv = document.getElementById("input");
-const editor = new CodeFlask(inputDiv, {
-    language: 'js',
-    lineNumbers: true
-});
-
+import {editor} from "./js/editor.bundle.js"
 
 const { setModuleImports, getAssemblyExports, getConfig } = await dotnet
     .withDiagnosticTracing(false)
@@ -33,7 +26,7 @@ const exports = await getAssemblyExports(config.mainAssemblyName);
 exports.BMinusRuntime.Init();
 
 document.getElementById('execute').onclick = ()=>{
-    var p = editor.getCode();
+    var p = editor.state.doc.toString();
     console.log("Running Program...");
     clearRegister();
     exports.BMinusRuntime.RunProgram(p);
@@ -45,7 +38,7 @@ document.getElementById('step').onclick = ()=>{
     //if state is ready, firstStep
     var s = exports.BMinusRuntime.GetState();
     if(s == 5 || s == 4 || s == 3){//uninitiazed, complete, error
-        var p = editor.getCode();
+        var p = editor.state.doc.toString();
         clearRegister();
         exports.BMinusRuntime.CompileAndStep(p);
     }else if(s == 2){

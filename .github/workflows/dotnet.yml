@@ -36,19 +36,10 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-pages-artifact@v2
       with: 
-        name: pub
         path: ${{env.DOTNET_ROOT}}/pub
+    - name: Deploy to Github Pages
+      id: deployment
+      uses: actions/deploy-pages@v3
 
-    
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: pub
-      - name: Deploy to Github Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
+  
       

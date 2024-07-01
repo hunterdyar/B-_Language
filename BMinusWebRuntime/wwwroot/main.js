@@ -2,6 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 import {dotnet} from './_framework/dotnet.js'
+import CodeFlask from './codeflask.module.js';
+
+const inputDiv = document.getElementById("input");
+const editor = new CodeFlask(inputDiv, {
+    language: 'js',
+    lineNumbers: true
+});
+
 
 const { setModuleImports, getAssemblyExports, getConfig } = await dotnet
     .withDiagnosticTracing(false)
@@ -25,8 +33,7 @@ const exports = await getAssemblyExports(config.mainAssemblyName);
 exports.BMinusRuntime.Init();
 
 document.getElementById('execute').onclick = ()=>{
-    var textarea = document.getElementById('input')
-    var p = textarea.value;
+    var p = editor.getCode();
     console.log("Running Program...");
     clearRegister();
     exports.BMinusRuntime.RunProgram(p);
@@ -38,8 +45,7 @@ document.getElementById('step').onclick = ()=>{
     //if state is ready, firstStep
     var s = exports.BMinusRuntime.GetState();
     if(s == 5 || s == 4 || s == 3){//uninitiazed, complete, error
-        var textarea = document.getElementById('input')
-        var p = textarea.value;
+        var p = editor.getCode();
         clearRegister();
         exports.BMinusRuntime.CompileAndStep(p);
     }else if(s == 2){
@@ -94,6 +100,7 @@ const instructionOutput = [
     document.getElementById("insName"),
     document.getElementById("insOperandA"),
     document.getElementById("insOperandB"),
+    document.getElementById("insTooltip"),
 ];
 
 function onInstruction(ins, opCount){
@@ -102,6 +109,20 @@ function onInstruction(ins, opCount){
     instructionOutput[2].innerText = ins[2];
     instructionOutput[1].hidden = opCount <= 0;
     instructionOutput[2].hidden = opCount <= 1;
+    instructionOutput[3].innerText = getTooltip(ins[0]);
+}
+function getTooltip(name)
+{
+    switch (name){
+        case "SetReg":
+            return "Sets Register Op2 to Value of Op1"
+        case "Arithmetic":
+            return "Does Operation Op1 on Registers A and B, puts result in X"
+        case "SetGlobal":
+            return "Sets global variable op1 to value of op2"
+        
+    }
+    return name;
 }
 
 const stacklist = document.getElementById("stackList");
@@ -111,7 +132,7 @@ function onStack(ins, opCount){
     stacksize.innerText = opCount;
     stacklist.innerHTML = "";
     for(var i = 0;i<ins.length;i++){
-        stacklist.innerHTML += "<li>"+ins[i]+"</li>";
+        stacklist.innerHTML += "<tr><td class=\"min\">"+i+"</td><td>"+ins[i]+"</td></tr>";
     }
 }
 

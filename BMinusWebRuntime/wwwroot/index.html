@@ -7,35 +7,137 @@
   <title>B-</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.6.5/dist/cdn/beer.min.css" rel="stylesheet">
+  <script type="module" src="./codeflask.module.js" ></script>
   <script type='module' src="./main.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.6.5/dist/cdn/beer.min.js"></script>
   <style>
+    body {
+      --primary: #006874;
+      --on-primary: #ffffff;
+      --primary-container: #97f0ff;
+      --on-primary-container: #001f24;
+      --secondary: #4a6267;
+      --on-secondary: #ffffff;
+      --secondary-container: #cde7ec;
+      --on-secondary-container: #051f23;
+      --tertiary: #525e7d;
+      --on-tertiary: #ffffff;
+      --tertiary-container: #dae2ff;
+      --on-tertiary-container: #0e1b37;
+      --error: #ba1a1a;
+      --on-error: #ffffff;
+      --error-container: #ffdad6;
+      --on-error-container: #410002;
+      --background: #fafdfd;
+      --on-background: #191c1d;
+      --surface: #f8fafa;
+      --on-surface: #191c1d;
+      --surface-variant: #dbe4e6;
+      --on-surface-variant: #3f484a;
+      --outline: #6f797a;
+      --outline-variant: #bfc8ca;
+      --shadow: #000000;
+      --scrim: #000000;
+      --inverse-surface: #2e3132;
+      --inverse-on-surface: #eff1f1;
+      --inverse-primary: #4fd8eb;
+      --surface-dim: #d8dadb;
+      --surface-bright: #f8fafa;
+      --surface-container-lowest: #ffffff;
+      --surface-container-low: #f2f4f4;
+      --surface-container: #eceeef;
+      --surface-container-high: #e6e8e9;
+      --surface-container-highest: #e1e3e3;
+    }
+    #input{
+      height: 8em;
+    }
     .changed{
       background-color: burlywood;
     }
+    
   </style>
 </head>
 
 <body>
-  <textarea id="input" rows="5">auto a;
+<article>
+  <main class="responsive">
+    <div class="grid">
+      <div class="s12">
+        <h1 class="small large-margin">B-</h1>
+        <div class="border large">
+          <div id="input">auto a;
 a = 1+2;
-putint(a);</textarea>
-  <br />
-  <button id="execute">Run</button>
+putint(a);</div>
+        </div>
+      </div>
+      <div class="s12">
+
+      <button id="execute">Run</button>
   <button id="step">Step</button>
-  <p id="out"></p>
-<hr />
-<p>Last Instruction: <strong><span id="insName"></span></strong> | <span id = "insOperandA"></span> | <span id="insOperandB"></span></p>
-<hr />
-<ul>
-  <li>X: <span id="regx">0</span></li>
-  <li>A: <span id="rega">0</span></li>
-  <li>B: <span id="regb">0</span></li>
-  <li>C: <span id="regc">0</span></li>
-  <li>D: <span id="regd">0</span></li>
-</ul>
-<hr />
-Stack (<span id="stackSize">0</span>)
-<ol id = "stackList"></ol>
+      </div>
+      <div class="s12">
+
+      <p id="out"></p>
+      </div>
+      <div class="s4">
+        <article class="border">
+          <h5 class="small">Instruction</h5>
+          <div class="chip no-elevate fill">
+            <span id="insName"></span>
+            <div class="tooltip top large-space">
+              <p id="insTooltip">This is an instruction</p>
+            </div>
+          </div>
+          <div class="chip" id = "insOperandA"></div>
+          <div class="chip" id="insOperandB"></div>
+        </article>
+      </div>
+      <div class="s4">
+        <article class="border">
+          <h5 class="small">Register</h5>
+        <table class="stripes">
+          <thead><tr><th class="min">Register</th><th>Value</th></tr></thead>
+          <tbody>
+          <tr><td class="min">X</td> <td id="regx">0</td></tr>
+          <tr><td>A</td> <td id="rega">0</td></tr>
+          <tr>
+            <td class="min">B</td>
+            <td id="regb">0</td>
+          </tr>
+          <tr>
+            <td class="min">C</td>
+            <td id="regc">0</td>
+          </tr>
+          <tr>
+            <td class="min">D</td>
+            <td id="regd">0</td>
+          </tr>
+          </tbody>
+        </table>
+        </article>
+      </div>
+      <div class="s4">
+        <article class="border">
+          <h5 class="small">Stack (<span id="stackSize">0</span>)</h5>
+          <table>
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Value</th>
+            </tr>
+            </thead>
+            <tbody id="stackList">
+            
+            </tbody>
+          </table>
+        </article>
+      </div>
+
+  </div>
+    </main>
+</article>
 </body>
 
 </html>

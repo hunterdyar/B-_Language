@@ -19,12 +19,13 @@ let startState = EditorState.create({
 	doc: "auto a;\n" +
 		"a = 1 + 2;\n" +
 		"putint(a);",
-	extensions: [basicSetup, cppLanguage, keymap.of(defaultKeymap)]
+	extensions: [basicSetup, cppLanguage, keymap.of(defaultKeymap)],
+	viewportMargin: Infinity
 })
 
 
 let editor = new EditorView(
 {
 	state: startState,
-	parent: inputDiv
+	parent: inputDiv,
 })

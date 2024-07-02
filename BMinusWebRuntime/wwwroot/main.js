@@ -28,12 +28,10 @@ exports.BMinusRuntime.Init();
 
 document.getElementById('execute').onclick = ()=>{
     var p = editor.state.doc.toString();
-    console.log("Running Program...");
     clearRegister();
     exports.BMinusRuntime.RunProgram(p);
     RenderAST();
-
-
+    
     var data = exports.BMinusRuntime.GetGlobals();
 };
 
@@ -159,28 +157,47 @@ const tree = document.getElementById("syntaxTree");
 //todo: call from a "onCompiled"
 function RenderAST(){
     var treeNode = exports.BMinusRuntime.GetAST();
-    console.log(treeNode);
     var n = JSON.parse(treeNode);
     console.log(n);
     tree.innerHTML = "";
     RenderTreeNode(tree,n);
 }
 function RenderTreeNode(parentNode, element){
-    var node = document.createElement("div");
-    parentNode.append(node);
-    node.id = "ast-"+element["id"];
+    if(element["children"].length === 0){
+        //is a leaf node.
+        var name = document.createElement("p");
+        parentNode.append(name);
+        name.id = "ast-" + element["id"];
+        if (element["label"] !== "") {
+            name.innerText = element["label"] + ": " + element["name"];
+        } else {
+            name.innerText = element["name"];
+        }
+        return;
+    }
+    var detailsNode = document.createElement("details");
+    detailsNode.open = true;
+    parentNode.append(detailsNode);
+    
+    name = document.createElement("summary");
+    detailsNode.append(name);
+    name.id = "ast-" + element["id"];
 
-    var name = document.createElement("p");
-    node.append(name);
-
+    var contentList = document.createElement("ul");
+    detailsNode.append(contentList);
+    
+    //set name
     if(element["label"] !== "") {
         name.innerText = element["label"]+": "+element["name"];
     }else{
         name.innerText = element["name"];
-
     }
+    
+    //create children
     for(var i = 0;i<element.children.length;i++){
-        RenderTreeNode(node,element.children[i]);
+        var childItem = document.createElement("li");
+        contentList.append(childItem);
+        RenderTreeNode(childItem,element.children[i]);
     }
     
 }

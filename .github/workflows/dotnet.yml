@@ -36,7 +36,7 @@ jobs:
       run: npm install rollup --save-dev
     - name: rollup run
       working-directory: ./BMinusWebRuntime/wwwroot
-      run: rollup --config ./rollup.config.mjs
+      run: npm run roll
     - name: Restore dependencies
       working-directory: ./BMinusWebRuntime
       run: dotnet restore

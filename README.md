@@ -9,8 +9,8 @@ What is this?
 - The internals of the interpreter are visibly and clearly represented.
 - The page should be an intuitive debugger that gives students a playground to explore, learn, and develop mental models of how programming languages work.
 
-> This project is serving as design research for [scrub](https://github.com/hunterdyar/scrub-lang). With a simpler, and non-rewindable, language.
-> I don't know what is the most important or critical part, but I know that I want students to have a place to develop their mental models by investigating the internals of an interpreter.
+> This project is serving as design research for [scrub](https://github.com/hunterdyar/scrub-lang). This project is part of that effort. Letting me focus on the student-facing elements by implementing a much simpler, non-rewindable, language.
+> I hope to gain insight by playtesting this project with students. I know that I want students to have a tool to develop their mental models by investigating the internals of an interpreter. 
 
 ## Future Objectives
 Version 1 of this project means:

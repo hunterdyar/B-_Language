@@ -33,11 +33,10 @@ public partial class BMinusRuntime
 
 	[JSExport]
 
-	public static void CompileAndStep(string program)
+	public static void Compile(string program)
 	{
 		Console.WriteLine("Compiling");
 		_runner.Compile(program);
-		_runner.Step();
 	}
 
 	[JSExport]

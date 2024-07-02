@@ -36,6 +36,11 @@ public class PrefixOp : Expression
 		return UnaryPrefixOpToString(this.Op) + Right.ToString();
 	}
 
+	protected override string GetJSONName()
+	{
+		return "Prefix Op (" + UnaryPrefixOpToString(Op) + ")";
+	}
+
 	public static string UnaryPrefixOpToString(UnaryPrefixOp op)
 	{
 		switch (op)

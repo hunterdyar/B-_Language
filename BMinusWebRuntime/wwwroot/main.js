@@ -43,8 +43,9 @@ document.getElementById('step').onclick = ()=>{
     if(s == 5 || s == 4 || s == 3){//uninitiazed, complete, error
         var p = editor.state.doc.toString();
         clearRegister();
-        exports.BMinusRuntime.CompileAndStep(p);
+        exports.BMinusRuntime.Compile(p);
         RenderAST();
+        exports.BMinusRuntime.Step();
 
     }else if(s == 2){
     //if state is stepping, step
@@ -165,7 +166,12 @@ function RenderTreeNode(parentNode, element){
     var name = document.createElement("p");
     node.append(name);
 
-    name.innerText = element["name"];
+    if(element["label"] !== "") {
+        name.innerText = element["label"]+": "+element["name"];
+    }else{
+        name.innerText = element["name"];
+
+    }
     for(var i = 0;i<element.children.length;i++){
         RenderTreeNode(node,element.children[i]);
     }

@@ -6,6 +6,7 @@ namespace BMinus.AST;
 public class Statement
 {
 	public readonly uint UID;
+	public string Label;
 	public Statement()
 	{
 		UID = Next();
@@ -18,7 +19,7 @@ public class Statement
 
 	public virtual string GetJSON()
 	{
-		return "{\"name\": \"" + GetJSONName() + "\",\"id\": " + UID + ",\"children\":" +
+		return "{\"name\": \"" + GetJSONName() + "\",\"id\": " + UID + ",\"label\": \"" + Label + "\",\"children\":" +
 		       GetJSONChildren()
 		       +"}";
 	}

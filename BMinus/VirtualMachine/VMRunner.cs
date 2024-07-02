@@ -29,6 +29,7 @@ public class VMRunner
 	{
 		if (_vm == null)
 		{
+			//uncompiled
 			return VMState.Uninitialized;
 		}
 		else
@@ -40,6 +41,7 @@ public class VMRunner
 	//todo: move measuring and reporting to the runner.
 	public string RunProgram(string program, bool report = false)
 	{
+		//todo: check if we are already compiled, do not commpile again.
 		_vmConsole.Clear();
 		try
 		{

@@ -37,6 +37,13 @@ document.getElementById('execute').onclick = ()=>{
     var data = exports.BMinusRuntime.GetGlobals();
 };
 
+document.getElementById('compile').onclick = () => {
+        clearRegister();
+        var p = editor.state.doc.toString();
+        exports.BMinusRuntime.Compile(p);
+        RenderAST();
+};
+
 document.getElementById('step').onclick = ()=>{
     //if state is ready, firstStep
     var s = exports.BMinusRuntime.GetState();

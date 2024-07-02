@@ -19,6 +19,7 @@ setModuleImports('main.js', {
     onRegister: onRegister,
     onInstruction: onInstruction,
     onStack: onStack,
+    
 });
 
 const config = getConfig();
@@ -30,6 +31,8 @@ document.getElementById('execute').onclick = ()=>{
     console.log("Running Program...");
     clearRegister();
     exports.BMinusRuntime.RunProgram(p);
+    RenderAST();
+
 
     var data = exports.BMinusRuntime.GetGlobals();
 };
@@ -41,6 +44,8 @@ document.getElementById('step').onclick = ()=>{
         var p = editor.state.doc.toString();
         clearRegister();
         exports.BMinusRuntime.CompileAndStep(p);
+        RenderAST();
+
     }else if(s == 2){
     //if state is stepping, step
         exports.BMinusRuntime.Step();
@@ -96,13 +101,26 @@ const instructionOutput = [
     document.getElementById("insTooltip"),
 ];
 
-function onInstruction(ins, opCount){
+var ast = null;
+function onInstruction(ins, astID, opCount){
     instructionOutput[0].innerText = ins[0];
     instructionOutput[1].innerText = ins[1];
     instructionOutput[2].innerText = ins[2];
     instructionOutput[1].hidden = opCount <= 0;
     instructionOutput[2].hidden = opCount <= 1;
     instructionOutput[3].innerText = getTooltip(ins[0]);
+    
+    if(ast != null){
+        if (ast.classList.contains('changed')) {
+            ast.classList.remove('changed');
+        }
+    }
+    ast = document.getElementById("ast-"+astID.toString());
+    if (ast != null) {
+        if (!ast.classList.contains('changed')) {
+            ast.classList.add('changed');
+        }
+    }
 }
 function getTooltip(name)
 {
@@ -127,6 +145,31 @@ function onStack(ins, opCount){
     for(var i = 0;i<ins.length;i++){
         stacklist.innerHTML += "<tr><td class=\"min\">"+i+"</td><td>"+ins[i]+"</td></tr>";
     }
+}
+
+const tree = document.getElementById("syntaxTree");
+//todo: call from a "onCompiled"
+function RenderAST(){
+    var treeNode = exports.BMinusRuntime.GetAST();
+    console.log(treeNode);
+    var n = JSON.parse(treeNode);
+    console.log(n);
+    tree.innerHTML = "";
+    RenderTreeNode(tree,n);
+}
+function RenderTreeNode(parentNode, element){
+    var node = document.createElement("div");
+    parentNode.append(node);
+    node.id = "ast-"+element["id"];
+
+    var name = document.createElement("p");
+    node.append(name);
+
+    name.innerText = element["name"];
+    for(var i = 0;i<element.children.length;i++){
+        RenderTreeNode(node,element.children[i]);
+    }
+    
 }
 
 

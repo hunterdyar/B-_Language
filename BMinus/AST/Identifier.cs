@@ -15,4 +15,9 @@ public class Identifier : Expression
 	{
 		return Value;
 	}
+
+	public virtual string GetJSON()
+	{
+		return "{\"name\": \"Identifier\",\"id\": " + UID + ",\"children\": []}";
+	}
 }

@@ -57,6 +57,12 @@ public partial class BMinusRuntime
 	{
 		return (int)_runner.VMState;
 	}
+
+	[JSExport]
+	public static string GetAST()
+	{
+		return _runner.Env.AST.GetJSON();
+	}
 	
 	[JSImport("onOutput", "main.js")]
 	public static partial void SendOutput(string newLine);
@@ -101,11 +107,11 @@ public partial class BMinusRuntime
 				break;
 		}
 		
-		SendInstruction(new []{ins.Op.ToString(),a,b},opCount);
+		SendInstruction(new []{ins.Op.ToString(),a,b},(int)ins.ASTNodeID,opCount);
 	}
 	
 	[JSImport("onInstruction", "main.js")]
-	public static partial void SendInstruction(string[] ins, int operands);
+	public static partial void SendInstruction(string[] ins, int id, int operands);
 
 	[JSImport("onStack", "main.js")]
 	public static partial void OnStackChange(int[] stack, int totalSize);

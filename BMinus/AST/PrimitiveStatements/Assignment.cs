@@ -1,4 +1,6 @@
-﻿namespace BMinus.AST.PrimitiveStatements;
+﻿using System.Text;
+
+namespace BMinus.AST.PrimitiveStatements;
 
 public class Assignment : Statement
 {
@@ -22,5 +24,19 @@ public class Assignment : Statement
 	public override string ToString()
 	{
 		return $"{Identifier.Value} = {ValueExpr.ToString()}";
+	}
+
+	public override string GetJSON()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.Append('{');
+		sb.Append("\"name\":\"Program Statement\", ");
+		sb.Append($"\"id\":\"{UID.ToString()}\", ");
+		sb.Append("\"children\": [");
+		sb.Append(Identifier.GetJSON());
+		sb.Append(',');
+		sb.Append(ValueExpr.GetJSON());
+		sb.Append("]}");
+		return sb.ToString();
 	}
 }

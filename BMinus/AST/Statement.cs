@@ -12,6 +12,11 @@ public class Statement
 	{
 		return "";
 	}
+
+	public virtual string GetJSON()
+	{
+		return "{\"name\": \"Statement\",\"id\": "+UID+",\"children\": []}";
+	}
 	
 	
 	//ID handling

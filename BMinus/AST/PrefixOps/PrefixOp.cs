@@ -26,6 +26,11 @@ public class PrefixOp : Expression
 		throw new ArgumentException($"Unable to create prefix expression with op: '{op}'");
 	}
 
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { Right };
+	}
+
 	public override string ToString()
 	{
 		return UnaryPrefixOpToString(this.Op) + Right.ToString();

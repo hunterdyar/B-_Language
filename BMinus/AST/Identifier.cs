@@ -16,8 +16,8 @@ public class Identifier : Expression
 		return Value;
 	}
 
-	public virtual string GetJSON()
+	protected override string GetJSONName()
 	{
-		return "{\"name\": \"Identifier\",\"id\": " + UID + ",\"children\": []}";
+		return "ID (" + Value + ")";
 	}
 }

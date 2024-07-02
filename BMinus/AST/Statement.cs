@@ -1,4 +1,7 @@
-﻿namespace BMinus.AST;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
+
+namespace BMinus.AST;
 
 public class Statement
 {
@@ -15,10 +18,39 @@ public class Statement
 
 	public virtual string GetJSON()
 	{
-		return "{\"name\": \"Statement\",\"id\": "+UID+",\"children\": []}";
+		return "{\"name\": \"" + GetJSONName() + "\",\"id\": " + UID + ",\"children\":" +
+		       GetJSONChildren()
+		       +"}";
 	}
-	
-	
+
+	protected virtual string GetJSONName()
+	{
+		return this.GetType().Name;
+	}
+
+	protected virtual string GetJSONChildren()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.Append('[');
+		bool atLeastOne = false;
+		foreach (var s in GetChildren())
+		{
+			sb.Append(s.GetJSON());
+			sb.Append(',');
+			atLeastOne = true;
+		}
+		//remove last comma
+		if (atLeastOne)
+		{
+			sb.Remove(sb.Length - 1, 1);
+		}
+		sb.Append(']');
+		return sb.ToString();
+	}
+	protected virtual IEnumerable<Statement> GetChildren()
+	{
+		return ArraySegment<Statement>.Empty;
+	}
 	//ID handling
 	private static uint _lastId;
 

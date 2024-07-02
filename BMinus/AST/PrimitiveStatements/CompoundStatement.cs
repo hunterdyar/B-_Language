@@ -11,6 +11,16 @@ public class CompoundStatement : Statement
 		Statements = statements;
 	}
 
+	protected override string GetJSONName()
+	{
+		return "Statement Block";
+	}
+
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return Statements;
+	}
+
 	public override string ToString()
 	{
 		StringBuilder sb = new StringBuilder();

@@ -18,6 +18,11 @@ public abstract class BinOp : Expression
 		return $"({Left.ToString()} {OpAsString} {Right.ToString()})";
 	}
 
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { Left, Right };
+	}
+
 	public static BinOp GetBinaryOp(Expression left, string op, Expression right)
 	{
 		switch (op)

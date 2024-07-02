@@ -13,6 +13,16 @@ public class FunctionCall : Expression
 		Arguments = arguments.ToArray();
 	}
 
+	protected override string GetJSONName()
+	{
+		return "Call (" + FunctionName.Value + ")";
+	}
+
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return Arguments;
+	}
+
 	public override string ToString()
 	{
 		StringBuilder sb = new StringBuilder();

@@ -11,7 +11,7 @@ public class CompareOp : BinOp
 	}
 
 	public override string OpAsString => ComparisonToString(Op);
-
+	
 	public static string ComparisonToString(Comparison op)
 	{
 		switch (op)

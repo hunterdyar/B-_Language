@@ -18,6 +18,11 @@ public class WordLiteral : Expression
 		Value = BitConverter.GetBytes(dVal);
 	}
 
+	protected override string GetJSONName()
+	{
+		return "Literal (" + ValueAsInt + ")";
+	}
+
 	public WordLiteral(char t, string s)
 	{
 		if (t == 'i')

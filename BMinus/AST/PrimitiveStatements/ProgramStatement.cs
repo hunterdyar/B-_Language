@@ -20,25 +20,9 @@ public class ProgramStatement : Statement
 		this.Statements = statements.ToArray();
 	}
 
-	public override string GetJSON()
+	protected override IEnumerable<Statement> GetChildren()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.Append('{');
-		sb.Append("\"name\":\"Program Statement\", ");
-		sb.Append($"\"id\":\"{UID.ToString()}\", ");
-		sb.Append("\"children\": [");
-		for (var i = 0; i < Statements.Length; i++)
-		{
-			var statement = Statements[i];
-			sb.Append(statement.GetJSON());
-			if (i < Statements.Length - 1)
-			{
-				sb.Append(',');
-			}
-		}
-
-		sb.Append("]}");
-		return sb.ToString();
+		return Statements;
 	}
 
 	public override string ToString()

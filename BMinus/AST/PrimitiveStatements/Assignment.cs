@@ -26,17 +26,8 @@ public class Assignment : Statement
 		return $"{Identifier.Value} = {ValueExpr.ToString()}";
 	}
 
-	public override string GetJSON()
+	protected override IEnumerable<Statement> GetChildren()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.Append('{');
-		sb.Append("\"name\":\"Program Statement\", ");
-		sb.Append($"\"id\":\"{UID.ToString()}\", ");
-		sb.Append("\"children\": [");
-		sb.Append(Identifier.GetJSON());
-		sb.Append(',');
-		sb.Append(ValueExpr.GetJSON());
-		sb.Append("]}");
-		return sb.ToString();
+		return new[] { ValueExpr };
 	}
 }

@@ -26177,10 +26177,6 @@ const cppLanguage = /*@__PURE__*/LRLanguage.define({
     }
 });
 
-ls;
-
-
-
 const inputDiv = document.getElementById("input");
 
 let startState = EditorState.create({

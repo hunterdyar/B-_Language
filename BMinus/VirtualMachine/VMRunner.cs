@@ -24,6 +24,7 @@ public class VMRunner
 	public Action<int[]> OnRegistersChange { get; set; }
 	public Action<Instruction> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
+	public Action<VMState> OnStateChange;
 
 	private VMState GetVMState()
 	{
@@ -74,6 +75,7 @@ public class VMRunner
 	public bool Compile(string program)
 	{
 		_vmConsole.Clear();
+		OnState(VMState.Uninitialized);
 		try
 		{
 			_compileWatch.Restart();
@@ -84,6 +86,8 @@ public class VMRunner
 			var env = _compiler.GetEnvironment();
 			_vm = new VirtualMachine(env, this);
 			_env = _vm.Env;
+			
+			OnState(VMState.Ready);
 			return true;
 		}
 		catch (Exception e)
@@ -131,9 +135,15 @@ public class VMRunner
 		_vm.Flush();
 	}
 
+	public void OnState(VMState newState)
+	{
+		OnStateChange?.Invoke(newState);
+	}
+
 	public void OnRunComplete()
 	{
 		OnOutputChange?.Invoke(_vmConsole.ToString());
 		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution);
+		//todo: unset any syntax tree.
 	}
 }

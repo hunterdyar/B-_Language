@@ -20,6 +20,7 @@ public partial class BMinusRuntime
 		_runner.OnRegistersChange += SendRegisters;
 		_runner.OnCurrentInstructionChange += OnInstructionChange;
 		_runner.OnStackChange += OnStackChange;
+		_runner.OnStateChange += (s) => OnStatehange((int)s);
 	}
 
 	
@@ -114,5 +115,8 @@ public partial class BMinusRuntime
 
 	[JSImport("onStack", "main.js")]
 	public static partial void OnStackChange(int[] stack, int totalSize);
+
+	[JSImport("onState", "main.js")]
+	public static partial void OnStatehange(int state);
 	
 }

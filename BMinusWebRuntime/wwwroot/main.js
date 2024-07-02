@@ -19,6 +19,7 @@ setModuleImports('main.js', {
     onRegister: onRegister,
     onInstruction: onInstruction,
     onStack: onStack,
+    onState: onState,
     
 });
 
@@ -67,6 +68,34 @@ function onOutput(outputText){
     console.log("on output");
     outputText = outputText.replace(/(?:\r\n|\r|\n)/g, '<br>');
     output.innerHTML = outputText;
+}
+
+const stateChip = document.getElementById('vmState');
+onState(5);//assume uinitialized to start.
+function onState(state){
+    var text = "unknown";
+    //see VMState.cs enum
+    switch(state){
+        case 0:
+            text= "Ready";
+            break;
+        case 4:
+            text = "Error";
+            break;
+        case 1:
+            text = "Running";
+            break;
+        case 2:
+            text = "Stepping (paused)";
+            break;
+        case 3:
+            text = "Complete";
+            break;
+        case 5:
+            text = "Uninitialized";
+            break;
+    }
+    stateChip.innerText = text;
 }
 
 const reg = [

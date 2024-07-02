@@ -69,9 +69,23 @@ public class VirtualMachine
 		_sp = 0;
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
-		_state = VMState.Ready;
+		SetState(VMState.Ready);
 		_registerDirty = false;
 		_stackDirty = false;
+	}
+
+	private void SetState(VMState state)
+	{
+		if (_state != state)
+		{
+			_state = state;
+		}
+		else
+		{
+			return;
+		}
+
+		_runner.OnState(_state);
 	}
 
 	public void Run()
@@ -80,7 +94,7 @@ public class VirtualMachine
 		//ready, or partway stepping (now should resume and run to end).
 		if (_state == VMState.Ready || _state == VMState.Stepping)
 		{
-			_state = VMState.Running;
+			SetState(VMState.Running);
 		}
 		else
 		{
@@ -102,7 +116,7 @@ public class VirtualMachine
 		{
 			if (_state == VMState.Ready)
 			{
-				_state = VMState.Stepping;
+				SetState(VMState.Stepping);
 			}else if (_state == VMState.Complete)
 			{
 				_runner.OnRunComplete();
@@ -139,7 +153,7 @@ public class VirtualMachine
 			}
 			else
 			{
-				_state = VMState.Complete;
+				SetState(VMState.Complete);
 			}
 			return;
 		}
@@ -174,6 +188,7 @@ public class VirtualMachine
 				SetRegister(op.OperandB, result);
 				return;
 			case OpCode.Bitwise:
+				SetState(VMState.Error);
 				throw new NotImplementedException("Bitwise not implemented in VM.");
 				return;
 			case OpCode.Call:
@@ -260,10 +275,18 @@ public class VirtualMachine
 	private void LeaveFrame()
 	{
 		//clear the stack
-		_frames.Pop();
-		if (_frames.Count == 0)
+		var p = _frames.TryPop(out var f);
+		if (p)
 		{
-			_state = VMState.Complete;
+			if (_frames.Count == 0)
+			{
+				SetState(VMState.Complete);
+			}
+		}
+		else
+		{
+			SetState(VMState.Error);
+			throw new Exception("Unable to leave frame");
 		}
 	}
 
@@ -271,6 +294,11 @@ public class VirtualMachine
 	{
 		if (reg < 0)
 		{
+			if (_sp >= _stack.Length)
+			{
+				SetState(VMState.Error);
+				throw new VMException("Stack Overflow!");
+			}
 			_stack[_sp] = val;
 			_sp++;
 			_stackDirty = true;

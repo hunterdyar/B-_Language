@@ -31,10 +31,10 @@ Version 3:
 ## Why B?
 
 ### Significant
-[B (The Programming Language)[https://en.wikipedia.org/wiki/B_(programming_language)] came before C. It's an interesting artifact in being instrumental to modern languages, but (unlike fortran), not used today.
+[B: The Programming Language](https://en.wikipedia.org/wiki/B_(programming_language)) came before C. It's an interesting artifact in being instrumental to modern languages, but (unlike fortran), not really used today. It's a touchstone in programming language history, which makes learning it a bit more significant than if it was an equally impractical toy language.
 
 ### Typeless
 B is typeless. No types!
+
 In my implementation, I use a 32-bit word. Everything is, basically, an int.
-Types cause a lot of headaches and annoyances for students, and learning why they exist - by exploring the quirks of a languge where they *don't* exist - is, I believe, a worthwhile exercise.
-Programming in B for a while
+Types cause a lot of headaches and annoyances for learners, and why they exist isn't often covered in detail. "Just the way things are" is not a satisfying explanation. By exploring the quirks of a languge where types *don't* exist - one can gain an understanding of - and an appreciation for - them.

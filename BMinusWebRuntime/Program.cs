@@ -33,11 +33,10 @@ public partial class BMinusRuntime
 
 	[JSExport]
 
-	public static void CompileAndStep(string program)
+	public static void Compile(string program)
 	{
 		Console.WriteLine("Compiling");
 		_runner.Compile(program);
-		_runner.Step();
 	}
 
 	[JSExport]
@@ -56,6 +55,12 @@ public partial class BMinusRuntime
 	public static int GetState()
 	{
 		return (int)_runner.VMState;
+	}
+
+	[JSExport]
+	public static string GetAST()
+	{
+		return _runner.Env.AST.GetJSON();
 	}
 	
 	[JSImport("onOutput", "main.js")]
@@ -101,11 +106,11 @@ public partial class BMinusRuntime
 				break;
 		}
 		
-		SendInstruction(new []{ins.Op.ToString(),a,b},opCount);
+		SendInstruction(new []{ins.Op.ToString(),a,b},(int)ins.ASTNodeID,opCount);
 	}
 	
 	[JSImport("onInstruction", "main.js")]
-	public static partial void SendInstruction(string[] ins, int operands);
+	public static partial void SendInstruction(string[] ins, int id, int operands);
 
 	[JSImport("onStack", "main.js")]
 	public static partial void OnStackChange(int[] stack, int totalSize);

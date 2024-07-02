@@ -52,7 +52,46 @@
     .changed{
       background-color: burlywood;
     }
+    
+    #syntaxTree{
+        --spacing: 1.2rem;
+        --radius: 5px;
+    }
+    #syntaxTree li{
+      padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
+      display: block;
+      position: relative;
+    }
 
+    #syntaxTree ul {
+      /*padding: revert;*/
+      margin-left: calc(var(--radius) - var(--spacing));
+      padding-left: 0;
+    }
+    #syntaxTree p{
+      padding: 0;
+      margin: 0;
+    }
+
+    #syntaxTree ul li {
+      border-left: 2px solid #ddd;
+    }
+
+    #syntaxTree ul li:last-child {
+      border-color: transparent;
+    }
+
+    #syntaxTree ul li::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: calc(var(--spacing) / -2);
+      left: -2px;
+      width: calc(var(--spacing) + 2px);
+      height: calc(var(--spacing) + 1px);
+      border: solid #ddd;
+      border-width: 0 0 2px 2px;
+    }
   </style>
 </head>
 
@@ -69,7 +108,8 @@
       <div class="s12">
 
       <button id="execute">Run</button>
-  <button id="step">Step</button>
+      <button id="compile">Compile</button>
+      <button id="step">Step</button>
       </div>
       <div class="s12">
     <div class="s12">
@@ -131,7 +171,14 @@
           </table>
         </article>
       </div>
-
+      <div class="s12">
+        <article class="border">
+          <h5 class="small">Syntax Tree</h5>
+          <div id="syntaxTree">
+            
+          </div>
+        </article>
+      </div>
   </div>
     </main>
 </article>

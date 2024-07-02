@@ -15,4 +15,9 @@ public class Identifier : Expression
 	{
 		return Value;
 	}
+
+	protected override string GetJSONName()
+	{
+		return "ID (" + Value + ")";
+	}
 }

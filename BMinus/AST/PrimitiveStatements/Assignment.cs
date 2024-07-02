@@ -1,4 +1,6 @@
-﻿namespace BMinus.AST.PrimitiveStatements;
+﻿using System.Text;
+
+namespace BMinus.AST.PrimitiveStatements;
 
 public class Assignment : Statement
 {
@@ -22,5 +24,10 @@ public class Assignment : Statement
 	public override string ToString()
 	{
 		return $"{Identifier.Value} = {ValueExpr.ToString()}";
+	}
+
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { ValueExpr };
 	}
 }

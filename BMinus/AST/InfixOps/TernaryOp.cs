@@ -13,6 +13,11 @@ public class TernaryOp : Expression
 		Alternative = alternative;
 	}
 
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { Condition, Consequence, Alternative };
+	}
+
 	public override string ToString()
 	{
 		return Condition.ToString() + " ? " + Consequence.ToString() + " : " + Alternative.ToString();

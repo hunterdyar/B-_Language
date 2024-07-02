@@ -20,6 +20,11 @@ public class ProgramStatement : Statement
 		this.Statements = statements.ToArray();
 	}
 
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return Statements;
+	}
+
 	public override string ToString()
 	{
 		if (this.Statements.Length == 1)

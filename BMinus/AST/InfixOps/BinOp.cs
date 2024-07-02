@@ -11,11 +11,23 @@ public abstract class BinOp : Expression
 	protected BinOp(Expression left, Expression right)
 	{
 		Left = left;
+		Left.Label = "Left";
 		Right = right;
+		Right.Label = "Right";
 	}
 	public override string ToString()
 	{
 		return $"({Left.ToString()} {OpAsString} {Right.ToString()})";
+	}
+
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { Left, Right };
+	}
+
+	protected override string GetJSONName()
+	{
+		return "Op ("+OpAsString+")";
 	}
 
 	public static BinOp GetBinaryOp(Expression left, string op, Expression right)

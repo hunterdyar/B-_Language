@@ -121,14 +121,24 @@
       <div class="s4">
         <article class="border">
           <h5 class="small">Instruction</h5>
-          <div class="chip no-elevate fill">
-            <span id="insName"></span>
-            <div class="tooltip top large-space">
-              <p id="insTooltip">This is an instruction</p>
+          <div class="row center-align">
+            <div class="chip no-elevate fill">
+              <span id="insName"></span>
+              <div class="tooltip">Instruction OpCode</div>
+            </div>
+            <div class="chip">
+              <span id="insOperandA"></span>
+              <div class="tooltip">Operand A</div>
+            </div>
+            <div class="chip" >
+              <span id="insOperandB"></span>
+              <div class="tooltip">Operand B</div>
             </div>
           </div>
-          <div class="chip" id = "insOperandA"></div>
-          <div class="chip" id="insOperandB"></div>
+          <article class="fill">
+          <p id="insDetails">This is an instruction</p>
+          </article>
+
         </article>
       </div>
       <div class="s4">

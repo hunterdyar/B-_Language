@@ -36,7 +36,7 @@ document.getElementById('execute').onclick = ()=>{
 };
 
 document.getElementById('compile').onclick = () => {
-        clearRegister();
+        clearOutput();
         var p = editor.state.doc.toString();
         exports.BMinusRuntime.Compile(p);
         RenderAST();
@@ -47,13 +47,13 @@ document.getElementById('step').onclick = ()=>{
     var s = exports.BMinusRuntime.GetState();
     if(s == 5 || s == 4 || s == 3){//uninitiazed, complete, error
         var p = editor.state.doc.toString();
-        clearRegister();
+        clearOutput();
         exports.BMinusRuntime.Compile(p);
         RenderAST();
         exports.BMinusRuntime.Step();
 
-    }else if(s == 2){
-    //if state is stepping, step
+    }else if(s == 2 || s == 0){
+    //if state is stepping, or compiled/ready. step
         exports.BMinusRuntime.Step();
     }else{
         //can't step, VM is
@@ -62,9 +62,11 @@ document.getElementById('step').onclick = ()=>{
     //console.log(data);
 };
 
-function onOutput(output){
-    output = output.replace(/(?:\r\n|\r|\n)/g, '<br>');
-    document.getElementById('out').innerHTML = output;
+const output = document.getElementById('out');
+function onOutput(outputText){
+    console.log("on output");
+    outputText = outputText.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    output.innerHTML = outputText;
 }
 
 const reg = [
@@ -92,19 +94,23 @@ function onRegister(data){
 }
 
 function clearRegister(){
-    for (var r=0;r<reg.length;r++){
+    for (var r = 0; r < reg.length; r++) {
         reg[r].innerText = "0";
         if (reg[r].classList.contains('changed')) {
             reg[r].classList.remove('changed');
         }
     }
 }
+function clearOutput(){
+    clearRegister();
+    output.innerHTML = "";
+}
 
 const instructionOutput = [
     document.getElementById("insName"),
     document.getElementById("insOperandA"),
     document.getElementById("insOperandB"),
-    document.getElementById("insTooltip"),
+    document.getElementById("insDetails"),
 ];
 
 var ast = null;
@@ -112,8 +118,8 @@ function onInstruction(ins, astID, opCount){
     instructionOutput[0].innerText = ins[0];
     instructionOutput[1].innerText = ins[1];
     instructionOutput[2].innerText = ins[2];
-    instructionOutput[1].hidden = opCount <= 0;
-    instructionOutput[2].hidden = opCount <= 1;
+    instructionOutput[1].parentElement.hidden = opCount <= 0;
+    instructionOutput[2].parentElement.hidden = opCount <= 1;
     instructionOutput[3].innerText = getTooltip(ins[0]);
     
     if(ast != null){
@@ -132,11 +138,11 @@ function getTooltip(name)
 {
     switch (name){
         case "SetReg":
-            return "Sets Register Op2 to Value of Op1"
+            return "Sets Register OpB to Value of OpA"
         case "Arithmetic":
-            return "Does Operation Op1 on Registers A and B, puts result in X"
+            return "Does Operation OpA on Registers A and B, puts result in X"
         case "SetGlobal":
-            return "Sets global variable op1 to value of op2"
+            return "Sets global variable OpA to value of OpB"
         
     }
     return name;
@@ -158,7 +164,6 @@ const tree = document.getElementById("syntaxTree");
 function RenderAST(){
     var treeNode = exports.BMinusRuntime.GetAST();
     var n = JSON.parse(treeNode);
-    console.log(n);
     tree.innerHTML = "";
     RenderTreeNode(tree,n);
 }
@@ -171,7 +176,7 @@ function RenderTreeNode(parentNode, element){
         if (element["label"] !== "") {
             name.innerText = element["label"] + ": " + element["name"];
         } else {
-            name.innerText = element["name"];
+            name.innerText = element["name"].toString();
         }
         return;
     }

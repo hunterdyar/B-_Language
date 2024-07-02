@@ -2,7 +2,7 @@
 
 import {basicSetup} from "codemirror"
 import {EditorView, keymap} from "@codemirror/view"
-ls
+
 import {
 	cppLanguage
 }

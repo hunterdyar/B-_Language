@@ -100,7 +100,10 @@
     .CodeMirror{
       height: auto;
     }
-    
+
+    .noHover {
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -118,8 +121,8 @@
       <button id="execute">Run</button>
       <button id="compile">Compile</button>
       <button id="step">Step</button>
-        <div class="chip" id="vmState">
-          Running!
+        <div class="chip padding-small noHover" id="vmState">
+          Initializing...
         </div>
       </div>
       <div class="s12 m12 l12">

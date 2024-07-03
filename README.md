@@ -17,8 +17,8 @@ Version 1 of this project means:
 - A viewable AST that highlights the appropriate section as the program runs.
 - A local frame viewer of some kind.
 - Most of the important B features implemented.
-  - Pointers/Dereferencing, Vectors, GoTo's, Labels, and out-of-order resolution of externs and function names are my next major milestones.
 - An intuitive-enoug web UI that one can reverse-engineer some of the concepts at play.
+- Text highlighting - siplay a clear visual connection between the source text, tokens, AST nodes, and compiled instructions.
 
 Version 2 of this project means:
 - Builtins that directly call javascript code. E.g. function registration for easily adding js functions to the runtime.

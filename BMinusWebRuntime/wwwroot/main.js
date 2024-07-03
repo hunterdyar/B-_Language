@@ -154,7 +154,7 @@ function onInstruction(ins){
     instructionOutput[3].innerText = getTooltip(ins[0]);
     let astID = Number.parseInt(ins[3]);
     let insLoc = ins[4];
-    console.log(insLoc);
+
     if(ast != null){
         if (ast.classList.contains('changed')) {
             ast.classList.remove('changed');
@@ -263,7 +263,6 @@ let currentActiveFramePage = null;
 let frames = [];
 
 function setActiveInstructionList(index){
-    console.log("Set active "+index);
     currentActiveFrameLink?.classList.remove("active");
     currentActiveFrameLink = document.getElementById("frame-link-"+index.toString());
     currentActiveFrameLink.classList.add("active");
@@ -308,7 +307,7 @@ function GetAndRenderAllInstructions(){
         table.classList.add("border");
         table.classList.add("no-space");
         pageContainer.append(table);
-        table.innerHTML = "<thead><th>Instruction</th><th>Op A</th><th>Op B</th></thead>";
+        table.innerHTML = "<thead><th>#</th><th>Instruction</th ><th>Op A</th><th>Op B</th></thead>";
         var tableBody = document.createElement("tbody");
         table.append(tableBody);
         for (let j = 0; j < f.length; j += 5) {
@@ -316,7 +315,7 @@ function GetAndRenderAllInstructions(){
             var row = document.createElement("tr");
             row.classList.add("min");
             row.id = "ins-" + i.toString() + "-" + (j / 5).toString();
-            row.innerHTML = "<td>" + f[j] + "</td><td>" + f[j + 1] + "</td><td>" + f[j + 2] + "</td>";
+            row.innerHTML = "<td>"+(j/5)+" </td><td>" + f[j] + "</td><td>" + f[j + 1] + "</td><td>" + f[j + 2] + "</td>";
             tableBody.append(row);
         }
 

@@ -143,20 +143,20 @@ const instructionOutput = [
 ];
 
 var ast = null;
-function onInstruction(ins, astID, opCount){
+function onInstruction(ins){
     instructionOutput[0].innerText = ins[0];
     instructionOutput[1].innerText = ins[1];
     instructionOutput[2].innerText = ins[2];
-    instructionOutput[1].parentElement.hidden = opCount <= 0;
-    instructionOutput[2].parentElement.hidden = opCount <= 1;
+    // instructionOutput[1].parentElement.hidden = ins[1].length===0;
+    // instructionOutput[2].parentElement.hidden = ins[2].length===0;
     instructionOutput[3].innerText = getTooltip(ins[0]);
-    
+    let astID = Number.parseInt(ins[3]);
     if(ast != null){
         if (ast.classList.contains('changed')) {
             ast.classList.remove('changed');
         }
     }
-    ast = document.getElementById("ast-"+astID.toString());
+    ast = document.getElementById("ast-"+ins[3]);
     if (ast != null) {
         if (!ast.classList.contains('changed')) {
             ast.classList.add('changed');

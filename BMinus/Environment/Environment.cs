@@ -9,6 +9,7 @@ namespace BMinus.Environment;
 /// </summary>
 public class Environment
 {
+	public int FramePrototypeCount => _framePrototypes.Length;
 	public Frame GetFramePrototype(int i) => _framePrototypes[i];
 	private Frame[] _framePrototypes;
 	public MemoryManager Memory => _memory;
@@ -53,5 +54,4 @@ public class Environment
 	{
 		return new InstructionLocation(0, 0);
 	}
-	
 }

@@ -68,14 +68,16 @@ public partial class BMinusRuntime
 	public static string[] GetInstructions(int f)
 	{
 		var frame = _runner.Env.GetFramePrototype(f);
-		var instructions = new string[frame.Instructions.Length*4];
+		var instructions = new string[frame.Instructions.Length*5];
 		for (int i = 0; i < frame.Instructions.Length; i++)
 		{
-			var ins = InstructionToString(frame.Instructions[i]);
-			instructions[i] = ins[0];
-			instructions[i+1] = ins[1];
-			instructions[i+2] = ins[2];
-			instructions[i+3] = ins[3];
+			var ins = InstructionToStringArray(frame.Instructions[i]);
+			int j = i * 5;
+			instructions[j] = ins[0];
+			instructions[j+1] = ins[1];
+			instructions[j+2] = ins[2];
+			instructions[j+3] = ins[3];
+			instructions[j+4] = ins[4];
 		}
 
 		return instructions;
@@ -94,12 +96,12 @@ public partial class BMinusRuntime
 	public static partial void SendRegisters(int[] registers);
 
 
-	public static void OnInstructionChange(Instruction ins)
+	public static void OnInstructionChange(Instruction ins, (int f, int l) loc)
 	{
-		SendInstruction(InstructionToString(ins));
+		SendInstruction(InstructionToStringArray(ins, loc.f,loc.l));
 	}
-
-	private static string[] InstructionToString(Instruction ins)
+	
+	private static string[] InstructionToStringArray(Instruction ins, int f=0, int l=0)
 	{
 		string a = ins.OperandA.ToString();
 		string b = ins.OperandB.ToString();
@@ -133,7 +135,7 @@ public partial class BMinusRuntime
 				break;
 		}
 
-		return new[] { ins.Op.ToString(), a, b, ins.ASTNodeID.ToString() };
+		return new[] { ins.Op.ToString(), a, b, ins.ASTNodeID.ToString(),$"{f}-{l}"};
 	}
 	
 	[JSImport("onInstruction", "main.js")]

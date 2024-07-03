@@ -41,6 +41,7 @@ document.getElementById('compile').onclick = () => {
         var p = editor.state.doc.toString();
         exports.BMinusRuntime.Compile(p);
         RenderAST();
+        GetAndRenderAllInstructions();
 };
 
 document.getElementById('step').onclick = ()=>{
@@ -143,6 +144,7 @@ const instructionOutput = [
 ];
 
 var ast = null;
+var inrow = null;
 function onInstruction(ins){
     instructionOutput[0].innerText = ins[0];
     instructionOutput[1].innerText = ins[1];
@@ -151,6 +153,8 @@ function onInstruction(ins){
     // instructionOutput[2].parentElement.hidden = ins[2].length===0;
     instructionOutput[3].innerText = getTooltip(ins[0]);
     let astID = Number.parseInt(ins[3]);
+    let insLoc = ins[4];
+    console.log(insLoc);
     if(ast != null){
         if (ast.classList.contains('changed')) {
             ast.classList.remove('changed');
@@ -161,6 +165,22 @@ function onInstruction(ins){
         if (!ast.classList.contains('changed')) {
             ast.classList.add('changed');
         }
+    }
+
+    if (inrow != null) {
+        if (inrow.classList.contains('changed')) {
+            inrow.classList.remove('changed');
+        }
+    }
+    inrow = document.getElementById("ins-" + insLoc);
+    if (inrow != null) {
+        if (!inrow.classList.contains('changed')) {
+            inrow.classList.add('changed');
+        }
+        inrow.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
 }
 function getTooltip(name)
@@ -234,6 +254,66 @@ function RenderTreeNode(parentNode, element){
         RenderTreeNode(childItem,element.children[i]);
     }
     
+}
+
+const fullInstructionList = document.getElementById("fullInstructions");
+const instructionTabs = document.getElementById("tabLinks");
+let currentActiveFrameLink = null;
+let currentActiveFramePage = null;
+let frames = [];
+function GetAndRenderAllInstructions(){
+
+    //clear existing
+    instructionTabs.innerHTML = "";
+    while (fullInstructionList.lastChild.id !== "tabLinks") {
+        fullInstructionList.removeChild(fullInstructionList.lastChild);
+    }
+    var numberFrames = exports.BMinusRuntime.GetFrameCount();
+    var firstlink;
+
+    for (let curFrame = 0;curFrame<numberFrames;curFrame++) {
+
+        var i = curFrame;
+        var f = exports.BMinusRuntime.GetInstructions(curFrame);
+        var link = document.createElement("a");
+        link.id = "frame-link-" + i.toString();
+        link.innerText = i === 0 ? "Instructions" : i.toString();
+        if (curFrame === 0) {
+            firstlink = link;
+        }
+        //todo: fix closure, make a function and make a closure that has the id.
+        link.onclick = () => {
+            currentActiveFrameLink?.classList.remove("active");
+            this.classList.add("active");
+            currentActiveFrameLink = this;
+            currentActiveFramePage?.classList.remove("active");
+            currentActiveFramePage = document.getElementById("frame-" + i.toString());
+            currentActiveFramePage?.classList.add("active");
+        }
+        instructionTabs.append(link);
+        var pageContainer = document.createElement("div");
+        pageContainer.classList.add("page");
+        pageContainer.classList.add("scroll");
+        pageContainer.classList.add("small-height");
+        pageContainer.id = "frame-" + i.toString();
+        fullInstructionList.append(pageContainer);
+
+        var table = document.createElement("table");
+        table.classList.add("border");
+        pageContainer.append(table);
+        table.innerHTML = "<thead><th>Instruction</th><th>Op A</th><th>Op B</th></thead>";
+        var tableBody = document.createElement("tbody");
+        table.append(tableBody);
+        for (let j = 0; j < f.length; j += 5) {
+            //ins.Op.ToString(), a, b, ins.ASTNodeID.ToString()
+            var row = document.createElement("tr");
+            row.id = "ins-" + i.toString() + "-" + (j / 5).toString();
+            row.innerHTML = "<td>" + f[j] + "</td><td>" + f[j + 1] + "</td><td>" + f[j + 2] + "</td>";
+            tableBody.append(row);
+        }
+
+    }
+    firstlink.onclick(null);
 }
 
 

@@ -22,7 +22,7 @@ public class VMRunner
 	public VMState VMState => GetVMState();
 	public Action<string> OnOutputChange { get; set; }
 	public Action<int[]> OnRegistersChange { get; set; }
-	public Action<Instruction> OnCurrentInstructionChange { get; set; }
+	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
 	public Action<VMState> OnStateChange;
 
@@ -131,7 +131,7 @@ public class VMRunner
 		{
 			OnStackChange?.Invoke(_vm.GetStackArray(10),_vm.CurrentStackSize);
 		}
-		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution);
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution, _vm.CurrentInstrutionLocation);
 		_vm.Flush();
 	}
 
@@ -143,7 +143,7 @@ public class VMRunner
 	public void OnRunComplete()
 	{
 		OnOutputChange?.Invoke(_vmConsole.ToString());
-		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution);
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution, _vm.CurrentInstrutionLocation);
 		//todo: unset any syntax tree.
 	}
 }

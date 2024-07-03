@@ -23,7 +23,8 @@ public class VirtualMachine
 
 	public Instruction CurrentInstrution => _currentInstruction;
 	private Instruction _currentInstruction = new Instruction(OpCode.Nop);
-	
+	public (int, int) CurrentInstrutionLocation => _frames.TryPeek(out var f) ? (f.FrameID, f.IP) : (0,0);
+
 	//Compiler gives us a compiler object, which is NOT really bytecode,
 	//as we will have initial heap state (constants) and frame prototypes as objects.
 	public int[] Register => _register;

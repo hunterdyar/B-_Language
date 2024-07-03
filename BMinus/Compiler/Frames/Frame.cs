@@ -41,6 +41,7 @@ public class Frame
 	{
 		return new Frame()
 		{
+			FrameID = this.FrameID,
 			Instructions = this.Instructions,
 			IP = this.IP,
 			_locals = (int[])this._locals.Clone(),

@@ -135,7 +135,7 @@ public partial class BMinusRuntime
 				break;
 		}
 
-		return new[] { ins.Op.ToString(), a, b, ins.ASTNodeID.ToString(),$"{f}-{l}"};
+		return new[] { ins.Op.ToString(), a, b, ins.ASTNodeID.ToString(),f.ToString(),l.ToString()};
 	}
 	
 	[JSImport("onInstruction", "main.js")]

@@ -131,7 +131,7 @@ public class VMRunner
 		{
 			OnStackChange?.Invoke(_vm.GetStackArray(10),_vm.CurrentStackSize);
 		}
-		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution, _vm.CurrentInstrutionLocation);
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstruction, _vm.CurrentInstrutionLocation);
 		_vm.Flush();
 	}
 
@@ -143,7 +143,7 @@ public class VMRunner
 	public void OnRunComplete()
 	{
 		OnOutputChange?.Invoke(_vmConsole.ToString());
-		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstrution, _vm.CurrentInstrutionLocation);
+		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstruction, _vm.CurrentInstrutionLocation);
 		//todo: unset any syntax tree.
 	}
 }

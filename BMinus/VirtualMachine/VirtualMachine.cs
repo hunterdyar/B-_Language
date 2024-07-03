@@ -21,7 +21,7 @@ public class VirtualMachine
 	public VMRunner Runner => _runner;
 	private VMRunner _runner;
 
-	public Instruction CurrentInstrution => _currentInstruction;
+	public Instruction CurrentInstruction => _currentInstruction;
 	private Instruction _currentInstruction = new Instruction(OpCode.Nop);
 	public (int, int) CurrentInstrutionLocation => _frames.TryPeek(out var f) ? (f.FrameID, f.IP) : (0,0);
 

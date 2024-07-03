@@ -152,9 +152,11 @@ function onInstruction(ins){
     // instructionOutput[1].parentElement.hidden = ins[1].length===0;
     // instructionOutput[2].parentElement.hidden = ins[2].length===0;
     instructionOutput[3].innerText = getTooltip(ins[0]);
+    //i hate that we parse this. maybe two function calls that get sent back to back. "on new instruction" (3 strings) and "on new instruction location" (3 ints)
     let astID = Number.parseInt(ins[3]);
-    let insLoc = ins[4];
-
+    let frameProto = Number.parseInt(ins[4]);
+    let insloc = Number.parseInt(ins[5]);
+    
     if(ast != null){
         if (ast.classList.contains('changed')) {
             ast.classList.remove('changed');
@@ -172,7 +174,14 @@ function onInstruction(ins){
             inrow.classList.remove('changed');
         }
     }
-    inrow = document.getElementById("ins-" + insLoc);
+    
+    if(frameProto !== currentVisibleInstructionList){
+        console.log("need to change frame");
+        setActiveInstructionList(frameProto);
+    }
+    
+    //use ins[4] and ins[5] since they are strings, and we cast to ints, and now... back to strings!
+    inrow = document.getElementById("ins-" +ins[4]+"-"+ ins[5]);
     if (inrow != null) {
         if (!inrow.classList.contains('changed')) {
             inrow.classList.add('changed');
@@ -260,19 +269,22 @@ const fullInstructionList = document.getElementById("fullInstructions");
 const instructionTabs = document.getElementById("tabLinks");
 let currentActiveFrameLink = null;
 let currentActiveFramePage = null;
-let frames = [];
-
+let currentVisibleInstructionList = 0;
 function setActiveInstructionList(index){
     currentActiveFrameLink?.classList.remove("active");
     currentActiveFrameLink = document.getElementById("frame-link-"+index.toString());
-    currentActiveFrameLink.classList.add("active");
+    if(currentActiveFrameLink != null) {
+        currentActiveFrameLink.classList.add("active");
+    }else{
+        console.log("null frame link - ",index);
+    }
 
     currentActiveFramePage?.classList.remove("active");
     currentActiveFramePage = document.getElementById("frame-" + index.toString());
     currentActiveFramePage?.classList.add("active");
+    currentVisibleInstructionList = index;
 }
 function GetAndRenderAllInstructions(){
-
     //clear existing
     instructionTabs.innerHTML = "";
     while (fullInstructionList.lastChild.id !== "tabLinks") {

@@ -261,6 +261,17 @@ const instructionTabs = document.getElementById("tabLinks");
 let currentActiveFrameLink = null;
 let currentActiveFramePage = null;
 let frames = [];
+
+function setActiveInstructionList(index){
+    console.log("Set active "+index);
+    currentActiveFrameLink?.classList.remove("active");
+    currentActiveFrameLink = document.getElementById("frame-link-"+index.toString());
+    currentActiveFrameLink.classList.add("active");
+
+    currentActiveFramePage?.classList.remove("active");
+    currentActiveFramePage = document.getElementById("frame-" + index.toString());
+    currentActiveFramePage?.classList.add("active");
+}
 function GetAndRenderAllInstructions(){
 
     //clear existing
@@ -282,14 +293,9 @@ function GetAndRenderAllInstructions(){
             firstlink = link;
         }
         //todo: fix closure, make a function and make a closure that has the id.
-        link.onclick = () => {
-            currentActiveFrameLink?.classList.remove("active");
-            this.classList.add("active");
-            currentActiveFrameLink = this;
-            currentActiveFramePage?.classList.remove("active");
-            currentActiveFramePage = document.getElementById("frame-" + i.toString());
-            currentActiveFramePage?.classList.add("active");
-        }
+        const id = i;
+        link.addEventListener("click", () => setActiveInstructionList(id),false);
+        
         instructionTabs.append(link);
         var pageContainer = document.createElement("div");
         pageContainer.classList.add("page");
@@ -300,6 +306,7 @@ function GetAndRenderAllInstructions(){
 
         var table = document.createElement("table");
         table.classList.add("border");
+        table.classList.add("no-space");
         pageContainer.append(table);
         table.innerHTML = "<thead><th>Instruction</th><th>Op A</th><th>Op B</th></thead>";
         var tableBody = document.createElement("tbody");
@@ -307,13 +314,14 @@ function GetAndRenderAllInstructions(){
         for (let j = 0; j < f.length; j += 5) {
             //ins.Op.ToString(), a, b, ins.ASTNodeID.ToString()
             var row = document.createElement("tr");
+            row.classList.add("min");
             row.id = "ins-" + i.toString() + "-" + (j / 5).toString();
             row.innerHTML = "<td>" + f[j] + "</td><td>" + f[j + 1] + "</td><td>" + f[j + 2] + "</td>";
             tableBody.append(row);
         }
 
     }
-    firstlink.onclick(null);
+    setActiveInstructionList(0);
 }
 
 

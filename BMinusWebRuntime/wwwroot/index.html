@@ -108,13 +108,13 @@
 <article>
   <main class="responsive">
     <div class="grid">
-      <div class="s12">
+      <div class="s12 m12 l12">
         <h1 class="small large-margin">B-</h1>
         <div class="border large">
           <div id="input"></div>
         </div>
       </div>
-      <div class="s12 row">
+      <div class="s12 m12 l12">
       <button id="execute">Run</button>
       <button id="compile">Compile</button>
       <button id="step">Step</button>
@@ -122,14 +122,14 @@
           Running!
         </div>
       </div>
-      <div class="s12">
-    <div class="s12">
+      <div class="s12 m12 l12">
+    <div class="s12 m12 l12">
       <article class="border fill">
       <p id="out"></p>
       </article>
     </div>
       </div>
-      <div class="s4">
+      <div class="s12 m4 l4">
         <article class="border">
           <h5 class="small">Instruction</h5>
           <div class="row center-align">
@@ -152,7 +152,7 @@
 
         </article>
       </div>
-      <div class="s4">
+      <div class="s12 m4 l4">
         <article class="border">
           <h5 class="small">Register</h5>
         <table class="stripes">
@@ -176,7 +176,7 @@
         </table>
         </article>
       </div>
-      <div class="s4">
+      <div class="s12 m4 l4">
         <article class="border">
           <h5 class="small">Stack (<span id="stackSize">0</span>)</h5>
           <table>
@@ -192,7 +192,7 @@
           </table>
         </article>
       </div>
-      <div class="s8">
+      <div class="s12 m6 l6">
         <article class="border">
           <h5 class="small">Syntax Tree</h5>
           <div id="syntaxTree">
@@ -200,18 +200,19 @@
           </div>
         </article>
       </div>
+      <div class="s12 m6 l6">
+        <article class="border">
+          <h5 class="small">Instruction List</h5>
+          <div id="fullInstructions">
+            <div id="tabLinks" class="tabs left-align">
+              <!--          <a class="active">Instructions</a>-->
+            </div>
+            <div class="page">list of rows</div>
+          </div>
+        </article>
+      </div>
   </div>
-    <div class="s4">
-      <article class="border">
-        <h5 class="small">Instruction List</h5>
-        <div id="fullInstructions">
-        <div id="tabLinks" class="tabs left-align">
-<!--          <a class="active">Instructions</a>-->
-        </div>
-        <div class="page">list of rows</div>
-        </div>
-      </article>
-    </div>
+    
     </main>
 </article>
 </body>

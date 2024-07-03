@@ -41,6 +41,7 @@ document.getElementById('compile').onclick = () => {
         var p = editor.state.doc.toString();
         exports.BMinusRuntime.Compile(p);
         RenderAST();
+        GetAndRenderAllInstructions();
 };
 
 document.getElementById('step').onclick = ()=>{
@@ -143,24 +144,43 @@ const instructionOutput = [
 ];
 
 var ast = null;
-function onInstruction(ins, astID, opCount){
+var inrow = null;
+function onInstruction(ins){
     instructionOutput[0].innerText = ins[0];
     instructionOutput[1].innerText = ins[1];
     instructionOutput[2].innerText = ins[2];
-    instructionOutput[1].parentElement.hidden = opCount <= 0;
-    instructionOutput[2].parentElement.hidden = opCount <= 1;
+    // instructionOutput[1].parentElement.hidden = ins[1].length===0;
+    // instructionOutput[2].parentElement.hidden = ins[2].length===0;
     instructionOutput[3].innerText = getTooltip(ins[0]);
-    
+    let astID = Number.parseInt(ins[3]);
+    let insLoc = ins[4];
+    console.log(insLoc);
     if(ast != null){
         if (ast.classList.contains('changed')) {
             ast.classList.remove('changed');
         }
     }
-    ast = document.getElementById("ast-"+astID.toString());
+    ast = document.getElementById("ast-"+ins[3]);
     if (ast != null) {
         if (!ast.classList.contains('changed')) {
             ast.classList.add('changed');
         }
+    }
+
+    if (inrow != null) {
+        if (inrow.classList.contains('changed')) {
+            inrow.classList.remove('changed');
+        }
+    }
+    inrow = document.getElementById("ins-" + insLoc);
+    if (inrow != null) {
+        if (!inrow.classList.contains('changed')) {
+            inrow.classList.add('changed');
+        }
+        inrow.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
 }
 function getTooltip(name)
@@ -234,6 +254,74 @@ function RenderTreeNode(parentNode, element){
         RenderTreeNode(childItem,element.children[i]);
     }
     
+}
+
+const fullInstructionList = document.getElementById("fullInstructions");
+const instructionTabs = document.getElementById("tabLinks");
+let currentActiveFrameLink = null;
+let currentActiveFramePage = null;
+let frames = [];
+
+function setActiveInstructionList(index){
+    console.log("Set active "+index);
+    currentActiveFrameLink?.classList.remove("active");
+    currentActiveFrameLink = document.getElementById("frame-link-"+index.toString());
+    currentActiveFrameLink.classList.add("active");
+
+    currentActiveFramePage?.classList.remove("active");
+    currentActiveFramePage = document.getElementById("frame-" + index.toString());
+    currentActiveFramePage?.classList.add("active");
+}
+function GetAndRenderAllInstructions(){
+
+    //clear existing
+    instructionTabs.innerHTML = "";
+    while (fullInstructionList.lastChild.id !== "tabLinks") {
+        fullInstructionList.removeChild(fullInstructionList.lastChild);
+    }
+    var numberFrames = exports.BMinusRuntime.GetFrameCount();
+    var firstlink;
+
+    for (let curFrame = 0;curFrame<numberFrames;curFrame++) {
+
+        var i = curFrame;
+        var f = exports.BMinusRuntime.GetInstructions(curFrame);
+        var link = document.createElement("a");
+        link.id = "frame-link-" + i.toString();
+        link.innerText = i === 0 ? "Instructions" : i.toString();
+        if (curFrame === 0) {
+            firstlink = link;
+        }
+        //todo: fix closure, make a function and make a closure that has the id.
+        const id = i;
+        link.addEventListener("click", () => setActiveInstructionList(id),false);
+        
+        instructionTabs.append(link);
+        var pageContainer = document.createElement("div");
+        pageContainer.classList.add("page");
+        pageContainer.classList.add("scroll");
+        pageContainer.classList.add("small-height");
+        pageContainer.id = "frame-" + i.toString();
+        fullInstructionList.append(pageContainer);
+
+        var table = document.createElement("table");
+        table.classList.add("border");
+        table.classList.add("no-space");
+        pageContainer.append(table);
+        table.innerHTML = "<thead><th>Instruction</th><th>Op A</th><th>Op B</th></thead>";
+        var tableBody = document.createElement("tbody");
+        table.append(tableBody);
+        for (let j = 0; j < f.length; j += 5) {
+            //ins.Op.ToString(), a, b, ins.ASTNodeID.ToString()
+            var row = document.createElement("tr");
+            row.classList.add("min");
+            row.id = "ins-" + i.toString() + "-" + (j / 5).toString();
+            row.innerHTML = "<td>" + f[j] + "</td><td>" + f[j + 1] + "</td><td>" + f[j + 2] + "</td>";
+            tableBody.append(row);
+        }
+
+    }
+    setActiveInstructionList(0);
 }
 
 

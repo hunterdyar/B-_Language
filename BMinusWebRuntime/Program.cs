@@ -59,6 +59,31 @@ public partial class BMinusRuntime
 	}
 
 	[JSExport]
+	public static int GetFrameCount()
+	{
+		return _runner.Env.FramePrototypeCount;
+	}
+	
+	[JSExport]
+	public static string[] GetInstructions(int f)
+	{
+		var frame = _runner.Env.GetFramePrototype(f);
+		var instructions = new string[frame.Instructions.Length*5];
+		for (int i = 0; i < frame.Instructions.Length; i++)
+		{
+			var ins = InstructionToStringArray(frame.Instructions[i]);
+			int j = i * 5;
+			instructions[j] = ins[0];
+			instructions[j+1] = ins[1];
+			instructions[j+2] = ins[2];
+			instructions[j+3] = ins[3];
+			instructions[j+4] = ins[4];
+		}
+
+		return instructions;
+	}
+
+	[JSExport]
 	public static string GetAST()
 	{
 		return _runner.Env.AST.GetJSON();
@@ -71,47 +96,50 @@ public partial class BMinusRuntime
 	public static partial void SendRegisters(int[] registers);
 
 
-	public static void OnInstructionChange(Instruction ins)
+	public static void OnInstructionChange(Instruction ins, (int f, int l) loc)
+	{
+		SendInstruction(InstructionToStringArray(ins, loc.f,loc.l));
+	}
+	
+	private static string[] InstructionToStringArray(Instruction ins, int f=0, int l=0)
 	{
 		string a = ins.OperandA.ToString();
 		string b = ins.OperandB.ToString();
-		int opCount = 2;
 		switch (ins.Op)
 		{
 			case OpCode.Arithmetic:
 				a = ((BinaryArithOp)ins.OperandA).ToString();
-				opCount = 1;
+				b = "";
 				break;
 			case OpCode.Compare:
 				a = ((Comparison)ins.OperandA).ToString();
-				opCount = 1;
+				b = "";
 				break;
 			case OpCode.CallBuiltin:
 				a = Builtins.GetBuiltinName(ins.OperandA);
-				opCount = 2;
 				break;
 			case OpCode.SetReg:
 				b = VirtualMachine.RegisterName(ins.OperandB);
 				break;
-			case OpCode.Nop:
-				opCount = 0;
-				break;
+			
 			case OpCode.GetGlobal:
 			case OpCode.SetGlobal:
 			case OpCode.SetLocal:
 			case OpCode.GetLocal:
 				b = VirtualMachine.RegisterName(ins.OperandB);
 				break;
+			case OpCode.Halt:
 			case OpCode.Pop:
-				opCount = 0;
+			case OpCode.Nop:
+				a = b = "";
 				break;
 		}
-		
-		SendInstruction(new []{ins.Op.ToString(),a,b},(int)ins.ASTNodeID,opCount);
+
+		return new[] { ins.Op.ToString(), a, b, ins.ASTNodeID.ToString(),$"{f}-{l}"};
 	}
 	
 	[JSImport("onInstruction", "main.js")]
-	public static partial void SendInstruction(string[] ins, int id, int operands);
+	public static partial void SendInstruction(string[] ins);
 
 	[JSImport("onStack", "main.js")]
 	public static partial void OnStackChange(int[] stack, int totalSize);

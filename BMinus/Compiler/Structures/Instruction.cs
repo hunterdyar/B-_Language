@@ -1,6 +1,9 @@
-﻿namespace BMinus.Compiler;
+﻿using System.Runtime.InteropServices.JavaScript;
 
-public struct Instruction
+namespace BMinus.Compiler;
+
+[System.Serializable]
+public struct Instruction 
 {
 	public OpCode Op;
 	public int OperandA;
@@ -61,4 +64,5 @@ public struct Instruction
 	{
 		return $"{Op} - {OperandA} | {OperandB}";
 	}
+	
 }

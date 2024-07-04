@@ -21,6 +21,7 @@ setModuleImports('main.js', {
     onInstruction: onInstruction,
     onStack: onStack,
     onState: onState,
+    onError: onError,
 });
 
 const config = getConfig();
@@ -30,18 +31,24 @@ exports.BMinusRuntime.Init();
 document.getElementById('execute').onclick = ()=>{
     let p = editor.state.doc.toString();
     clearRegister();
-    exports.BMinusRuntime.RunProgram(p);
-    RenderAST();
+    //todo: if already compiled, dont do this again (current state is ready)
+    var success = exports.BMinusRuntime.Compile(p);
     
-    // var data = exports.BMinusRuntime.GetGlobals();
+    if(success) {
+        exports.BMinusRuntime.RunProgram(p);
+        RenderAST();
+    }
 };
 
 document.getElementById('compile').onclick = () => {
         clearOutput();
         let p = editor.state.doc.toString();
-        exports.BMinusRuntime.Compile(p);
-        RenderAST();
-        GetAndRenderAllInstructions();
+        var success = exports.BMinusRuntime.Compile(p);
+        
+        if(success) {
+            RenderAST();
+            GetAndRenderAllInstructions();
+        }
 };
 
 document.getElementById('step').onclick = ()=>{
@@ -65,16 +72,38 @@ document.getElementById('step').onclick = ()=>{
 };
 
 const output = document.getElementById('out');
+const outputContainer = output.parentElement.parentElement;//the div s12
+const errorContainer = document.getElementById("errorContainer");
+const errorMessage = document.getElementById("error");
+errorContainer.parentElement.hidden = true;
 function onOutput(outputText){
-    console.log("on output");
     outputText = outputText.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    output.hidden = false;
     output.innerHTML = outputText;
+    errorContainer.parentElement.hidden = true;
+}
+function onError(eType, message){
+    console.log(eType,message);
+    errorContainer.parentElement.hidden = false;
+    //use this section for different colors.
+    if(eType === "lexer"){
+        errorContainer.classList.add("tertiary");
+    }else if(eType === "parser"){
+        errorContainer.classList.add("tertiary");
+    }else if(eType === "compiler"){
+        errorContainer.classList.add("tertiary");
+    }else if(eType === "vm"){
+        errorContainer.classList.add("tertiary");
+    }
+    outputContainer.hidden = true;
+    errorMessage.innerText = message;
 }
 
 const stateChip = document.getElementById('vmState');
 onState(5);//assume uinitialized to start.
 function onState(state){
     let text = "unknown";
+    var showError = false;
     //see VMState.cs enum
     switch(state){
         case 0:
@@ -82,6 +111,7 @@ function onState(state){
             break;
         case 4:
             text = "Error";
+            showError = true;
             break;
         case 1:
             text = "Running";
@@ -96,6 +126,9 @@ function onState(state){
             text = "Uninitialized";
             break;
     }
+
+    outputContainer.hidden = showError;
+    errorContainer.parentElement.hidden = !showError;
     stateChip.innerText = text;
 }
 
@@ -263,7 +296,6 @@ function RenderTreeNode(parentNode, element){
         contentList.append(childItem);
         RenderTreeNode(childItem,element.children[i]);
     }
-    
 }
 
 const fullInstructionList = document.getElementById("fullInstructions");
@@ -272,6 +304,10 @@ let currentActiveFrameLink = null;
 let currentActiveFramePage = null;
 let currentVisibleInstructionList = 0;
 function setActiveInstructionList(index){
+    if(index === undefined){
+        console.log("instructions askes to update, but in bad state. ignoring. ")
+        return;
+    }
     currentActiveFrameLink?.classList.remove("active");
     currentActiveFrameLink = document.getElementById("frame-link-"+index.toString());
     if(currentActiveFrameLink != null) {

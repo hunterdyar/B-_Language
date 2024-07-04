@@ -6,4 +6,7 @@
     <ItemGroup>
       <ProjectReference Include="..\BMinus\BMinus.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="wwwroot\icons\" />
+    </ItemGroup>
 </Project>

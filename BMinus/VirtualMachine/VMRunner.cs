@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using BMinus.Compiler;
+using BMinus.Parser;
 using BMinus.Tokenizer;
 
 namespace BMinus.VirtualMachine;
@@ -21,6 +22,7 @@ public class VMRunner
 	private StringBuilder _vmConsole = new StringBuilder();
 	public VMState VMState => GetVMState();
 	public Action<string> OnOutputChange { get; set; }
+	public Action<string, string> OnErrorThrow { get; set; }
 	public Action<int[]> OnRegistersChange { get; set; }
 	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
@@ -43,6 +45,7 @@ public class VMRunner
 	public string RunProgram(string program, bool report = false)
 	{
 		//todo: check if we are already compiled, do not commpile again.
+		//if we click compile then run.
 		_vmConsole.Clear();
 		try
 		{
@@ -86,15 +89,39 @@ public class VMRunner
 			var env = _compiler.GetEnvironment();
 			_vm = new VirtualMachine(env, this);
 			_env = _vm.Env;
-			
+
 			OnState(VMState.Ready);
 			return true;
 		}
+		catch (LexerException e)
+		{
+			_vmConsole.Append(e.Message);
+			OnErrorThrow?.Invoke("lexer",e.Message);
+			OnState(VMState.Error);
+			return false;
+		}
+		catch (ParseException e)
+		{
+			_vmConsole.Append(e.Message);
+			OnErrorThrow?.Invoke("parser",e.Message);
+			OnState(VMState.Error);
+
+			return false;
+		}
+		catch (CompilerException e)
+		{
+			_vmConsole.Append(e.Message);
+			OnErrorThrow?.Invoke("compiler",e.Message);
+			OnState(VMState.Error);
+
+			return false;
+		}
 		catch (Exception e)
 		{
-			Console.WriteLine(e);
 			_vmConsole.Append(e.Message);
-			OnOutputChange?.Invoke(e.Message);
+			OnErrorThrow?.Invoke("error",e.Message);
+			OnState(VMState.Error);
+
 			return false;
 		}
 

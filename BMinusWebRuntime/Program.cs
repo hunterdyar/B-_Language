@@ -21,9 +21,8 @@ public partial class BMinusRuntime
 		_runner.OnCurrentInstructionChange += OnInstructionChange;
 		_runner.OnStackChange += OnStackChange;
 		_runner.OnStateChange += (s) => OnStatehange((int)s);
+		_runner.OnErrorThrow += OnErrorThrown;
 	}
-
-	
 
 	[JSExport]
 	public static void RunProgram(string program)
@@ -34,10 +33,9 @@ public partial class BMinusRuntime
 
 	[JSExport]
 
-	public static void Compile(string program)
+	public static bool Compile(string program)
 	{
-		Console.WriteLine("Compiling");
-		_runner.Compile(program);
+		return _runner.Compile(program);
 	}
 
 	[JSExport]
@@ -147,4 +145,6 @@ public partial class BMinusRuntime
 	[JSImport("onState", "main.js")]
 	public static partial void OnStatehange(int state);
 	
+	[JSImport("onError", "main.js")]
+	public static partial void OnErrorThrown(string errorType, string errorMessage);
 }

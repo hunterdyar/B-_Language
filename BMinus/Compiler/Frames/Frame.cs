@@ -8,7 +8,7 @@ public class Frame
 	public int IP = -1;
 	private int _basePointer;
 	public int BasePointer => _basePointer;
-
+	
 	
 	public Frame()
 	{

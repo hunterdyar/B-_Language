@@ -33,25 +33,21 @@ public class Environment
 		throw new VMException($"Unable to get global {loc}");
 	}
 
+	
 	public void SetGlobal(int pos, int val)
 	{
 		_memory.SetHeapValue(pos,val);
 
 	}
 
-	public void SetLocal(Frame frame, int loc, int val)
+	public void SetLocal( int loc, int val)
 	{
-		_memory.SetHeapValue(frame.BasePointer+loc,val);
+		_memory.SetLocal(loc,val);
 	}
 
-	public int GetLocal(Frame frame, int loc)
+	public int GetLocal(int loc)
 	{
-		if (_memory.GetHeapValue(frame.BasePointer+loc, out var val))
-		{
-			return val;
-		}
-
-		throw new VMException($"Unable to get global {loc} for frame {frame.FrameID}");
+		return _memory.GetLocal(loc);
 	}
 
 	public InstructionLocation GetLabel(int labelID)

@@ -18,7 +18,6 @@ public class Environment
 	//dictionaries are temp till i do other stuff.
 	public Dictionary<int, int> Globals => _globals;
 	private Dictionary<int, int> _globals = new Dictionary<int, int>();
-	private Dictionary<int, int> _heap = new Dictionary<int, int>();
 
 	public readonly Statement AST;
 	public Environment(Statement root, List<string> globals, Frame[] framePrototypes)
@@ -30,7 +29,14 @@ public class Environment
 
 	public int GetGlobal(int loc)
 	{
-		if (_globals.TryGetValue(loc, out var val))
+		if(_memory.GetHeapValue(loc, out var val))
+		{
+			return val;
+		}
+		
+		
+		//vestigial
+		if (_globals.TryGetValue(loc, out val))
 		{
 			return val;
 		}
@@ -40,6 +46,7 @@ public class Environment
 
 	public void SetGlobal(int pos, int val)
 	{
+		_memory.SetHeapValue(pos,val);
 		if (_globals.ContainsKey(pos))
 		{
 			_globals[pos] = val;
@@ -53,5 +60,11 @@ public class Environment
 	public InstructionLocation GetLabel(int labelID)
 	{
 		return new InstructionLocation(0, 0);
+	}
+
+
+	public byte[] HeapMemorySegment()
+	{
+		return _memory.GetHeap();
 	}
 }

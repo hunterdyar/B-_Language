@@ -43,10 +43,10 @@ public class VMTests
 	[TestCase("a=4;","4")]
 	[TestCase("a=2+2;", "4")]
 	[TestCase("a=2+2*2;", "6")]
-	[TestCase("a=2;a=3;a=4;a=6;", "6")]
+	[TestCase("a=2;b=3;c=4;a=a+c;", "6")]
 	public static void IntTestVarA(string p, string e)
 	{
-		p = "auto a;" + p + "putint(a);";
+		p = "auto a,b,c;" + p + "putint(a);";
 		RunTestOnOutput(p,e);
 	}
 

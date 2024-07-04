@@ -73,7 +73,6 @@ document.getElementById('step').onclick = ()=>{
 
 const output = document.getElementById('out');
 const outputContainer = output.parentElement.parentElement.parentElement;//the div s12
-console.log(outputContainer);
 const errorContainer = document.getElementById("errorContainer");
 const errorMessage = document.getElementById("error");
 errorContainer.parentElement.hidden = true;

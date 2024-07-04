@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using BMinus.Compiler;
@@ -147,4 +148,10 @@ public partial class BMinusRuntime
 	
 	[JSImport("onError", "main.js")]
 	public static partial void OnErrorThrown(string errorType, string errorMessage);
+
+	[JSExport]
+	public static byte[] GetHeapMemory()
+	{
+		return _runner.Env.HeapMemorySegment();
+	}
 }

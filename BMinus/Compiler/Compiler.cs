@@ -60,8 +60,18 @@ public class Compiler
 			}
 		}else if (statement is Assignment assignment)
 		{
-			var left = assignment.Identifier;
-			int leftID = 0;//todo
+			var left = assignment.Identifier.Value;
+			//todo: move to resolver function
+			int leftID = 0;
+			if (_globals.Contains(left))
+			{
+				leftID = _globals.IndexOf(left);
+			}
+			else
+			{
+				//check locals, etc etc, in the right order, etc.
+				throw new CompilerException($"Unable to resolve variable named {left}");
+			} 
 			CompileExpression(assignment.ValueExpr, VM.X);
 			//if isLocal
 			if (Frame.FrameID == 0)

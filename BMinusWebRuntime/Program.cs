@@ -46,12 +46,6 @@ public partial class BMinusRuntime
 	}
 	
 	[JSExport]
-	public static int[] GetGlobals()
-	{
-		return _runner.Env.Globals.Values.ToArray();
-	}
-
-	[JSExport]
 	public static int GetState()
 	{
 		return (int)_runner.VMState;

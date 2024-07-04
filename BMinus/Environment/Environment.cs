@@ -14,11 +14,7 @@ public class Environment
 	private Frame[] _framePrototypes;
 	public MemoryManager Memory => _memory;
 	private MemoryManager _memory;
-
-	//dictionaries are temp till i do other stuff.
-	public Dictionary<int, int> Globals => _globals;
-	private Dictionary<int, int> _globals = new Dictionary<int, int>();
-
+	
 	public readonly Statement AST;
 	public Environment(Statement root, List<string> globals, Frame[] framePrototypes)
 	{
@@ -34,27 +30,28 @@ public class Environment
 			return val;
 		}
 		
-		
-		//vestigial
-		if (_globals.TryGetValue(loc, out val))
-		{
-			return val;
-		}
-
 		throw new VMException($"Unable to get global {loc}");
 	}
 
 	public void SetGlobal(int pos, int val)
 	{
 		_memory.SetHeapValue(pos,val);
-		if (_globals.ContainsKey(pos))
+
+	}
+
+	public void SetLocal(Frame frame, int loc, int val)
+	{
+		_memory.SetHeapValue(frame.BasePointer+loc,val);
+	}
+
+	public int GetLocal(Frame frame, int loc)
+	{
+		if (_memory.GetHeapValue(frame.BasePointer+loc, out var val))
 		{
-			_globals[pos] = val;
+			return val;
 		}
-		else
-		{
-			_globals.Add(pos,val);
-		}
+
+		throw new VMException($"Unable to get global {loc} for frame {frame.FrameID}");
 	}
 
 	public InstructionLocation GetLabel(int labelID)
@@ -67,4 +64,6 @@ public class Environment
 	{
 		return _memory.GetHeap();
 	}
+
+	
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using BMinus.VirtualMachine;
 
 namespace BMinus.Environment;
 
@@ -44,6 +45,17 @@ public class MemoryManager
 		return _topLoc + WordSize;
 	}
 
+	public void ReduceSize(int newTop)
+	{
+		if (newTop < _topLoc)
+		{
+			_topLoc = _topLoc;
+			return;
+		}
+		
+		throw new VMException("Unable to reduce size of heap");
+	}
+	
 	public bool GetHeapValue(int pointer, out int value)
 	{
 		var loc = HeapFromPointer(pointer);

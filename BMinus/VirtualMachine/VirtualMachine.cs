@@ -175,10 +175,10 @@ public class VirtualMachine
 				Env.SetGlobal(op.OperandA, GetRegister(op.OperandB));
 				return;
 			case OpCode.GetLocal:
-				SetRegister(op.OperandB,CurrentFrame.GetLocal(op.OperandA));
+				SetRegister(op.OperandB,Env.GetLocal(CurrentFrame,op.OperandA));
 				return;
 			case OpCode.SetLocal:
-				CurrentFrame.SetLocal(op.OperandA, GetRegister(op.OperandB));
+				Env.SetLocal(CurrentFrame,op.OperandA, GetRegister(op.OperandB));
 				return;
 			case OpCode.Arithmetic:
 				int result = DoArithmetic(_register[A], _register[B], (BinaryArithOp)op.OperandA);
@@ -195,6 +195,7 @@ public class VirtualMachine
 			case OpCode.Call:
 				var prototype = Env.GetFramePrototype(op.OperandA);
 				var f = prototype.Clone();
+				f.SetBasePointer(Env.Memory.GetNextAvailablePointer());
 				_frames.Push(f);
 				return;
 			case OpCode.CallBuiltin:
@@ -283,6 +284,9 @@ public class VirtualMachine
 			{
 				SetState(VMState.Complete);
 			}
+			
+			Env.Memory.ReduceSize(f.BasePointer);
+			
 		}
 		else
 		{

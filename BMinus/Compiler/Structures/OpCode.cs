@@ -4,6 +4,7 @@ public enum OpCode : byte
 {
 	Halt,//stop
 	Nop,//Do nothing
+	Move,//Sets value of op2 to value of op1.
 	SetReg,//puts op1 (any value) into op2 (register)
 	SetLocal,//sets heap at pointer (op1) from register (op2)
 	GetLocal,//puts pointer (op1) from heap into register (op2)

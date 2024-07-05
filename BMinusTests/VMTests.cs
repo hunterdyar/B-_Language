@@ -68,6 +68,17 @@ public class VMTests
 		};
 		main();
 	""", "1")]
+	[TestCase("""
+	          double(v) {
+	          	return (v * 2);
+	          }
+
+	          auto a;
+	          a = 1;
+
+	          a = double(4);
+	          putint(a);
+	          ""","8")]
 
 	public static void FuncDecTest(string p, string e)
 	{
@@ -81,6 +92,7 @@ public class VMTests
 	          	};
 	          	main();
 	          """)]
+	
 	public static void StepTest(string p)
 	{
 		VMRunner runner = new VMRunner();
@@ -95,4 +107,6 @@ public class VMTests
 	}
 	
 	//test that it fails on unclosed a "
+
+	
 }

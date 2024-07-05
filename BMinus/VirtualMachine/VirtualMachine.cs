@@ -268,6 +268,9 @@ public class VirtualMachine
 			case OpCode.Pop:
 				SetRegister(X,Pop());
 				return;
+			case OpCode.Move:
+				SetRegister(op.OperandB,GetRegister(op.OperandA));
+				return;
 		}
 	}
 

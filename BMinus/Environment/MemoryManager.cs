@@ -3,6 +3,7 @@ using BMinus.VirtualMachine;
 
 namespace BMinus.Environment;
 
+//todo: get rid of integer pointers and replace entirely with "memory locations".
 public class MemoryManager
 {
 	private byte[] _memory = new byte[256];

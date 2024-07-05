@@ -125,31 +125,7 @@ public class Compiler
 			}
 		}else if (statement is FunctionCall fn)
 		{
-			var name = fn.FunctionName.Value;
-			
-			//compile and put onto the stack in order. 
-			foreach (var arg in fn.Arguments)
-			{
-				CompileExpression(arg,-1);
-			}
-
-			if (Builtins.IsBuiltin(name, out var index))
-			{
-				Emit(OpCode.CallBuiltin,fn.UID,index, fn.Arguments.Length);
-				return;
-			}
-
-			//getFunctionID = fn.FunctionName;
-
-			if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition sub))
-			{
-				throw new CompilerException($"Unable to find function {fn.FunctionName}");
-			}
-			Emit(OpCode.Call,fn.UID, sub.FrameID);
-			return;
-			//entering a frame sets base stackPointer, etc.
-			//after the function is done, we will return to this location of this frame.
-			//Runtime frames will clean the stack when we leave them.
+			CompileFunctionCall(fn);
 		}else if (statement is FunctionDeclaration fnDec)
 		{
 			var name = fnDec.Identifier.Value;
@@ -215,9 +191,18 @@ public class Compiler
 		{
 			Emit(OpCode.Nop, nop.UID);
 			return;
+		}else if (statement is ReturnStatement returnStatement)
+		{
+			if (returnStatement.Value != null)
+			{
+				CompileExpression(returnStatement.Value,VM.X);
+			}
+
+			Emit(OpCode.Return, returnStatement.UID);
 		}
 	}
 
+	
 	/// <summary>
 	/// Compiles an expression and emits instructions to put it on the stack.
 	/// </summary>
@@ -277,8 +262,47 @@ public class Compiler
 			}
 
 			throw new CompilerException($"Unble to resolve variable {identifier.Value}. Has it been declared?");
+		}else if (expression is FunctionCall fn)
+		{
+			CompileFunctionCall(fn, register);	
 		}
 	}
+	
+	//called by both compileStatement and compileExpression
+	private void CompileFunctionCall(FunctionCall fn, int register = 0)
+	{
+		var name = fn.FunctionName.Value;
+
+		//compile and put onto the stack in order. 
+		foreach (var arg in fn.Arguments)
+		{
+			CompileExpression(arg, -1);
+		}
+
+		if (Builtins.IsBuiltin(name, out var index))
+		{
+			Emit(OpCode.CallBuiltin, fn.UID, index, fn.Arguments.Length);
+			return;
+		}
+
+		//getFunctionID = fn.FunctionName;
+
+		if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition? sub))
+		{
+			throw new CompilerException($"Unable to find function {fn.FunctionName}");
+		}
+
+		Emit(OpCode.Call, fn.UID, sub.FrameID);
+		if (register != VM.X)
+		{
+			Emit(OpCode.Move,fn.UID,VM.X, register);
+		}
+		return;
+		//entering a frame sets base stackPointer, etc.
+		//after the function is done, we will return to this location of this frame.
+		//Runtime frames will clean the stack when we leave them.
+	}
+
 	
 	#region Helpers
 	private InstructionLocation Emit(OpCode code, uint astNodeID, params int[] operands)

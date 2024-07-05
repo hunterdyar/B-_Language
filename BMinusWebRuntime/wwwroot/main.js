@@ -22,6 +22,7 @@ setModuleImports('main.js', {
     onStack: onStack,
     onState: onState,
     onError: onError,
+    onHeapValue: onHeapValue,
 });
 
 const config = getConfig();
@@ -371,5 +372,80 @@ function GetAndRenderAllInstructions(){
     setActiveInstructionList(0);
 }
 
+//MEMORY
+
+
+var memList = document.getElementById("frameList");
+var frames = [];
+function onHeapValue(frame, pos, value){
+    console.log(frame,pos,value);
+
+    console.log("before", frames);
+
+    //create if we need it.
+    if(frames.length-1 < frame){
+        createEmptyFrame();
+    }
+    console.log("after",frames);
+    //create rows while we need them.
+    while(frames[frame].items.length-1 < pos){
+        let item = {};
+        item.rowDom = document.createElement("tr");
+        item.nameDom = document.createElement("td");
+        item.nameDom.innerText = String(frames[frame].items.length);
+        item.valDom = document.createElement("td");
+        item.rowDom.append(item.nameDom);
+        item.rowDom.append(item.valDom);
+        
+        frames[frame].tbody.append(item.rowDom);
+        frames[frame].items.push(item);
+    }
+
+    frames[frame].items[pos].valDom.innerText = value;
+}
+
+
+function createEmptyFrame(){
+    let f = {};
+    f.container = document.createElement("div");
+    f.container.classList.add("fill");
+    //title
+    let title = document.createElement("h6");
+    title.classList.add("small");
+    if(frames.length === 0){
+        title.innerText = "Globals";
+    }else{
+        title.innerText = "Frame "+frames.length+1;
+    }
+    f.container.append(title);
+    //table
+    let table = document.createElement("table");
+    f.container.append(table);
+    table.classList.add("stripes");
+    let body = document.createElement("tbody");
+    table.append(body);
+    f.tbody = body;
+    
+    // <div class="fill">
+    //     <h6 class="small">Globals</h6>
+    //     <table class="stripes">
+    //         <tbody>
+    //         <tr>
+    //             <td>a</td>
+    //             <td>ff</td>
+    //         </tr>
+    //         </tbody>
+    //     </table>
+    // </div>
+    
+    f.items = [];
+    frames.push(f);
+    memList.append(f.container);
+}
+
+function removeFrame(){
+    let f = frames[frames.length-1];
+    memList.removeChild(f.container);
+}
 
 await dotnet.run();

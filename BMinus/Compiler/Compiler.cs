@@ -4,6 +4,7 @@ using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using BMinus.Environment;
 using BMinus.Models;
+using BMinus.VirtualMachine;
 using VM = BMinus.VirtualMachine.VirtualMachine;
 namespace BMinus.Compiler;
 
@@ -30,7 +31,12 @@ public class Compiler
 	private readonly Dictionary<string, InstructionLocation> _labels = new Dictionary<string, InstructionLocation>();
 	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
 	private Stack<string> _frames = new Stack<string>();
-	
+
+	private VMRunner _runner;
+	public Compiler(VMRunner runner)
+	{
+		_runner = runner;
+	}
 	public void NewCompile(Statement s)
 	{
 		_frames.Clear();
@@ -314,7 +320,7 @@ public class Compiler
 
 	public Environment.Environment GetEnvironment()
 	{
-		return new Environment.Environment(Root, _globals,GetFrames());
+		return new Environment.Environment(_runner,Root, _globals,GetFrames());
 	}
 
 	//todo: move this to environment, clone at runtime...

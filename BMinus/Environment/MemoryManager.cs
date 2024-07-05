@@ -20,6 +20,8 @@ public class MemoryManager
 		//store names in out lookup table used for debugging.
 	}
 
+	public int LocalFrameIndex => _frames.Count;
+
 	public void PushFrame(int initSize)
 	{
 		var b = _topLoc + WordSize;//NextAvailable
@@ -41,7 +43,7 @@ public class MemoryManager
 		_topFrame = _frames[^1];
 	}
 
-	public void SetLocal(int pos, int value)
+	public byte[] SetLocal(int pos, int value)
 	{
 		var f = _frames[^1];
 		if (f.Item2 > pos)
@@ -50,13 +52,22 @@ public class MemoryManager
 			_topLoc = f.Item1 + f.Item2;//this? should be true?
 		}
 
-		SetHeapValue(f.Item1 + pos, value);
+		return SetHeapValue(f.Item1 + pos, value);
+	}
 
+	public static byte[] IntToBytes(int value)
+	{
+		var data = BitConverter.GetBytes(value);
+		if (!BitConverter.IsLittleEndian)
+		{
+			data = data.Reverse().ToArray();
+		}
+
+		return data;
 	}
 
 	public int GetLocal(int pos)
 	{
-		
 		if (GetHeapValue(_frames[^1].Item1 + pos, out var val))
 		{
 			return val;
@@ -77,7 +88,7 @@ public class MemoryManager
 	}
 	//list of frame primitives
 	//list of constants, if we use those; otherwise the initial heap state
-	public void SetHeapValue(int pointer, int value)
+	public byte[] SetHeapValue(int pointer, int value)
 	{
 		var loc = HeapFromPointer(pointer);
 
@@ -86,11 +97,7 @@ public class MemoryManager
 			DoubleMemoryContainer();
 		}
 
-		var data = BitConverter.GetBytes(value);
-		if (!BitConverter.IsLittleEndian)
-		{
-			data = data.Reverse().ToArray();
-		}
+		var data = IntToBytes(value);
 		
 		data.CopyTo(_memory,loc);
 		
@@ -98,6 +105,8 @@ public class MemoryManager
 		{
 			_topLoc = loc;
 		}
+
+		return data;
 	}
 
 	public int GetNextAvailablePointer()

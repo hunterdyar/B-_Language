@@ -23,6 +23,7 @@ public partial class BMinusRuntime
 		_runner.OnStackChange += OnStackChange;
 		_runner.OnStateChange += (s) => OnStatehange((int)s);
 		_runner.OnErrorThrow += OnErrorThrown;
+		_runner.OnHeapValueChange += OnValueUpdated;
 	}
 
 	[JSExport]
@@ -142,6 +143,9 @@ public partial class BMinusRuntime
 	
 	[JSImport("onError", "main.js")]
 	public static partial void OnErrorThrown(string errorType, string errorMessage);
+
+	[JSImport("onHeapValue", "main.js")]
+	public static partial void OnValueUpdated(int frame, int loc, byte[] newVal);
 
 	[JSExport]
 	public static byte[] GetHeapMemory()

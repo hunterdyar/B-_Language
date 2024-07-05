@@ -9,9 +9,9 @@ namespace BMinus.VirtualMachine;
 //a VM Runner is a wrapper to the VM. Let's you grab the output, event subscriptions, and so on.
 public class VMRunner
 {
-	private Parser.Parser _parser;
-	private Compiler.Compiler _compiler = new Compiler.Compiler();
-	private VirtualMachine _vm;
+	private Parser.Parser? _parser;
+	private Compiler.Compiler _compiler;
+	private VirtualMachine? _vm;
 	public Environment.Environment Env => _env;
 	private Environment.Environment _env;
 
@@ -27,7 +27,13 @@ public class VMRunner
 	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
 	public Action<VMState> OnStateChange;
+	public Action<int, int, byte[]> OnHeapValueChange;
+	public Action OnFramePop;
 
+	public VMRunner()
+	{
+		_compiler = new Compiler.Compiler(this);
+	}
 	private VMState GetVMState()
 	{
 		if (_vm == null)
@@ -172,5 +178,18 @@ public class VMRunner
 		OnOutputChange?.Invoke(_vmConsole.ToString());
 		OnCurrentInstructionChange?.Invoke(_vm.CurrentInstruction, _vm.CurrentInstrutionLocation);
 		//todo: unset any syntax tree.
+	}
+
+	public void OnValueUpated(int i, int pos, byte[] bytes)
+	{
+		if (_vm.State == VMState.Stepping || _vm.State == VMState.Complete)
+		{
+			OnHeapValueChange?.Invoke(i, pos, bytes);
+		}
+	}
+
+	public void OnFrameExit()
+	{
+		OnFramePop?.Invoke();
 	}
 }

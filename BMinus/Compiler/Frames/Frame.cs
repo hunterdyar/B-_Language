@@ -1,14 +1,15 @@
 ﻿namespace BMinus.Compiler;
 
 //aka runtime subroutine
+//This can be rewritten without making copies of the instructions, but just runtime, holding the IP and environment.subroutines[frameID].instruction
 public class Frame
 {
+	
 	public int FrameID;//this indexes to function names.
 	public Instruction[] Instructions;
 	public int IP = -1;
 	private int _basePointer;
 	public int BasePointer => _basePointer;
-	
 	
 	public Frame()
 	{
@@ -22,7 +23,6 @@ public class Frame
 		Instructions = prototype.Instructions.ToArray();
 		IP = -1;
 	}
-
 
 	public Frame Clone()
 	{

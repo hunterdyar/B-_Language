@@ -6,7 +6,7 @@ public enum OpCode : byte
 	Nop,//Do nothing
 	Move,//Sets value of op2 to value of op1.
 	SetReg,//puts op1 (any value) into op2 (register)
-	SetLocal,//sets heap at pointer (op1) from register (op2)
+	SetLocal,//sets stack at pointer (op1) from register (op2)
 	GetLocal,//puts pointer (op1) from heap into register (op2)
 	Pop,//remove from stack, puts into EAX. pushing is done by setting register -1.
 	SetGlobal,//sets global (index op1) from op2 (register)

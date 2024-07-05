@@ -27,7 +27,6 @@ public class VMRunner
 	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
 	public Action<VMState> OnStateChange;
-	public Action<int, int, byte[]> OnHeapValueChange;
 	public Action OnFramePop;
 
 	public VMRunner()
@@ -184,7 +183,6 @@ public class VMRunner
 	{
 		if (_vm.State == VMState.Stepping || _vm.State == VMState.Complete)
 		{
-			OnHeapValueChange?.Invoke(i, pos, bytes);
 		}
 	}
 

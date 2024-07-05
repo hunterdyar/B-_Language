@@ -23,7 +23,6 @@ public partial class BMinusRuntime
 		_runner.OnStackChange += OnStackChange;
 		_runner.OnStateChange += (s) => OnStatehange((int)s);
 		_runner.OnErrorThrow += OnErrorThrown;
-		_runner.OnHeapValueChange += OnValueUpdated;
 	}
 
 	[JSExport]
@@ -62,8 +61,8 @@ public partial class BMinusRuntime
 	public static string[] GetInstructions(int f)
 	{
 		var frame = _runner.Env.GetFramePrototype(f);
-		var instructions = new string[frame.Instructions.Length*5];
-		for (int i = 0; i < frame.Instructions.Length; i++)
+		var instructions = new string[frame.Instructions.Count*5];
+		for (int i = 0; i < frame.Instructions.Count; i++)
 		{
 			var ins = InstructionToStringArray(frame.Instructions[i]);
 			int j = i * 5;
@@ -103,11 +102,9 @@ public partial class BMinusRuntime
 		{
 			case OpCode.Arithmetic:
 				a = ((BinaryArithOp)ins.OperandA).ToString();
-				b = "";
 				break;
 			case OpCode.Compare:
 				a = ((Comparison)ins.OperandA).ToString();
-				b = "";
 				break;
 			case OpCode.CallBuiltin:
 				a = Builtins.GetBuiltinName(ins.OperandA);

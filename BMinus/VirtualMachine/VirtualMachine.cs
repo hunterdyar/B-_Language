@@ -146,7 +146,7 @@ public class VirtualMachine
 			return;
 		}
 		CurrentFrame.IP++;
-		if (CurrentFrame.IP >= CurrentFrame.Instructions.Length)
+		if (CurrentFrame.IP >= CurrentFrame.Instructions.Count)
 		{
 			if (_frames.Count > 0)
 			{
@@ -175,10 +175,13 @@ public class VirtualMachine
 				Env.SetGlobal(op.OperandA, GetRegister(op.OperandB));
 				return;
 			case OpCode.GetLocal:
-				SetRegister(op.OperandB,Env.GetLocal(op.OperandA));
+				int stackPos = CurrentFrame.StackBasePos + op.OperandA;
+				Console.WriteLine(CurrentFrame.StackBasePos + "," + op.OperandA + "="+ _stack[stackPos]);
+				SetRegister(op.OperandB,_stack[stackPos]);
 				return;
 			case OpCode.SetLocal:
-				Env.SetLocal(op.OperandA, GetRegister(op.OperandB));
+				stackPos = CurrentFrame.StackBasePos + op.OperandA;
+				_stack[stackPos] = GetRegister(op.OperandB);
 				return;
 			case OpCode.Arithmetic:
 				int result = DoArithmetic(_register[A], _register[B], (BinaryArithOp)op.OperandA);
@@ -193,11 +196,13 @@ public class VirtualMachine
 				throw new NotImplementedException("Bitwise not implemented in VM.");
 				return;
 			case OpCode.Call:
+				//todo: rename GetFramePrototype here. should create frame from that instead of cloning.
 				var prototype = Env.GetFramePrototype(op.OperandA);
 				var f = prototype.Clone();
-				f.SetBasePointer(Env.Memory.GetNextAvailablePointer());
+				f.SetBasePointer(_sp-f.ArgCount);
+				//this creates room for arguments, but not for locals? should they just get pushed to stack?
+				//_sp += f.LocalVarCount-f.ArgCount;//now the stack has room for locals too, should anything else use the stack.
 				_frames.Push(f);
-				Env.Memory.PushFrame(0);//todo: initial size
 				return;
 			case OpCode.CallBuiltin:
 				var builtin = op.OperandA;
@@ -289,9 +294,6 @@ public class VirtualMachine
 				SetState(VMState.Complete);
 				return;
 			}
-			//don't call this on the last frame please.
-			Env.Memory.RemoveTopFrame();
-			
 		}
 		else
 		{

@@ -13,11 +13,14 @@ public class SubroutineDefinition
 	public int FrameID;
 	public readonly string Name;
 	public List<Instruction> Instructions = new List<Instruction>();
-	
-	public SubroutineDefinition(string name,int id)
+	public readonly int ArgumentCount;
+	public int LocalCount => Locals.Count;
+
+	public SubroutineDefinition(string name,int id, int parameterCount)
 	{
 		this.Name = name;
 		FrameID = id;
+		ArgumentCount = parameterCount;
 	}
 	/// <summary>
 	/// Adds an instruction and returns it's instructionLocation

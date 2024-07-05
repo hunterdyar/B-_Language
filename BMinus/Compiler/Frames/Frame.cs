@@ -4,34 +4,41 @@
 //This can be rewritten without making copies of the instructions, but just runtime, holding the IP and environment.subroutines[frameID].instruction
 public class Frame
 {
-	
+	private SubroutineDefinition _source;
 	public int FrameID;//this indexes to function names.
-	public Instruction[] Instructions;
+	public List<Instruction> Instructions => _source.Instructions;
 	public int IP = -1;
-	private int _basePointer;
-	public int BasePointer => _basePointer;
-	
+	private int _stackBasePos;
+	public int StackBasePos => _stackBasePos;
+	public int ArgCount;
+	public int LocalVarCount;
 	public Frame()
 	{
 		FrameID = -1;
-		Instructions = null;
+		_stackBasePos = 0;
+		ArgCount = 0;
+		LocalVarCount = 0;
 	}
 
 	public Frame(SubroutineDefinition prototype)
 	{
+		_source = prototype;
 		FrameID = prototype.FrameID;
-		Instructions = prototype.Instructions.ToArray();
 		IP = -1;
+		ArgCount = prototype.ArgumentCount;
+		LocalVarCount = prototype.LocalCount;
 	}
 
 	public Frame Clone()
 	{
 		return new Frame()
 		{
+			_source = this._source,
 			FrameID = this.FrameID,
-			Instructions = this.Instructions,
 			IP = this.IP,
-			_basePointer = this._basePointer,
+			_stackBasePos = this._stackBasePos,
+			ArgCount = this.ArgCount,
+			LocalVarCount = this.LocalVarCount
 		};
 	}
 
@@ -42,6 +49,6 @@ public class Frame
 
 	public void SetBasePointer(int pointer)
 	{
-		_basePointer = pointer;
+		_stackBasePos = pointer;
 	}
 }

@@ -43,16 +43,6 @@ public class Environment
 		_runner.OnValueUpated(0,pos,d);
 	}
 
-	public void SetLocal(int loc, int val)
-	{
-		var d = _memory.SetLocal(loc,val);
-		_runner.OnValueUpated(_memory.LocalFrameIndex, loc, d);
-	}
-
-	public int GetLocal(int loc)
-	{
-		return _memory.GetLocal(loc);
-	}
 
 	public InstructionLocation GetLabel(int labelID)
 	{

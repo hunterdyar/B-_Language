@@ -233,7 +233,7 @@ function getTooltip(name)
         case "SetReg":
             return "Sets Register OpB to Value of OpA"
         case "Arithmetic":
-            return "Does Operation OpA on Registers A and B, puts result in X"
+            return "Does Operation OpA on Registers A and B, puts result in register OpB"
         case "SetGlobal":
             return "Sets global variable OpA to value of OpB"
         

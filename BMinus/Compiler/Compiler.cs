@@ -45,7 +45,7 @@ public class Compiler
 		_globals.Clear();
 		
 		Root = s;
-		_subroutines.Add("", new SubroutineDefinition("", 0)); //the global frame.
+		_subroutines.Add("", new SubroutineDefinition("", 0,0)); //the global frame.
 		_frames.Push("");
 		Compile(Root);
 	}
@@ -136,7 +136,7 @@ public class Compiler
 			//set a function prototype frame ID for name
 			//create a new frame
 
-			_subroutines.Add(name,new SubroutineDefinition(name,_subroutines.Count));
+			_subroutines.Add(name,new SubroutineDefinition(name,_subroutines.Count, fnDec.Parameters.Length));
 			_frames.Push(name);
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
 			foreach (var parameter in fnDec.Parameters)

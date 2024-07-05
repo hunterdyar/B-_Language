@@ -292,11 +292,11 @@ public class Compiler
 			throw new CompilerException($"Unable to find function {fn.FunctionName}");
 		}
 
-		Emit(OpCode.Call, fn.UID, sub.FrameID);
-		if (register != VM.X)
-		{
-			Emit(OpCode.Move,fn.UID,VM.X, register);
-		}
+		Emit(OpCode.Call, fn.UID, sub.FrameID, register);
+		// if (register != VM.X)
+		// {
+		// 	Emit(OpCode.Move,fn.UID,VM.X, register);
+		// }
 		return;
 		//entering a frame sets base stackPointer, etc.
 		//after the function is done, we will return to this location of this frame.

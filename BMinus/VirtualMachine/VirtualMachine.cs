@@ -200,6 +200,7 @@ public class VirtualMachine
 				var prototype = Env.GetFramePrototype(op.OperandA);
 				var f = prototype.Clone();
 				f.SetBasePointer(_sp-f.ArgCount);
+				f.ReturnRegister = op.OperandB;
 				//this creates room for arguments, but not for locals? should they just get pushed to stack?
 				//_sp += f.LocalVarCount-f.ArgCount;//now the stack has room for locals too, should anything else use the stack.
 				_frames.Push(f);
@@ -267,7 +268,7 @@ public class VirtualMachine
 				//
 				return;
 			case OpCode.Return:
-				SetRegister(D,op.OperandA);
+				SetRegister(CurrentFrame.ReturnRegister,op.OperandA);
 				LeaveFrame();
 				return;
 			case OpCode.Pop:

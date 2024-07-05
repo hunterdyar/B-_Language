@@ -102,9 +102,14 @@ public partial class BMinusRuntime
 		{
 			case OpCode.Arithmetic:
 				a = ((BinaryArithOp)ins.OperandA).ToString();
+				b = VirtualMachine.RegisterName(ins.OperandB);
 				break;
 			case OpCode.Compare:
 				a = ((Comparison)ins.OperandA).ToString();
+				b = VirtualMachine.RegisterName(ins.OperandB);
+				break;
+			case OpCode.Return:
+				b = VirtualMachine.RegisterName(ins.OperandB);
 				break;
 			case OpCode.CallBuiltin:
 				a = Builtins.GetBuiltinName(ins.OperandA);

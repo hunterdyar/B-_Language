@@ -10,6 +10,8 @@ public class Frame
 	public int IP = -1;
 	private int _stackBasePos;
 	public int StackBasePos => _stackBasePos;
+	public int ReturnRegister { get; set; }
+
 	public int ArgCount;
 	public int LocalVarCount;
 	public Frame()
@@ -18,6 +20,7 @@ public class Frame
 		_stackBasePos = 0;
 		ArgCount = 0;
 		LocalVarCount = 0;
+		ReturnRegister = 0;
 	}
 
 	public Frame(SubroutineDefinition prototype)
@@ -27,6 +30,7 @@ public class Frame
 		IP = -1;
 		ArgCount = prototype.ArgumentCount;
 		LocalVarCount = prototype.LocalCount;
+		ReturnRegister = 0;
 	}
 
 	public Frame Clone()
@@ -38,7 +42,8 @@ public class Frame
 			IP = this.IP,
 			_stackBasePos = this._stackBasePos,
 			ArgCount = this.ArgCount,
-			LocalVarCount = this.LocalVarCount
+			LocalVarCount = this.LocalVarCount,
+			ReturnRegister = this.ReturnRegister
 		};
 	}
 

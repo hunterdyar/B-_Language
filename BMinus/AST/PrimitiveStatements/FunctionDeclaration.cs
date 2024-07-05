@@ -37,4 +37,14 @@ public class FunctionDeclaration : Statement
 		sb.Append(Statement.ToString());
 		return sb.ToString();
 	}
+
+	protected override IEnumerable<Statement> GetChildren()
+	{
+		return new[] { Statement };
+	}
+
+	protected override string GetJSONName()
+	{
+		return "Function Declaration ("+Identifier.Value+")";
+	}
 }

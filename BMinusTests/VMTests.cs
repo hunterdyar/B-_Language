@@ -80,6 +80,29 @@ public class VMTests
 	          putint(a);
 	          ""","8")]
 
+	[TestCase("""
+	          double(a){
+	            return(a*2);
+	          }
+	          main(a,b,c){
+	            putint(double(a)+double(b)+double(c));
+	          }
+	          main(1,2,3);
+	          """, "12")]
+
+	[TestCase("""
+	          double(a){
+	            return(a*2);
+	          }
+	          add(a,b){
+	            return(a+b);
+	          }
+	          main(a,b,c){{
+	            putint(add(add(b,a),add(c,c)));
+	          }}
+	          main(1,2,3);
+	          """, "9")]
+
 	public static void FuncDecTest(string p, string e)
 	{
 		RunTestOnOutput(p, e);

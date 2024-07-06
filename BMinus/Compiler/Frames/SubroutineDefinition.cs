@@ -15,6 +15,7 @@ public class SubroutineDefinition
 	public List<Instruction> Instructions = new List<Instruction>();
 	public readonly int ArgumentCount;
 	public int LocalCount => Locals.Count;
+	public Instruction LastInstruction => Instructions[^1];
 
 	public SubroutineDefinition(string name,int id, int parameterCount)
 	{

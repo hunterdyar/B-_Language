@@ -10,8 +10,10 @@ public class VirtualMachine
 	public static readonly int X = 0; //accumulator, result of operations.
 	public static readonly int A = 1; //general
 	public static readonly int B = 2; //general
-	public static readonly int C = 3; //count
-	public static readonly int D = 4;
+	public static readonly int RET = 6;
+	public static readonly int A2 = 3; //
+	public static readonly int B2 = 4;
+	public static readonly int X2 = 5;
 	public static readonly int S = -1;
 	public const int StackSize = 2048;
 	
@@ -23,8 +25,9 @@ public class VirtualMachine
 
 	public Instruction CurrentInstruction => _currentInstruction;
 	private Instruction _currentInstruction = new Instruction(OpCode.Nop);
-	public (int, int) CurrentInstrutionLocation => _frames.TryPeek(out var f) ? (f.FrameID, f.IP) : (0,0);
-
+	public (int, int) CurrentInstrutionLocation = (0,0);
+	public uint CurrentASTNodeID => _currentASTNodeID;
+	private uint _currentASTNodeID;
 	//Compiler gives us a compiler object, which is NOT really bytecode,
 	//as we will have initial heap state (constants) and frame prototypes as objects.
 	public int[] Register => _register;
@@ -161,6 +164,9 @@ public class VirtualMachine
 
 		var op = CurrentFrame.Instructions[CurrentFrame.IP];
 		_currentInstruction = op;
+		//todo: I think dynamic acess is getting messed up by the Return (current frame changes), so hard-coding it. now other things are wonking out.
+		CurrentInstrutionLocation = (_frames.Count - 1, CurrentFrame.IP);
+		_currentASTNodeID = op.ASTNodeID;
 		switch (op.Op)
 		{
 			case OpCode.Nop:
@@ -176,7 +182,6 @@ public class VirtualMachine
 				return;
 			case OpCode.GetLocal:
 				int stackPos = CurrentFrame.StackBasePos + op.OperandA;
-				Console.WriteLine(CurrentFrame.StackBasePos + "," + op.OperandA + "="+ _stack[stackPos]);
 				SetRegister(op.OperandB,_stack[stackPos]);
 				return;
 			case OpCode.SetLocal:
@@ -195,6 +200,17 @@ public class VirtualMachine
 				SetState(VMState.Error);
 				throw new NotImplementedException("Bitwise not implemented in VM.");
 				return;
+			case OpCode.SaveRegister:
+				//todo: this doesn't work because we add to the stack before calling OpCode.Call.
+				SetRegister(S, _register[X]);
+				SetRegister(S, _register[A]);
+				SetRegister(S, _register[B]);
+				Console.WriteLine("push reg");
+				return;
+			case OpCode.RestoreRegister:
+				_register[B] = Pop();
+				_register[A] = Pop();
+				return;
 			case OpCode.Call:
 				//todo: rename GetFramePrototype here. should create frame from that instead of cloning.
 				var prototype = Env.GetFramePrototype(op.OperandA);
@@ -204,6 +220,7 @@ public class VirtualMachine
 				//this creates room for arguments, but not for locals? should they just get pushed to stack?
 				//_sp += f.LocalVarCount-f.ArgCount;//now the stack has room for locals too, should anything else use the stack.
 				_frames.Push(f);
+				//save the current register data before beginning the call.
 				return;
 			case OpCode.CallBuiltin:
 				var builtin = op.OperandA;
@@ -268,7 +285,7 @@ public class VirtualMachine
 				//
 				return;
 			case OpCode.Return:
-				SetRegister(CurrentFrame.ReturnRegister,op.OperandA);
+				SetRegister(RET, GetRegister(op.OperandA));
 				LeaveFrame();
 				return;
 			case OpCode.Pop:
@@ -284,12 +301,22 @@ public class VirtualMachine
 	{
 		return GetRegister(S);
 	}
+
+	private void Push(int val)
+	{
+		SetRegister(S, val);
+	}
 	private void LeaveFrame()
 	{
-		//clear the stack
 		var p = _frames.TryPop(out var f);
 		if (p)
 		{
+			//clear the stack
+			for (int i = 0; i < f.ArgCount; i++)
+			{
+				Pop();
+			}
+			//we're done!
 			if (_frames.Count == 0)
 			{
 				SetState(VMState.Complete);
@@ -380,12 +407,12 @@ public class VirtualMachine
 		{
 			return "Stack";
 		}
-		return new[]{"X", "A", "B", "C", "D"}[reg];
+		return new[]{"X", "A", "B", "A2", "B2", "X2", "RET"}[reg];
 	}
 
 	public int[] GetStackArray(int max)
 	{
 		int size = _sp > max ? max : _sp;
-		return new ArraySegment<int>(_stack, _sp-size, size).ToArray();
+		return new ArraySegment<int>(_stack, _sp-size, size).Reverse().ToArray();
 	}
 }

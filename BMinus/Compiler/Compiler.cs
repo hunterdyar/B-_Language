@@ -138,14 +138,31 @@ public class Compiler
 
 			_subroutines.Add(name,new SubroutineDefinition(name,_subroutines.Count, fnDec.Parameters.Length));
 			_frames.Push(name);
+			
+			//Save the existing value of registers, to prevent clobbering.
+			if (ShouldSaveRegisters())
+			{
+				Emit(OpCode.SaveRegister, fnDec.UID);
+			}
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
+
 			foreach (var parameter in fnDec.Parameters)
 			{
 				Frame.AddLocal(parameter.Value);
 			}
 			
 			Compile(fnDec.Statement);
-			Emit(OpCode.Return, fnDec.UID);//Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
+
+			
+			if (Frame.Instructions.Count == 0 || Frame.LastInstruction.Op != OpCode.Return)
+			{
+				if (ShouldSaveRegisters())
+				{
+					Emit(OpCode.RestoreRegister, fnDec.UID);
+				}
+				Emit(OpCode.Return, fnDec.UID, VM.X); //Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
+			}
+
 			_frames.Pop();
 			return;
 		}else if(statement is GoTo gotoStatement)
@@ -198,7 +215,11 @@ public class Compiler
 				CompileExpression(returnStatement.Value,VM.X);
 			}
 
-			Emit(OpCode.Return, returnStatement.UID);
+			if (ShouldSaveRegisters())
+			{
+				Emit(OpCode.RestoreRegister, returnStatement.UID);
+			}
+			Emit(OpCode.Return, returnStatement.UID, VM.X);
 		}
 	}
 
@@ -264,14 +285,17 @@ public class Compiler
 			throw new CompilerException($"Unble to resolve variable {identifier.Value}. Has it been declared?");
 		}else if (expression is FunctionCall fn)
 		{
-			CompileFunctionCall(fn, register);	
+			CompileFunctionCall(fn);
+			Emit(OpCode.Move, fn.UID, VM.RET, register);
 		}
 	}
 	
 	//called by both compileStatement and compileExpression
-	private void CompileFunctionCall(FunctionCall fn, int register = 0)
+	private void CompileFunctionCall(FunctionCall fn)
 	{
 		var name = fn.FunctionName.Value;
+		//todo: check that this never matters in global scope. we never leave, right? e.g., shouldn't affect us linearly, only when entering/exiting calls.
+		
 
 		//compile and put onto the stack in order. 
 		foreach (var arg in fn.Arguments)
@@ -291,8 +315,8 @@ public class Compiler
 		{
 			throw new CompilerException($"Unable to find function {fn.FunctionName}");
 		}
-
-		Emit(OpCode.Call, fn.UID, sub.FrameID, register);
+		
+		Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
 		// if (register != VM.X)
 		// {
 		// 	Emit(OpCode.Move,fn.UID,VM.X, register);
@@ -307,6 +331,8 @@ public class Compiler
 	#region Helpers
 	private InstructionLocation Emit(OpCode code, uint astNodeID, params int[] operands)
 	{
+		TestEmit(code, operands);
+		
 		if (operands.Length == 0)
 		{
 			return Frame.AddInstruction(new Instruction(code, astNodeID));
@@ -323,9 +349,30 @@ public class Compiler
 		}
 	}
 
+	private void TestEmit(OpCode op, params int[] operands)
+	{
+		if (op == OpCode.Return)
+		{
+			if (operands.Length > 0)
+			{
+				var a = operands[0];
+				//todo: write caller-saved tags for these.
+				if (a == VM.A || a == VM.B)
+				{
+					throw new CompilerException("Return statement would clobber non-clobbering registers.");
+				}
+			}
+		}
+	}
+
 	private SubroutineDefinition GetFrame(string name)
 	{
 		return _subroutines[name];
+	}
+
+	private bool ShouldSaveRegisters()
+	{
+		return _frames.Count > 1;
 	}
 	
 	private InstructionLocation TopLocation()

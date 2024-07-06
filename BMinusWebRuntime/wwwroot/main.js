@@ -137,8 +137,10 @@ const reg = [
     document.getElementById("regx"),
     document.getElementById("rega"),
     document.getElementById("regb"),
-    document.getElementById("regc"),
-    document.getElementById("regd"),
+    document.getElementById("regx2"),
+    document.getElementById("rega2"),
+    document.getElementById("regb2"),
+    document.getElementById("regret"),
 ];
 function onRegister(data){
 //highlight the registers that changed on that frame.

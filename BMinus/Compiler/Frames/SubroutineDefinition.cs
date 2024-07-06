@@ -16,7 +16,7 @@ public class SubroutineDefinition
 	public readonly int ArgumentCount;
 	public int LocalCount => Locals.Count;
 	public Instruction LastInstruction => Instructions[^1];
-
+	public bool[] ModifiedRegisters = new bool[8];
 	public SubroutineDefinition(string name,int id, int parameterCount)
 	{
 		this.Name = name;
@@ -84,5 +84,28 @@ public class SubroutineDefinition
 		index = -1;
 		scope = Scope.None;
 		return false;
+	}
+
+	public void RemoveInstruction(InstructionLocation? instructionLoc)
+	{
+		if (instructionLoc == null)
+		{
+			return;
+		}
+		var loc = instructionLoc.Value.InstructionIndex;
+		Instructions.RemoveAt(loc);
+		for (int i = 0; i <= loc; i++)
+		{
+			if (Instructions[i].Op == OpCode.Jump
+			    || Instructions[i].Op == OpCode.JumpZero
+			    || Instructions[i].Op == OpCode.JumpNotZero)
+			{
+				if (Instructions[i].OperandB >= loc)
+				{
+					throw new CompilerException(
+						"Instruction removal would mess up jumps. Fixing that not implemented yet.");
+				}
+			}
+		}
 	}
 }

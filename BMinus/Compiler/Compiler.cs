@@ -20,7 +20,7 @@ public class Compiler
 {
 	public Statement Root;
 	//shorthands for register indices. can move to VM as static.
-
+	private bool[] _dirtyRegisters = new bool[8];
 	//environment
 	private List<string> _globals = new List<string>();
 
@@ -140,29 +140,31 @@ public class Compiler
 			_frames.Push(name);
 			
 			//Save the existing value of registers, to prevent clobbering.
-			if (ShouldSaveRegisters())
-			{
-				Emit(OpCode.SaveRegister, fnDec.UID);
-			}
+			// if (ShouldSaveRegisters())
+			// {
+			// 	Emit(OpCode.SaveRegister, fnDec.UID);
+			// }
 			//in this frame, compile the arguments into gets from the stack (eh?) into local variables (id 0,1,2,etc)
 
 			foreach (var parameter in fnDec.Parameters)
 			{
 				Frame.AddLocal(parameter.Value);
 			}
-			
+
+			SetRegistersClean();
 			Compile(fnDec.Statement);
 
 			
 			if (Frame.Instructions.Count == 0 || Frame.LastInstruction.Op != OpCode.Return)
 			{
-				if (ShouldSaveRegisters())
-				{
-					Emit(OpCode.RestoreRegister, fnDec.UID);
-				}
+				// if (ShouldSaveRegisters())
+				// {
+				// 	Emit(OpCode.RestoreRegister, fnDec.UID);
+				// }
 				Emit(OpCode.Return, fnDec.UID, VM.X); //Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
 			}
 
+			Frame.ModifiedRegisters = (bool[])_dirtyRegisters.Clone();
 			_frames.Pop();
 			return;
 		}else if(statement is GoTo gotoStatement)
@@ -215,10 +217,10 @@ public class Compiler
 				CompileExpression(returnStatement.Value,VM.X);
 			}
 
-			if (ShouldSaveRegisters())
-			{
-				Emit(OpCode.RestoreRegister, returnStatement.UID);
-			}
+			// if (ShouldSaveRegisters())
+			// {
+			// 	Emit(OpCode.RestoreRegister, returnStatement.UID);
+			// }
 			Emit(OpCode.Return, returnStatement.UID, VM.X);
 		}
 	}
@@ -231,6 +233,11 @@ public class Compiler
 	/// <param name="register">which register, or -1 for on the stack.</param>
 	public void CompileExpression(Expression expression, int register = 0)
 	{
+		if (register >= 0)
+		{
+			_dirtyRegisters[register] = true;
+		}
+
 		if(expression is WordLiteral wordLiteral)
 		{
 			Emit(OpCode.SetReg, expression.UID,wordLiteral.ValueAsInt, register);
@@ -285,8 +292,31 @@ public class Compiler
 			throw new CompilerException($"Unble to resolve variable {identifier.Value}. Has it been declared?");
 		}else if (expression is FunctionCall fn)
 		{
-			CompileFunctionCall(fn);
+			//try callER svae instead of callEE save.
+			InstructionLocation? save = null;
+			if (ShouldSaveRegisters())
+			{
+				save = Emit(OpCode.SaveRegister, fn.UID);
+			}
+			SetRegistersClean();
+			CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			var sub = _subroutines[fn.FunctionName.Value];
+			//todo: move to function in subroutine to return "does this modify this/these registers"
+			var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];
+			if (dirty)//registers the caller contract says can't be modified (a or b) have been modified.
+			{
+				if (ShouldSaveRegisters())//does it even matter if it's dirty.
+				{
+					Emit(OpCode.RestoreRegister, fn.UID);
+				}
+			}
+			else
+			{
+				Frame.RemoveInstruction(save);
+			}
+
 			Emit(OpCode.Move, fn.UID, VM.RET, register);
+			_dirtyRegisters[VM.RET] = true;
 		}
 	}
 	
@@ -294,9 +324,7 @@ public class Compiler
 	private void CompileFunctionCall(FunctionCall fn)
 	{
 		var name = fn.FunctionName.Value;
-		//todo: check that this never matters in global scope. we never leave, right? e.g., shouldn't affect us linearly, only when entering/exiting calls.
 		
-
 		//compile and put onto the stack in order. 
 		foreach (var arg in fn.Arguments)
 		{
@@ -317,6 +345,7 @@ public class Compiler
 		}
 		
 		Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
+		_dirtyRegisters[VM.RET] = true;
 		// if (register != VM.X)
 		// {
 		// 	Emit(OpCode.Move,fn.UID,VM.X, register);
@@ -348,7 +377,7 @@ public class Compiler
 			throw new CompilerException("Too many operands");
 		}
 	}
-
+	
 	private void TestEmit(OpCode op, params int[] operands)
 	{
 		if (op == OpCode.Return)
@@ -372,6 +401,8 @@ public class Compiler
 
 	private bool ShouldSaveRegisters()
 	{
+		//todo: check that this never matters in global scope. we never leave, right? e.g., shouldn't affect us linearly, only when entering/exiting calls.
+
 		return _frames.Count > 1;
 	}
 	
@@ -385,6 +416,11 @@ public class Compiler
 		var kvp = _subroutines.First(x => x.Value.FrameID == original.FrameIndex);
 		var f = kvp.Value;
 		f.UpdateOperands(original,newOps);
+	}
+
+	private void SetRegistersClean()
+	{
+		_dirtyRegisters = new bool[8];//all false, unchanged.
 	}
 	
 	#endregion

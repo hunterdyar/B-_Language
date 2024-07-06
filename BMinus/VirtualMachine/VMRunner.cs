@@ -57,7 +57,7 @@ public class VMRunner
 			var c =Compile(program);
 			if (!c)
 			{
-				Console.WriteLine("Compile Error");
+				Console.WriteLine("Compiler Error");
 				return "Compiler Error";
 			}
 			_vm.Run();

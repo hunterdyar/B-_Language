@@ -27,8 +27,8 @@ public class VMRunner
 	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
 	public Action<VMState> OnStateChange;
-	public Action<Frame> OnEnterNewFrame;
-	public Action OnFramePop;
+	public Action<int, Frame> OnEnterNewFrame;
+	public Action<int> OnFramePop;
 
 	public VMRunner()
 	{
@@ -188,21 +188,21 @@ public class VMRunner
 		}
 	}
 
-	public void OnFrameExit()
+	public void OnFrameExit(int newCount)
 	{
 		if (VMState == VMState.Stepping
 		    || VMState == VMState.Ready
 		    || VMState == VMState.Complete) //or 'ready/complete' i think? depending on order?
 		{
-			OnFramePop?.Invoke();
+			OnFramePop?.Invoke(newCount);
 		}
 	}
 
-	public void OnFrameEnter(Frame frame)
+	public void OnFrameEnter(int newCount, Frame frame)
 	{
 		if (VMState == VMState.Stepping || VMState == VMState.Ready || VMState == VMState.Complete)//or 'ready/complete' i think? depending on order?
 		{
-			OnEnterNewFrame?.Invoke(frame);
+			OnEnterNewFrame?.Invoke(newCount, frame);
 		}
 	}
 }

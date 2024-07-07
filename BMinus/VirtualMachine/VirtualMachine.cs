@@ -74,7 +74,7 @@ public class VirtualMachine
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
 		SetState(VMState.Ready);
-		_runner.OnFrameEnter(_frames.Peek());
+		_runner.OnFrameEnter(1,_frames.Peek());
 		_registerDirty = false;
 		_stackDirty = false;
 	}
@@ -220,8 +220,9 @@ public class VirtualMachine
 				f.ReturnRegister = op.OperandB;
 				//this creates room for arguments, but not for locals? should they just get pushed to stack?
 				//_sp += f.LocalVarCount-f.ArgCount;//now the stack has room for locals too, should anything else use the stack.
-				_runner.OnFrameEnter(f);
 				_frames.Push(f);
+				_runner.OnFrameEnter(_frames.Count, f);
+
 				//save the current register data before beginning the call.
 				return;
 			case OpCode.CallBuiltin:
@@ -318,6 +319,9 @@ public class VirtualMachine
 			{
 				Pop();
 			}
+
+			_runner.OnFrameExit(_frames.Count);
+
 			//we're done!
 			if (_frames.Count == 0)
 			{
@@ -325,7 +329,6 @@ public class VirtualMachine
 				return;
 			}
 
-			_runner.OnFrameExit();
 		}
 		else
 		{

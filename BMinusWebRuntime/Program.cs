@@ -157,14 +157,14 @@ public partial class BMinusRuntime
 		return _runner.Env.HeapMemorySegment();
 	}
 
-	private static void OnEnterNewFrame(Frame frame)
+	private static void OnEnterNewFrame(int newCount, Frame frame)
 	{
-		OnFrameEnter(frame.Source.Name,frame.FrameID,frame.Source.Locals.Keys.ToArray());
+		OnFrameEnter(newCount, frame.Source.Name,frame.FrameID,frame.Source.Locals.Keys.ToArray());
 	}
 
 	[JSImport("onFrameEnter", "main.js")]
-	public static partial void OnFrameEnter(string fname, int fid, string[] locals);
+	public static partial void OnFrameEnter(int newCount, string fname, int fid, string[] locals);
 
 	[JSImport("onFramePop","main.js")]
-	public static partial void OnFramePop();
+	public static partial void OnFramePop(int newCount);
 }

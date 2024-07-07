@@ -413,7 +413,7 @@ function onHeapValue(frame, pos, value){
     // frames[frame].items[pos].valDom.innerText = value;
 }
 
-function onFrameEnter(name, id, locals){
+function onFrameEnter(count, name, id, locals){
     createEmptyFrame();
     let frame = frames.length-1;//top of stack.
     if(frame !== 0){
@@ -433,6 +433,9 @@ function onFrameEnter(name, id, locals){
     }
     //how do get value?
     // frames[frame].items[pos].valDom.innerText = value;
+    if(frames.length !== count){
+        console.log("Out of sync with frame count on add. There are "+count+" frames in interpreter, we have "+frames.length,"(note: this is call order?");
+    }
 }
 
 function ClearFrames(){
@@ -441,10 +444,13 @@ function ClearFrames(){
         removeFrame();
     }
 }
-function onFramePop(){
+function onFramePop(count){
     console.log("remove frame");
-    let f = frames.pop();
-    memList.removeChild(f.container);
+    removeFrame();
+    
+    if (count !== frames.length) {
+        console.log("We got out of sync with frame count!");
+    }
 }
 
 function createEmptyFrame(){
@@ -486,7 +492,7 @@ function createEmptyFrame(){
 }
 
 function removeFrame(){
-    let f = frames[frames.length-1];
+    let f = frames.pop();
     memList.removeChild(f.container);
 }
 

@@ -36,7 +36,9 @@ public class VMTests
 			//run test
 			VMRunner runner = new VMRunner();
 			var result = runner.RunProgram(program);
+			Console.Write(runner.VMConsole.ToString());
 			Assert.That(result, Is.EqualTo(expectedOutput));
+			
 	}
 
 	[Test]
@@ -127,6 +129,22 @@ public class VMTests
 		runner.Step();
 		runner.Step();
 
+	}
+	[Test]
+	[TestCase("""
+	          foo(a,b){
+	            auto c;
+	            c = a+b;
+	            auto d;
+	            d = c+c;
+	            return(d);
+	          }
+	          putint(foo(1,3));
+	          """, "8")]
+
+	public static void FuncLocals(string p, string e)
+	{
+		RunTestOnOutput(p, e);
 	}
 	
 	//test that it fails on unclosed a "

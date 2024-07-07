@@ -67,26 +67,21 @@ public class Compiler
 		}else if (statement is Assignment assignment)
 		{
 			var left = assignment.Identifier.Value;
-			//todo: move to resolver function
-			int leftID = 0;
-			if (_globals.Contains(left))
-			{
-				leftID = _globals.IndexOf(left);
-			}
-			else
-			{
-				//check locals, etc etc, in the right order, etc.
-				throw new CompilerException($"Unable to resolve variable named {left}");
-			} 
+			(int id, Scope s) = ResolveVariable(left);
+			
 			CompileExpression(assignment.ValueExpr, VM.X);
 			//if isLocal
-			if (Frame.FrameID == 0)
+			if (s == Scope.Global)
 			{
-				Emit(OpCode.SetGlobal, assignment.UID, leftID, VM.X);
+				Emit(OpCode.SetGlobal, assignment.UID, id, VM.X);
+			}
+			else if(s == Scope.Local)
+			{
+				Emit(OpCode.SetLocal, assignment.UID,id, VM.X);
 			}
 			else
 			{
-				Emit(OpCode.SetLocal, assignment.UID,leftID, VM.X);
+				throw new CompilerException("Bad variable scope. Also, this error should have been caught before here. If you are reading this, sorry. Something went wrong.");
 			}
 
 		}else if (statement is VariableDeclaration varDeclaration)
@@ -225,7 +220,25 @@ public class Compiler
 		}
 	}
 
-	
+	private (int id, Scope s) ResolveVariable(string varName)
+	{
+		if (_subroutines.ContainsKey(varName))
+		{
+			throw new CompilerException($"Can't resolve variable name {varName}, {varName} has been defined as a function.");
+		}
+		if (Frame.TryGetLocal(varName, out var id))
+		{
+			return (id, Scope.Local);
+		}else if (_globals.Contains(varName))
+		{
+			return (_globals.IndexOf(varName), Scope.Global);
+		}
+
+		throw new CompilerException($"Unknown variable {varName}.");
+		return (-1, Scope.None);
+	}
+
+
 	/// <summary>
 	/// Compiles an expression and emits instructions to put it on the stack.
 	/// </summary>
@@ -277,6 +290,7 @@ public class Compiler
 			//get position?
 		}else if (expression is Identifier identifier)
 		{
+			//wait, didn't I write 
 			if (Frame.TryResolveID(identifier.Value, out int index, out Scope scope))
 			{
 				if (scope == Scope.Local || scope == Scope.Argument)
@@ -287,6 +301,15 @@ public class Compiler
 					Emit(OpCode.GetGlobal, expression.UID, index, register);
 				}
 				return;
+			}
+
+			if (Frame.FrameID != 0)
+			{
+				if (_globals.Contains(identifier.Value))
+				{
+					throw new CompilerException(
+						$"External Variables must be declared in functions. Consider adding 'extern {identifier.Value};' to the top of the {Frame.Name} function.");
+				}
 			}
 
 			throw new CompilerException($"Unble to resolve variable {identifier.Value}. Has it been declared?");

@@ -9,7 +9,7 @@ public class SubroutineDefinition
 {
 	public Dictionary<string, int> Locals = new Dictionary<string, int>();
 	public Dictionary<string, int> Externs = new Dictionary<string, int>();
-
+	public List<string> UnknownExterns = new List<string>();
 	public int FrameID;
 	public readonly string Name;
 	public List<Instruction> Instructions = new List<Instruction>();
@@ -80,6 +80,14 @@ public class SubroutineDefinition
 			scope = Scope.Global;
 			return true;
 		}
+		
+		if(UnknownExterns.Contains(name))
+		{
+			//set scope to unknownExtern.
+			index = 9999;
+			scope = Scope.UnknownGlobal;
+			return true;
+		}
 
 		index = -1;
 		scope = Scope.None;
@@ -107,5 +115,12 @@ public class SubroutineDefinition
 				}
 			}
 		}
+	}
+
+	//todo: keep track of location for when we have to go back and update.
+	public void AddUnknownExtern(string declaredExternName)
+	{
+		//todo: prevent multiple adds with an error. extern a, a, a; should be invalid.
+		UnknownExterns.Add(declaredExternName);
 	}
 }

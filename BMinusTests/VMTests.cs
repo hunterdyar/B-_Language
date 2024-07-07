@@ -162,6 +162,24 @@ public class VMTests
 	{
 		RunTestOnOutput(p, e);
 	}
+
+	[Test]
+	[TestCase("""
+	          print(){
+	            extern a;
+	            a = 5;
+	            putint(a);
+	          }
+	          
+	          auto a;
+	          a = 1;
+	          print();
+	          """, "5")]
+
+	public static void UnknownExternTest(string p, string e)
+	{
+		RunTestOnOutput(p, e);
+	}
 	//test that it fails on unclosed a "
 
 	

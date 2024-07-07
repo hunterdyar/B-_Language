@@ -22,9 +22,12 @@ public class Compiler
 	//shorthands for register indices. can move to VM as static.
 	private bool[] _dirtyRegisters = new bool[8];
 	//environment
+	public List<string> Globals => _globals;
 	private List<string> _globals = new List<string>();
 
 	private List<UnknownFunctionCall> _unknownFunctionCalls = new List<UnknownFunctionCall>();
+
+	private HashSet<UnknownExtern> _unknownExterns = new HashSet<UnknownExtern>();
 	//functions, basically
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
 	public Dictionary<string, SubroutineDefinition> Subroutines => _subroutines;
@@ -42,6 +45,7 @@ public class Compiler
 	public void NewCompile(Statement s)
 	{
 		_unknownFunctionCalls.Clear();
+		_unknownExterns.Clear();
 		_frames.Clear();
 		_labels.Clear();
 		_subroutines.Clear();
@@ -55,6 +59,11 @@ public class Compiler
 		foreach (var unknownFn in _unknownFunctionCalls)
 		{
 			unknownFn.TryToFindCallAgain(this);
+		}
+
+		foreach (var unknownExtern in _unknownExterns)
+		{
+			unknownExtern.TryToFindExternAgain(this);
 		}
 	}
 	
@@ -86,6 +95,10 @@ public class Compiler
 			else if(s == Scope.Local)
 			{
 				Emit(OpCode.SetLocal, assignment.UID,id, VM.X);
+			}else if (s == Scope.UnknownGlobal)
+			{
+				var save = Emit(OpCode.SetGlobal, assignment.UID, 9999, VM.X);
+				_unknownExterns.Add(new UnknownExtern(left, VM.X, save, Frame));
 			}
 			else
 			{
@@ -115,16 +128,8 @@ public class Compiler
 				{
 					throw new CompilerException($"Extern keyword is invalid at top level.");
 				}
-
-				int index = _globals.IndexOf(var.Value);
-				if (index != -1)
-				{
-					Frame.AddExtern(var.Value, index);
-				}
-				else
-				{
-					throw new CompilerException($"Unable to resolve extern {var.Value}");
-				}
+				
+				Frame.AddUnknownExtern(var.Value);
 			}
 		}else if (statement is FunctionCall fn)
 		{
@@ -237,6 +242,9 @@ public class Compiler
 		if (Frame.TryGetLocal(varName, out var id))
 		{
 			return (id, Scope.Local);
+		}else if(Frame.UnknownExterns.Contains(varName))
+		{
+			return (9999, Scope.UnknownGlobal);
 		}else if (_globals.Contains(varName))
 		{
 			return (_globals.IndexOf(varName), Scope.Global);
@@ -301,13 +309,19 @@ public class Compiler
 			//wait, didn't I write 
 			if (Frame.TryResolveID(identifier.Value, out int index, out Scope scope))
 			{
+				//todo: is this the right order?
 				if (scope == Scope.Local || scope == Scope.Argument)
 				{
 					Emit(OpCode.GetLocal, expression.UID, index, register);
 				}else if (scope == Scope.Global)
 				{
 					Emit(OpCode.GetGlobal, expression.UID, index, register);
+				}else if (scope == Scope.UnknownGlobal)
+				{
+					var location = Emit(OpCode.GetGlobal, expression.UID, index, register);
+					_unknownExterns.Add(new UnknownExtern(identifier.Value, register, location, Frame));
 				}
+				
 				return;
 			}
 

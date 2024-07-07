@@ -388,9 +388,32 @@ function GetAndRenderAllInstructions(){
 
 
 var memList = document.getElementById("frameList");
+const heap = document.getElementById("heap");
 var frames = [];
+var memoryBytes = [];
 function onHeapValue(pos, value){
-   console.log(pos,value);
+    //increase memory to be large enough if needed.
+    let neededsize = pos+value.length -1;
+    while (neededsize > memoryBytes.length) {
+        memoryBytes.push(0);
+    }
+    
+    for (let i=0;i<value.length;i++){
+        memoryBytes[pos+i] = value[i];
+    }
+   console.log(memoryBytes);
+    //todo: this is horrible and slow and unhelpful.
+    heap.innerHTML="";
+    for(let j=0;j<memoryBytes.length;j++){
+        heap.innerHTML+="<span>"+(memoryBytes[j].toString(16))+" "
+        if((j+1)%4===0){
+            heap.innerHTML+=" | ";
+        }
+        if((j+1)%16===0){
+            heap.innerHTML+="<br />";
+        }
+        heap.innerHTML+="</span>";
+    }
 }
 
 function onFrameEnter(count, name, id, locals){
@@ -425,7 +448,6 @@ function ClearFrames(){
     }
 }
 function onFramePop(count){
-    console.log("remove frame");
     removeFrame();
     
     if (count !== frames.length) {

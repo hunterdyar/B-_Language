@@ -254,6 +254,8 @@ function onStack(ins, opCount){
     }
 }
 
+
+
 const tree = document.getElementById("syntaxTree");
 //todo: call from a "onCompiled"
 function RenderAST(){

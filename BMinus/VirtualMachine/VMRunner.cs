@@ -96,6 +96,8 @@ public class VMRunner
 			_env = _vm.Env;
 
 			OnState(VMState.Ready);
+			OnStackChange?.Invoke(_vm.GetStackArray(10), _vm.CurrentStackSize);
+			
 			return true;
 		}
 		catch (LexerException e)

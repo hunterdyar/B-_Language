@@ -25,6 +25,7 @@ public partial class BMinusRuntime
 		_runner.OnErrorThrow += OnErrorThrown;
 		_runner.OnEnterNewFrame += OnEnterNewFrame;
 		_runner.OnFramePop += OnFramePop;
+		_runner.OnHeapValueUpdatedEvent += OnHeapValChange;
 	}
 
 	[JSExport]
@@ -167,4 +168,7 @@ public partial class BMinusRuntime
 
 	[JSImport("onFramePop","main.js")]
 	public static partial void OnFramePop(int newCount);
+
+	[JSImport("onHeapValueChange", "main.js")]
+	public static partial void OnHeapValChange(int pointer, byte[] value);
 }

@@ -18,7 +18,6 @@ public class Environment
 	private VMRunner _runner;
 	public readonly Statement AST;
 
-	public Action<int, int, byte[]> OnValueUpdated;
 	public Environment(VMRunner runner,Statement root, Dictionary<string,int> globals, Frame[] framePrototypes)
 	{
 		AST = root;
@@ -40,7 +39,7 @@ public class Environment
 	public void SetGlobal(int pos, int val)
 	{
 		var d = _memory.SetHeapValue(pos,val);
-		_runner.OnValueUpated(0,pos,d);
+		_runner.OnHeapValueUpdated(pos,d);
 	}
 
 

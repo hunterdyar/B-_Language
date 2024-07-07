@@ -29,6 +29,7 @@ public class VMRunner
 	public Action<VMState> OnStateChange;
 	public Action<int, Frame> OnEnterNewFrame;
 	public Action<int> OnFramePop;
+	public Action<int,byte[]> OnHeapValueUpdatedEvent;
 
 	public VMRunner()
 	{
@@ -181,10 +182,11 @@ public class VMRunner
 		//todo: unset any syntax tree.
 	}
 
-	public void OnValueUpated(int i, int pos, byte[] bytes)
+	public void OnHeapValueUpdated(int pos, byte[] bytes)
 	{
 		if (_vm.State == VMState.Stepping || _vm.State == VMState.Complete)
 		{
+			OnHeapValueUpdatedEvent?.Invoke(pos,bytes);
 		}
 	}
 

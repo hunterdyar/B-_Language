@@ -22,7 +22,7 @@ setModuleImports('main.js', {
     onStack: onStack,
     onState: onState,
     onError: onError,
-    onHeapValue: onHeapValue,
+    onHeapValueChange: onHeapValue,
     onFrameEnter: onFrameEnter,
     onFramePop: onFramePop,
 });
@@ -389,31 +389,8 @@ function GetAndRenderAllInstructions(){
 
 var memList = document.getElementById("frameList");
 var frames = [];
-function onHeapValue(frame, pos, value){
-   //console.log(frame,pos,value);
-
-    //console.log("before", frames);
-
-    //create if we need it.
-    // if(frames.length-1 < frame){
-    //     createEmptyFrame();
-    // }
-    // console.log("after",frames);
-    //create rows while we need them.
-    // while(frames[frame].items.length-1 < pos){
-    //     let item = {};
-    //     item.rowDom = document.createElement("tr");
-    //     item.nameDom = document.createElement("td");
-    //     item.nameDom.innerText = String(frames[frame].items.length);
-    //     item.valDom = document.createElement("td");
-    //     item.rowDom.append(item.nameDom);
-    //     item.rowDom.append(item.valDom);
-    //    
-    //     frames[frame].tbody.append(item.rowDom);
-    //     frames[frame].items.push(item);
-    // }
-    //
-    // frames[frame].items[pos].valDom.innerText = value;
+function onHeapValue(pos, value){
+   console.log(pos,value);
 }
 
 function onFrameEnter(count, name, id, locals){

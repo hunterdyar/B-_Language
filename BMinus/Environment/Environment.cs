@@ -19,7 +19,7 @@ public class Environment
 	public readonly Statement AST;
 
 	public Action<int, int, byte[]> OnValueUpdated;
-	public Environment(VMRunner runner,Statement root, List<string> globals, Frame[] framePrototypes)
+	public Environment(VMRunner runner,Statement root, Dictionary<string,int> globals, Frame[] framePrototypes)
 	{
 		AST = root;
 		_memory = new MemoryManager(globals);

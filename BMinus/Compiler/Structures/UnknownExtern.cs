@@ -20,8 +20,7 @@ public class UnknownExtern
 
 	public void TryToFindExternAgain(Compiler compiler)
 	{
-		int index = compiler.Globals.IndexOf(externName);
-		if (index != -1)
+		if (compiler.Globals.TryGetValue(externName, out var index))
 		{
 			//Emit(OpCode.GetGlobal, expression.UID, index, register);
 			callingFrame.UpdateOperands(_instructionLocation, index, register);

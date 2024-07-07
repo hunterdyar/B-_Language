@@ -22,8 +22,8 @@ public class Compiler
 	//shorthands for register indices. can move to VM as static.
 	private bool[] _dirtyRegisters = new bool[8];
 	//environment
-	public List<string> Globals => _globals;
-	private List<string> _globals = new List<string>();
+	public Dictionary<string, int> Globals => _globals;
+	private Dictionary<string, int> _globals = new Dictionary<string, int>();
 
 	private List<UnknownFunctionCall> _unknownFunctionCalls = new List<UnknownFunctionCall>();
 
@@ -111,8 +111,9 @@ public class Compiler
 			{
 				if (Frame.FrameID == 0)
 				{
-					Frame.AddExtern(identifier.Value, _globals.Count);
-					_globals.Add(identifier.Value);
+					int nextGlobalAddress = _globals.Count * 4;
+					Frame.AddExtern(identifier.Value, nextGlobalAddress);
+					_globals.Add(identifier.Value, nextGlobalAddress);
 				}
 				else
 				{
@@ -245,9 +246,11 @@ public class Compiler
 		}else if(Frame.UnknownExterns.Contains(varName))
 		{
 			return (9999, Scope.UnknownGlobal);
-		}else if (_globals.Contains(varName))
+		}else if (_globals.TryGetValue(varName, out id))
 		{
-			return (_globals.IndexOf(varName), Scope.Global);
+			//todo: move this to GetAndMarkUsed in memory manager, or whathaveyou.
+			//todo: consolidate logic for this and 
+			return (id, Scope.Global);
 		}
 
 		throw new CompilerException($"Unknown variable {varName}.");
@@ -327,7 +330,7 @@ public class Compiler
 
 			if (Frame.FrameID != 0)
 			{
-				if (_globals.Contains(identifier.Value))
+				if (_globals.ContainsKey(identifier.Value))
 				{
 					throw new CompilerException(
 						$"External Variables must be declared in functions. Consider adding 'extern {identifier.Value};' to the top of the {Frame.Name} function.");

@@ -24,9 +24,11 @@ public class Compiler
 	//environment
 	private List<string> _globals = new List<string>();
 
+	private List<UnknownFunctionCall> _unknownFunctionCalls = new List<UnknownFunctionCall>();
 	//functions, basically
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
-	
+	public Dictionary<string, SubroutineDefinition> Subroutines => _subroutines;
+
 	private readonly Dictionary<string,SubroutineDefinition> _subroutines = new Dictionary<string, SubroutineDefinition>();
 	private readonly Dictionary<string, InstructionLocation> _labels = new Dictionary<string, InstructionLocation>();
 	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
@@ -39,6 +41,7 @@ public class Compiler
 	}
 	public void NewCompile(Statement s)
 	{
+		_unknownFunctionCalls.Clear();
 		_frames.Clear();
 		_labels.Clear();
 		_subroutines.Clear();
@@ -48,6 +51,11 @@ public class Compiler
 		_subroutines.Add("", new SubroutineDefinition("", 0,0)); //the global frame.
 		_frames.Push("");
 		Compile(Root);
+
+		foreach (var unknownFn in _unknownFunctionCalls)
+		{
+			unknownFn.TryToFindCallAgain(this);
+		}
 	}
 	
 	public void Compile(Statement statement)
@@ -364,10 +372,14 @@ public class Compiler
 
 		if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition? sub))
 		{
-			throw new CompilerException($"Unable to find function {fn.FunctionName}");
+			var save = Emit(OpCode.Call, fn.UID, 99999, VM.RET);
+			_unknownFunctionCalls.Add(new UnknownFunctionCall(save,fn.FunctionName.Value,Frame));
 		}
-		
-		Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
+		else
+		{
+			Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
+		}
+
 		_dirtyRegisters[VM.RET] = true;
 		// if (register != VM.X)
 		// {

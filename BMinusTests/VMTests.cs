@@ -146,7 +146,22 @@ public class VMTests
 	{
 		RunTestOnOutput(p, e);
 	}
-	
+
+	[Test]
+	[TestCase("""
+	          auto a;
+	          a = 1;
+	          print(a);
+	          
+	          print(c){
+	            putint(c);
+	          }
+	          """, "1")]
+
+	public static void UnknownFuncTest(string p, string e)
+	{
+		RunTestOnOutput(p, e);
+	}
 	//test that it fails on unclosed a "
 
 	

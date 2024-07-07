@@ -459,7 +459,7 @@ public class Compiler
 		var frames = new Frame[_subroutines.Count];
 		foreach (var subroutine in _subroutines)
 		{
-			frames[subroutine.Value.FrameID] = new Frame(subroutine.Value);
+			frames[subroutine.Value.FrameID] = new Frame(_runner,subroutine.Value);
 		}
 
 		if (frames.Any(x => x == null))

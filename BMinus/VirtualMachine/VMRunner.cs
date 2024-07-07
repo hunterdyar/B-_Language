@@ -27,6 +27,7 @@ public class VMRunner
 	public Action<Instruction, (int,int)> OnCurrentInstructionChange { get; set; }
 	public Action<int[],int> OnStackChange { get; set; }
 	public Action<VMState> OnStateChange;
+	public Action<Frame> OnEnterNewFrame;
 	public Action OnFramePop;
 
 	public VMRunner()
@@ -97,7 +98,6 @@ public class VMRunner
 
 			OnState(VMState.Ready);
 			OnStackChange?.Invoke(_vm.GetStackArray(10), _vm.CurrentStackSize);
-			
 			return true;
 		}
 		catch (LexerException e)
@@ -190,6 +190,19 @@ public class VMRunner
 
 	public void OnFrameExit()
 	{
-		OnFramePop?.Invoke();
+		if (VMState == VMState.Stepping
+		    || VMState == VMState.Ready
+		    || VMState == VMState.Complete) //or 'ready/complete' i think? depending on order?
+		{
+			OnFramePop?.Invoke();
+		}
+	}
+
+	public void OnFrameEnter(Frame frame)
+	{
+		if (VMState == VMState.Stepping || VMState == VMState.Ready || VMState == VMState.Complete)//or 'ready/complete' i think? depending on order?
+		{
+			OnEnterNewFrame?.Invoke(frame);
+		}
 	}
 }

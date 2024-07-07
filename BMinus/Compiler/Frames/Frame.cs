@@ -1,9 +1,12 @@
-﻿namespace BMinus.Compiler;
+﻿using BMinus.VirtualMachine;
+
+namespace BMinus.Compiler;
 
 //aka runtime subroutine
 //This can be rewritten without making copies of the instructions, but just runtime, holding the IP and environment.subroutines[frameID].instruction
 public class Frame
 {
+	public SubroutineDefinition Source => _source;
 	private SubroutineDefinition _source;
 	public int FrameID;//this indexes to function names.
 	public List<Instruction> Instructions => _source.Instructions;
@@ -14,17 +17,21 @@ public class Frame
 
 	public int ArgCount;
 	public int LocalVarCount;
-	public Frame()
+
+	private VMRunner _runner;//static reference instead?
+	public Frame(VMRunner runner)
 	{
 		FrameID = -1;
 		_stackBasePos = 0;
 		ArgCount = 0;
 		LocalVarCount = 0;
 		ReturnRegister = 0;
+		_runner = runner;
 	}
 
-	public Frame(SubroutineDefinition prototype)
+	public Frame(VMRunner runner, SubroutineDefinition prototype)
 	{
+		_runner = runner;
 		_source = prototype;
 		FrameID = prototype.FrameID;
 		IP = -1;
@@ -35,7 +42,7 @@ public class Frame
 
 	public Frame Clone()
 	{
-		return new Frame()
+		return new Frame(_runner)
 		{
 			_source = this._source,
 			FrameID = this.FrameID,

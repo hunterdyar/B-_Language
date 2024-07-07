@@ -23,6 +23,8 @@ setModuleImports('main.js', {
     onState: onState,
     onError: onError,
     onHeapValue: onHeapValue,
+    onFrameEnter: onFrameEnter,
+    onFramePop: onFramePop,
 });
 
 const config = getConfig();
@@ -31,13 +33,14 @@ exports.BMinusRuntime.Init();
 
 document.getElementById('execute').onclick = ()=>{
     let p = editor.state.doc.toString();
-    clearRegister();
+    clearOutput();
     //todo: if already compiled, dont do this again (current state is ready)
     var success = exports.BMinusRuntime.Compile(p);
     
     if(success) {
         exports.BMinusRuntime.RunProgram(p);
         RenderAST();
+        GetAndRenderAllInstructions();
     }
 };
 
@@ -170,6 +173,7 @@ function clearRegister(){
 }
 function clearOutput(){
     clearRegister();
+    ClearFrames();
     output.innerHTML = "";
 }
 
@@ -191,7 +195,7 @@ function onInstruction(ins){
     instructionOutput[3].innerText = getTooltip(ins[0]);
     //i hate that we parse this. maybe two function calls that get sent back to back. "on new instruction" (3 strings) and "on new instruction location" (3 ints)
    // let astID = Number.parseInt(ins[3]);
-    let frameProto = Number.parseInt(ins[4]);
+    let frameProto = Number.parseInt(ins[4]);//todo make this frameID or also pass that in?
     //let insloc = Number.parseInt(ins[5]);
     
     if(ast != null){
@@ -318,6 +322,7 @@ function setActiveInstructionList(index){
     if(currentActiveFrameLink != null) {
         currentActiveFrameLink.classList.add("active");
     }else{
+        //todo: oops, we're passing in the DEPTH not the ID.
         console.log("null frame link - ",index);
     }
 
@@ -382,46 +387,79 @@ function GetAndRenderAllInstructions(){
 var memList = document.getElementById("frameList");
 var frames = [];
 function onHeapValue(frame, pos, value){
-    console.log(frame,pos,value);
+   //console.log(frame,pos,value);
 
-    console.log("before", frames);
+    //console.log("before", frames);
 
     //create if we need it.
-    if(frames.length-1 < frame){
-        createEmptyFrame();
-    }
-    console.log("after",frames);
+    // if(frames.length-1 < frame){
+    //     createEmptyFrame();
+    // }
+    // console.log("after",frames);
     //create rows while we need them.
-    while(frames[frame].items.length-1 < pos){
+    // while(frames[frame].items.length-1 < pos){
+    //     let item = {};
+    //     item.rowDom = document.createElement("tr");
+    //     item.nameDom = document.createElement("td");
+    //     item.nameDom.innerText = String(frames[frame].items.length);
+    //     item.valDom = document.createElement("td");
+    //     item.rowDom.append(item.nameDom);
+    //     item.rowDom.append(item.valDom);
+    //    
+    //     frames[frame].tbody.append(item.rowDom);
+    //     frames[frame].items.push(item);
+    // }
+    //
+    // frames[frame].items[pos].valDom.innerText = value;
+}
+
+function onFrameEnter(name, id, locals){
+    createEmptyFrame();
+    let frame = frames.length-1;//top of stack.
+    if(frame !== 0){
+        frames[frame].title.innerText = frame+" - "+name;
+    }
+    for (let i = 0;i<locals.length;i++){
         let item = {};
         item.rowDom = document.createElement("tr");
         item.nameDom = document.createElement("td");
-        item.nameDom.innerText = String(frames[frame].items.length);
+        item.nameDom.innerText = String(locals[i]);
         item.valDom = document.createElement("td");
         item.rowDom.append(item.nameDom);
         item.rowDom.append(item.valDom);
-        
+
         frames[frame].tbody.append(item.rowDom);
         frames[frame].items.push(item);
     }
-
-    frames[frame].items[pos].valDom.innerText = value;
+    //how do get value?
+    // frames[frame].items[pos].valDom.innerText = value;
 }
 
+function ClearFrames(){
+    //todo: there's a better way to do this lol.
+    while(frames.length > 0){
+        removeFrame();
+    }
+}
+function onFramePop(){
+    console.log("remove frame");
+    let f = frames.pop();
+    memList.removeChild(f.container);
+}
 
 function createEmptyFrame(){
     let f = {};
     f.container = document.createElement("div");
     f.container.classList.add("fill");
     //title
-    let title = document.createElement("h6");
-    title.classList.add("small");
+    f.title = document.createElement("h6");
+    f.title.classList.add("small");
     if(frames.length === 0){
-        title.innerText = "Globals";
+        f.title.innerText = "Globals";
     }else{
-        title.innerText = "Frame "+frames.length+1;
+        f.title.innerText = "Frame "+frames.length+1;
     }
-    f.container.append(title);
+    f.container.append(f.title);
     //table
     let table = document.createElement("table");
     f.container.append(table);

@@ -74,6 +74,7 @@ public class VirtualMachine
 		_frames = new Stack<Frame>();
 		_frames.Push(env.GetFramePrototype(0));
 		SetState(VMState.Ready);
+		_runner.OnFrameEnter(_frames.Peek());
 		_registerDirty = false;
 		_stackDirty = false;
 	}
@@ -214,11 +215,12 @@ public class VirtualMachine
 			case OpCode.Call:
 				//todo: rename GetFramePrototype here. should create frame from that instead of cloning.
 				var prototype = Env.GetFramePrototype(op.OperandA);
-				var f = prototype.Clone();
+				var f = prototype.Clone();//todo: this was written before i split runtime and compile time (frame/subroutine definition. keep subroutines instead of frames in VM)
 				f.SetBasePointer(_sp-f.ArgCount);
 				f.ReturnRegister = op.OperandB;
 				//this creates room for arguments, but not for locals? should they just get pushed to stack?
 				//_sp += f.LocalVarCount-f.ArgCount;//now the stack has room for locals too, should anything else use the stack.
+				_runner.OnFrameEnter(f);
 				_frames.Push(f);
 				//save the current register data before beginning the call.
 				return;
@@ -322,6 +324,8 @@ public class VirtualMachine
 				SetState(VMState.Complete);
 				return;
 			}
+
+			_runner.OnFrameExit();
 		}
 		else
 		{

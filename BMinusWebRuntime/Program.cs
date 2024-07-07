@@ -23,6 +23,8 @@ public partial class BMinusRuntime
 		_runner.OnStackChange += OnStackChange;
 		_runner.OnStateChange += (s) => OnStatehange((int)s);
 		_runner.OnErrorThrow += OnErrorThrown;
+		_runner.OnEnterNewFrame += OnEnterNewFrame;
+		_runner.OnFramePop += OnFramePop;
 	}
 
 	[JSExport]
@@ -154,4 +156,15 @@ public partial class BMinusRuntime
 	{
 		return _runner.Env.HeapMemorySegment();
 	}
+
+	private static void OnEnterNewFrame(Frame frame)
+	{
+		OnFrameEnter(frame.Source.Name,frame.FrameID,frame.Source.Locals.Keys.ToArray());
+	}
+
+	[JSImport("onFrameEnter", "main.js")]
+	public static partial void OnFrameEnter(string fname, int fid, string[] locals);
+
+	[JSImport("onFramePop","main.js")]
+	public static partial void OnFramePop();
 }

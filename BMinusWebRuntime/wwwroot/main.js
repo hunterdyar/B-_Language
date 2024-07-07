@@ -227,10 +227,13 @@ function onInstruction(ins){
         if (!inrow.classList.contains('changed')) {
             inrow.classList.add('changed');
         }
-        inrow.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
+        if(currentActiveFramePage != null) {
+            currentActiveFramePage.scrollTo({
+                top: inrow.offsetTop,
+                behavior: 'smooth'
+            });
+        }
+        
     }
 }
 function getTooltip(name)

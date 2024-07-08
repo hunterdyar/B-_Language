@@ -38,7 +38,6 @@ public class VMTests
 			var result = runner.RunProgram(program);
 			Console.Write(runner.VMConsole.ToString());
 			Assert.That(result, Is.EqualTo(expectedOutput));
-			
 	}
 
 	[Test]
@@ -175,6 +174,19 @@ public class VMTests
 	          a = 1;
 	          print();
 	          """, "5")]
+
+	[TestCase("""
+	          auto a;
+	          a = 2;
+	          a = double(1) + double(a);
+	          double(f){
+	            auto c,d;
+	            c = f;
+	            d = f;
+	            return(c+d);
+	          }
+	          putint(a);
+	          """, "6")]
 
 	public static void UnknownExternTest(string p, string e)
 	{

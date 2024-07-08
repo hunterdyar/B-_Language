@@ -348,6 +348,9 @@ public class Compiler
 			}
 			SetRegistersClean();
 			CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			
+			//todo: somehow need to check this during the 'unknown' step.  
+			
 			var sub = _subroutines[fn.FunctionName.Value];
 			//todo: move to function in subroutine to return "does this modify this/these registers"
 			var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];

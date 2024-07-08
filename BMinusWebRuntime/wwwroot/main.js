@@ -172,10 +172,14 @@ function clearRegister(){
     }
 }
 function clearOutput(){
+    //clear components
     clearRegister();
     ClearFrames();
+    //clear output
     output.innerHTML = "";
-    heap.innerHTML = "";
+    //clear memory 
+    hexview.data = [];
+    hexview.renderDom();
 }
 
 const instructionOutput = [
@@ -388,8 +392,10 @@ function GetAndRenderAllInstructions(){
 //MEMORY
 
 
+const hexview = new HexEditor(document.getElementById("heap"))
+hexview.readonly = true;
 var memList = document.getElementById("frameList");
-const heap = document.getElementById("heap");
+// const heap = document.getElementById("heap");
 var frames = [];
 var memoryBytes = [];
 function onHeapValue(pos, value){
@@ -398,21 +404,13 @@ function onHeapValue(pos, value){
     while (neededsize > memoryBytes.length) {
         memoryBytes.push(0);
     }
+    for (let i = 0; i < value.length; i++) {
+        memoryBytes[pos + i] = value[i];
+    }
     
-    for (let i=0;i<value.length;i++){
-        memoryBytes[pos+i] = value[i];
-    }
-   console.log(memoryBytes);
-    //todo: this is horrible and slow and unhelpful.
-    heap.innerHTML="";
-    for(let j=0;j<memoryBytes.length;j+=4){
-        heap.innerHTML+="<div class=\"row\">"
-            + "<span>"+ (memoryBytes[j].toString(2))+"</span>"
-            + "<span>" + (memoryBytes[j+1].toString(2)) + "</span>"
-            + "<span>" + (memoryBytes[j+2].toString(2)) + "</span>"
-            + "<span>" + (memoryBytes[j+3].toString(2)) + "</span>"
-       c+="</div>";
-    }
+    const data = new Uint8Array(memoryBytes)
+    hexview.data = data
+    hexview.renderDom()
 }
 
 function onFrameEnter(count, name, id, locals){

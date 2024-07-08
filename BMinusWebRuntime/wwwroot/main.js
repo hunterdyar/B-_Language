@@ -175,6 +175,7 @@ function clearOutput(){
     clearRegister();
     ClearFrames();
     output.innerHTML = "";
+    heap.innerHTML = "";
 }
 
 const instructionOutput = [
@@ -404,15 +405,13 @@ function onHeapValue(pos, value){
    console.log(memoryBytes);
     //todo: this is horrible and slow and unhelpful.
     heap.innerHTML="";
-    for(let j=0;j<memoryBytes.length;j++){
-        heap.innerHTML+="<span>"+(memoryBytes[j].toString(16))+" "
-        if((j+1)%4===0){
-            heap.innerHTML+=" | ";
-        }
-        if((j+1)%16===0){
-            heap.innerHTML+="<br />";
-        }
-        heap.innerHTML+="</span>";
+    for(let j=0;j<memoryBytes.length;j+=4){
+        heap.innerHTML+="<div class=\"row\">"
+            + "<span>"+ (memoryBytes[j].toString(2))+"</span>"
+            + "<span>" + (memoryBytes[j+1].toString(2)) + "</span>"
+            + "<span>" + (memoryBytes[j+2].toString(2)) + "</span>"
+            + "<span>" + (memoryBytes[j+3].toString(2)) + "</span>"
+       c+="</div>";
     }
 }
 

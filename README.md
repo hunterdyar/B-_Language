@@ -41,4 +41,5 @@ Types cause a lot of headaches and annoyances for learners, and why they exist i
 
 ---
 *License Information*  
-[Error](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:error:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e8eaed&icon.query=error) and [Chevron Right](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:chevron_right:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e8eaed) icons from [Google Fonts Material Icons](https://fonts.google.com/icons)
+[Error](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:error:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e8eaed&icon.query=error) and [Chevron Right](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:chevron_right:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e8eaed) icons from [Google Fonts Material Icons](https://fonts.google.com/icons).  
+[hexedit-js](https://github.com/dnlmlr/hexedit-js) by [dnlmlr](https://github.com/dnlmlr) (MIT).

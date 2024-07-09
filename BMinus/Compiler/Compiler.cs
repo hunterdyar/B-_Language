@@ -18,10 +18,10 @@ namespace BMinus.Compiler;
 
 public class Compiler
 {
+	//todo: i don't like that this is static, would rather inject reference to compiler instance.
+	public static Action<int, int> OnInstructionRemoved;
 	public Statement Root;
-	//shorthands for register indices. can move to VM as static.
-	private bool[] _dirtyRegisters = new bool[8];
-	//environment
+		//environment
 	public Dictionary<string, int> Globals => _globals;
 	private Dictionary<string, int> _globals = new Dictionary<string, int>();
 
@@ -160,7 +160,6 @@ public class Compiler
 				Frame.AddLocal(parameter.Value);
 			}
 
-			SetRegistersClean();
 			Compile(fnDec.Statement);
 
 			
@@ -173,7 +172,6 @@ public class Compiler
 				Emit(OpCode.Return, fnDec.UID, VM.X); //Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
 			}
 
-			Frame.ModifiedRegisters = (bool[])_dirtyRegisters.Clone();
 			_frames.Pop();
 			return;
 		}else if(statement is GoTo gotoStatement)
@@ -267,7 +265,7 @@ public class Compiler
 	{
 		if (register >= 0)
 		{
-			_dirtyRegisters[register] = true;
+			Frame.ModifiedRegisters[register] = true;
 		}
 
 		if(expression is WordLiteral wordLiteral)
@@ -346,17 +344,12 @@ public class Compiler
 			{
 				save = Emit(OpCode.SaveRegister, fn.UID);
 			}
-			SetRegistersClean();
 			CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			var call = Frame.GetTopInstructionLocation();
 			
 			//todo: somehow need to check this during the 'unknown' step.  
-			//todo: move dirtyRegisters to subroutine definition
-
 			if (_subroutines.TryGetValue(fn.FunctionName.Value, out var sub))
 			{
-
-
-				//todo: move to function in subroutine to return "does this modify this/these registers"
 				var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];
 				if (dirty) //registers the caller contract says can't be modified (a or b) have been modified.
 				{
@@ -372,12 +365,16 @@ public class Compiler
 			}
 			else
 			{
-				throw new Exception(
-					"Function calls must be declared before they can be used as expressions. This is a bug.");
+				//todo: if it's a builtin, ignore this
+				
+				//we don't know if we oidify the registers or not. we will include both save and restore in the unknown.
+				var restore = Emit(OpCode.RestoreRegister, fn.UID);
+				_unknownFunctionCalls.Add(new UnknownFunctionCall(call,fn.FunctionName.Value,Frame,save,restore));
+				
 			}
 
 			Emit(OpCode.Move, fn.UID, VM.RET, register);
-			_dirtyRegisters[VM.RET] = true;
+			Frame.ModifiedRegisters[VM.RET] = true;
 		}
 	}
 	
@@ -394,8 +391,8 @@ public class Compiler
 
 		if (Builtins.IsBuiltin(name, out var index))
 		{
-			Emit(OpCode.CallBuiltin, fn.UID, index, fn.Arguments.Length);
-			return;
+			 Emit(OpCode.CallBuiltin, fn.UID, index, fn.Arguments.Length);
+			 return;
 		}
 
 		//getFunctionID = fn.FunctionName;
@@ -407,10 +404,10 @@ public class Compiler
 		}
 		else
 		{
-			Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
+			var call = Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
 		}
 
-		_dirtyRegisters[VM.RET] = true;
+		Frame.ModifiedRegisters[VM.RET] = true;
 		// if (register != VM.X)
 		// {
 		// 	Emit(OpCode.Move,fn.UID,VM.X, register);
@@ -481,11 +478,6 @@ public class Compiler
 		var kvp = _subroutines.First(x => x.Value.FrameID == original.FrameIndex);
 		var f = kvp.Value;
 		f.UpdateOperands(original,newOps);
-	}
-
-	private void SetRegistersClean()
-	{
-		_dirtyRegisters = new bool[8];//all false, unchanged.
 	}
 	
 	#endregion

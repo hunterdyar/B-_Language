@@ -350,20 +350,30 @@ public class Compiler
 			CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
 			
 			//todo: somehow need to check this during the 'unknown' step.  
-			
-			var sub = _subroutines[fn.FunctionName.Value];
-			//todo: move to function in subroutine to return "does this modify this/these registers"
-			var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];
-			if (dirty)//registers the caller contract says can't be modified (a or b) have been modified.
+			//todo: move dirtyRegisters to subroutine definition
+
+			if (_subroutines.TryGetValue(fn.FunctionName.Value, out var sub))
 			{
-				if (ShouldSaveRegisters())//does it even matter if it's dirty.
+
+
+				//todo: move to function in subroutine to return "does this modify this/these registers"
+				var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];
+				if (dirty) //registers the caller contract says can't be modified (a or b) have been modified.
 				{
-					Emit(OpCode.RestoreRegister, fn.UID);
+					if (ShouldSaveRegisters()) //does it even matter if it's dirty.
+					{
+						Emit(OpCode.RestoreRegister, fn.UID);
+					}
+				}
+				else
+				{
+					Frame.RemoveInstruction(save);
 				}
 			}
 			else
 			{
-				Frame.RemoveInstruction(save);
+				throw new Exception(
+					"Function calls must be declared before they can be used as expressions. This is a bug.");
 			}
 
 			Emit(OpCode.Move, fn.UID, VM.RET, register);

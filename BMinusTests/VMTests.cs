@@ -179,6 +179,7 @@ public class VMTests
 	          auto a;
 	          a = 2;
 	          a = double(1) + double(a);
+	          
 	          double(f){
 	            auto c,d;
 	            c = f;

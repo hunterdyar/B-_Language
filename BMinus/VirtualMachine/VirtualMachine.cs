@@ -362,6 +362,10 @@ public class VirtualMachine
 		{
 			_sp--;
 			_stackDirty = true;
+			if (_sp < 0)
+			{
+				throw new VMException("SHIT");
+			}
 			return _stack[_sp];
 		}
 

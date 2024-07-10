@@ -18,7 +18,7 @@ public struct InstructionLocation
 		{
 			if (insIndex < this.InstructionIndex)
 			{
-				return new InstructionLocation(frameId, InstructionIndex--);
+				return new InstructionLocation(frameId, InstructionIndex-1);
 			}else if (insIndex == InstructionIndex)
 			{
 				return null;

@@ -54,8 +54,10 @@ public abstract class BinOp : Expression
 				return new CompareOp(left, Comparison.LessThan, right);
 			case "<=":
 				return new CompareOp(left, Comparison.LessThanOrEqual, right);
+			case "!=":
+				return new CompareOp(left, Comparison.NotEquals, right);
 			default:
-				throw new ArgumentException($"bad token: {op}");
+				throw new ArgumentException($"bad token for binary op: {op}");
 		}
 	}
 	

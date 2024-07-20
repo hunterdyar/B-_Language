@@ -134,7 +134,7 @@ public class Compiler
 			}
 		}else if (statement is FunctionCall fn)
 		{
-			CompileFunctionCall(fn);
+			CompileFunctionCall(fn, true);
 		}else if (statement is FunctionDeclaration fnDec)
 		{
 			var name = fnDec.Identifier.Value;
@@ -344,7 +344,7 @@ public class Compiler
 			{
 				save = Emit(OpCode.SaveRegister, fn.UID);
 			}
-			var call = CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			var call = CompileFunctionCall(fn, false);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
 			//var call = Frame.GetTopInstructionLocation();
 			
 			//todo: somehow need to check this during the 'unknown' step.  
@@ -368,7 +368,12 @@ public class Compiler
 			{
 				//Not normal! we need to go back and fix it later, if we find the function definition.
 				//we create the restore. use the save, and the call was created with a garbage function value in CompilieFunctionCall()
-				var restore = Emit(OpCode.RestoreRegister, fn.UID);
+				InstructionLocation? restore = null;
+				if (ShouldSaveRegisters())
+				{ 
+					restore = Emit(OpCode.RestoreRegister, fn.UID);
+				}
+
 				_unknownFunctionCalls.Add(new UnknownFunctionCall(call,fn.FunctionName.Value,Frame,save,restore));
 			}
 
@@ -378,7 +383,7 @@ public class Compiler
 	}
 	
 	//called by both compileStatement and compileExpression
-	private InstructionLocation CompileFunctionCall(FunctionCall fn)
+	private InstructionLocation CompileFunctionCall(FunctionCall fn, bool emitUnknown)
 	{
 		var name = fn.FunctionName.Value;
 		
@@ -399,7 +404,10 @@ public class Compiler
 		if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition? sub))
 		{
 			call = Emit(OpCode.Call, fn.UID, 99999, VM.RET);
-			//_unknownFunctionCalls.Add(new UnknownFunctionCall(call,fn.FunctionName.Value,Frame));
+			if (emitUnknown)
+			{
+				_unknownFunctionCalls.Add(new UnknownFunctionCall(call, fn.FunctionName.Value, Frame));
+			}
 		}
 		else
 		{

@@ -1,4 +1,5 @@
-﻿using BMinus.AST;
+﻿using System.Diagnostics;
+using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using BMinus.Models;
 

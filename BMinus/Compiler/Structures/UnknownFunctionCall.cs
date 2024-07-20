@@ -25,8 +25,8 @@ public struct UnknownFunctionCall
 		CallLocation = callLocation;
 		this.functionName = functionName;
 		this.callingFrame = callingFrame;
-		this.save = save.GetValueOrDefault();
-		this.restore = restore.GetValueOrDefault();
+		this.save = save;
+		this.restore = restore;
 		Compiler.OnInstructionRemoved+= OnInstructionRemoved;
 	}
 
@@ -68,5 +68,10 @@ public struct UnknownFunctionCall
 				//hack a second 'original instruction locatin' to do a remap? might need this kind of thing for more complex compiler optimizations, but it feels like a wild overhead.
 			}
 		}
+	}
+
+	public override string ToString()
+	{
+		return $"Unknown '{functionName}' at {CallLocation}. S{save}. R{restore}";
 	}
 }

@@ -27,4 +27,9 @@ public struct InstructionLocation
 
 		return this;
 	}
+
+	public override string ToString()
+	{
+		return $"L{FrameIndex}:{InstructionIndex}";
+	}
 }

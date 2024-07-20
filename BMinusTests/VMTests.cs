@@ -174,6 +174,17 @@ public class VMTests
 	          a = 1;
 	          print();
 	          """, "5")]
+	[TestCase("""
+	          changea(){
+	            extern a;
+	            a = 5;
+	          }
+
+	          auto a;
+	          a = 1;
+	          changea();
+	          putint(a);
+	          """, "5")]
 
 	[TestCase("""
 	          auto a;

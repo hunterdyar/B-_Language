@@ -204,7 +204,22 @@ public class VMTests
 	{
 		RunTestOnOutput(p, e);
 	}
-	//test that it fails on unclosed a "
+
+	[TestCase("""
+	          auto a;
+	          a = 5;
+
+	          while(a > 0){
+	            putint(a);
+	            a = a-1;
+	          }
+	          putint(0);
+	          """, "543210")]
+
+	public static void WhileLoopTest(string p, string e)
+	{
+		RunTestOnOutput(p, e);
+	}
 
 	
 }

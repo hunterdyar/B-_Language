@@ -209,6 +209,15 @@ public class Compiler
 			Compile(ifStatement.Consequence);
 			var top = Frame.GetTopInstructionLocation();
 			UpdateOperands(jnz, top.FrameIndex, top.InstructionIndex);
+		}else if (statement is WhileLoop whileLoop)
+		{
+			CompileExpression(whileLoop.Condition, VM.X);
+			var start = Frame.GetTopInstructionLocation();
+			var jnz = Emit(OpCode.JumpZero, whileLoop.UID, 9999, 9999);
+			Compile(whileLoop.Consequence);
+			Emit(OpCode.Jump, whileLoop.UID, start.FrameIndex, start.InstructionIndex);
+			var end = Frame.GetTopInstructionLocation();
+			UpdateOperands(jnz, end.FrameIndex, end.InstructionIndex);
 		}else if (statement is Label label)
 		{
 			//Create label

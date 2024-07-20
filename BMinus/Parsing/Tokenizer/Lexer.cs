@@ -64,7 +64,7 @@ public class Lexer
 	private ((TokenType, TokenType), TokenType)[] _merges = new[]
 	{
 		((TokenType.Assignment, TokenType.Assignment), TokenType.Equals),
-		((TokenType.Bang,TokenType.Assignment),        TokenType.NotEquals),
+		((TokenType.Bang,TokenType.Assignment),        TokenType.NotEquals),//todo: is this not working?
 		((TokenType.GreaterThan, TokenType.Assignment), TokenType.GreaterThanEqual),
 		((TokenType.LessThan, TokenType.Assignment), TokenType.LessThanEqual),
 		((TokenType.Plus, TokenType.Plus), TokenType.Increment),

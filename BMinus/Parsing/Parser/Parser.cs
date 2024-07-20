@@ -35,6 +35,7 @@ public class Parser
 		Register(TokenType.SwitchKeyword, new SwitchParselet());
 		Register(TokenType.ExternKeyword, new ExternDeclarationParselet());
 		Register(TokenType.ReturnKeyword, new ReturnParselet());
+		Register(TokenType.WhileKeyword, new WhileLoopParselet());
 		//infix
 		Register(TokenType.LParen, new FunctionParselet());
 		
@@ -209,6 +210,7 @@ public class Parser
 		        || t == typeof(CompoundStatement)
 				|| t == typeof(IfElseStatement)
 			    || t == typeof(FunctionDeclaration)
+			    || t == typeof(WhileLoop)
 				);
 	}
 

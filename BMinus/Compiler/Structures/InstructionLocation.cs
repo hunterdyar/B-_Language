@@ -10,4 +10,26 @@ public struct InstructionLocation
 		FrameIndex = frameIndex;
 		InstructionIndex = instructionIndex;
 	}
+
+	//call when a different instruction is removed.
+	public InstructionLocation? OnOtherInstructionRemoved(int frameId, int insIndex)
+	{
+		if (frameId == this.FrameIndex)
+		{
+			if (insIndex < this.InstructionIndex)
+			{
+				return new InstructionLocation(frameId, InstructionIndex-1);
+			}else if (insIndex == InstructionIndex)
+			{
+				return null;
+			}
+		}
+
+		return this;
+	}
+
+	public override string ToString()
+	{
+		return $"L{FrameIndex}:{InstructionIndex}";
+	}
 }

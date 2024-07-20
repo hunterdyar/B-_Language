@@ -184,7 +184,7 @@ public class VMRunner
 
 	public void OnHeapValueUpdated(int pos, byte[] bytes)
 	{
-		if (_vm.State == VMState.Stepping || _vm.State == VMState.Complete)
+		if (_vm != null && (_vm.State == VMState.Stepping || _vm.State == VMState.Complete))
 		{
 			OnHeapValueUpdatedEvent?.Invoke(pos,bytes);
 		}

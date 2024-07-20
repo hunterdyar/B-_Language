@@ -1,4 +1,5 @@
-﻿using BMinus.AST;
+﻿using System.Diagnostics;
+using BMinus.AST;
 using BMinus.AST.PrimitiveStatements;
 using BMinus.Models;
 
@@ -106,7 +107,8 @@ public class SubroutineDefinition
 		{
 			if (Instructions[i].Op == OpCode.Jump
 			    || Instructions[i].Op == OpCode.JumpZero
-			    || Instructions[i].Op == OpCode.JumpNotZero)
+			    || Instructions[i].Op == OpCode.JumpNotZero
+			    )
 			{
 				if (Instructions[i].OperandB >= loc)
 				{
@@ -115,6 +117,8 @@ public class SubroutineDefinition
 				}
 			}
 		}
+		//we also mess up saved instruction locations, and need to go back to the compiler and tell all the unknowns to potentially update.
+		Compiler.OnInstructionRemoved?.Invoke(instructionLoc.Value.FrameIndex,instructionLoc.Value.InstructionIndex);
 	}
 
 	//todo: keep track of location for when we have to go back and update.

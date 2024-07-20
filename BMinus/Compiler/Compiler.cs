@@ -18,10 +18,10 @@ namespace BMinus.Compiler;
 
 public class Compiler
 {
+	//todo: i don't like that this is static, would rather inject reference to compiler instance.
+	public static Action<int, int> OnInstructionRemoved;
 	public Statement Root;
-	//shorthands for register indices. can move to VM as static.
-	private bool[] _dirtyRegisters = new bool[8];
-	//environment
+		//environment
 	public Dictionary<string, int> Globals => _globals;
 	private Dictionary<string, int> _globals = new Dictionary<string, int>();
 
@@ -134,7 +134,7 @@ public class Compiler
 			}
 		}else if (statement is FunctionCall fn)
 		{
-			CompileFunctionCall(fn);
+			CompileFunctionCall(fn, true);
 		}else if (statement is FunctionDeclaration fnDec)
 		{
 			var name = fnDec.Identifier.Value;
@@ -160,7 +160,6 @@ public class Compiler
 				Frame.AddLocal(parameter.Value);
 			}
 
-			SetRegistersClean();
 			Compile(fnDec.Statement);
 
 			
@@ -173,7 +172,6 @@ public class Compiler
 				Emit(OpCode.Return, fnDec.UID, VM.X); //Leaves the frame, (which cleans the stack from it's locals). With a value perhaps in EAX.
 			}
 
-			Frame.ModifiedRegisters = (bool[])_dirtyRegisters.Clone();
 			_frames.Pop();
 			return;
 		}else if(statement is GoTo gotoStatement)
@@ -267,7 +265,7 @@ public class Compiler
 	{
 		if (register >= 0)
 		{
-			_dirtyRegisters[register] = true;
+			Frame.ModifiedRegisters[register] = true;
 		}
 
 		if(expression is WordLiteral wordLiteral)
@@ -346,17 +344,13 @@ public class Compiler
 			{
 				save = Emit(OpCode.SaveRegister, fn.UID);
 			}
-			SetRegistersClean();
-			CompileFunctionCall(fn);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			var call = CompileFunctionCall(fn, false);//clobbers A and B, X is considered clobberable, and RET should have a new value now.
+			//var call = Frame.GetTopInstructionLocation();
 			
 			//todo: somehow need to check this during the 'unknown' step.  
-			//todo: move dirtyRegisters to subroutine definition
-
 			if (_subroutines.TryGetValue(fn.FunctionName.Value, out var sub))
 			{
-
-
-				//todo: move to function in subroutine to return "does this modify this/these registers"
+				//all normal here, add the restore, or remove the save. (either we have restore/save, or neither, as needed).
 				var dirty = sub.ModifiedRegisters[VM.A] || sub.ModifiedRegisters[VM.B];
 				if (dirty) //registers the caller contract says can't be modified (a or b) have been modified.
 				{
@@ -372,17 +366,24 @@ public class Compiler
 			}
 			else
 			{
-				throw new Exception(
-					"Function calls must be declared before they can be used as expressions. This is a bug.");
+				//Not normal! we need to go back and fix it later, if we find the function definition.
+				//we create the restore. use the save, and the call was created with a garbage function value in CompilieFunctionCall()
+				InstructionLocation? restore = null;
+				if (ShouldSaveRegisters())
+				{ 
+					restore = Emit(OpCode.RestoreRegister, fn.UID);
+				}
+
+				_unknownFunctionCalls.Add(new UnknownFunctionCall(call,fn.FunctionName.Value,Frame,save,restore));
 			}
 
 			Emit(OpCode.Move, fn.UID, VM.RET, register);
-			_dirtyRegisters[VM.RET] = true;
+			Frame.ModifiedRegisters[VM.RET] = true;
 		}
 	}
 	
 	//called by both compileStatement and compileExpression
-	private void CompileFunctionCall(FunctionCall fn)
+	private InstructionLocation CompileFunctionCall(FunctionCall fn, bool emitUnknown)
 	{
 		var name = fn.FunctionName.Value;
 		
@@ -394,28 +395,31 @@ public class Compiler
 
 		if (Builtins.IsBuiltin(name, out var index))
 		{
-			Emit(OpCode.CallBuiltin, fn.UID, index, fn.Arguments.Length);
-			return;
+			 var e =Emit(OpCode.CallBuiltin, fn.UID, index, fn.Arguments.Length);
+			 return e;
 		}
 
 		//getFunctionID = fn.FunctionName;
-
+		InstructionLocation call;
 		if (!_subroutines.TryGetValue(fn.FunctionName.Value, out SubroutineDefinition? sub))
 		{
-			var save = Emit(OpCode.Call, fn.UID, 99999, VM.RET);
-			_unknownFunctionCalls.Add(new UnknownFunctionCall(save,fn.FunctionName.Value,Frame));
+			call = Emit(OpCode.Call, fn.UID, 99999, VM.RET);
+			if (emitUnknown)
+			{
+				_unknownFunctionCalls.Add(new UnknownFunctionCall(call, fn.FunctionName.Value, Frame));
+			}
 		}
 		else
 		{
-			Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
+			call = Emit(OpCode.Call, fn.UID, sub.FrameID, VM.RET);
 		}
 
-		_dirtyRegisters[VM.RET] = true;
+		Frame.ModifiedRegisters[VM.RET] = true;
 		// if (register != VM.X)
 		// {
 		// 	Emit(OpCode.Move,fn.UID,VM.X, register);
 		// }
-		return;
+		return call;
 		//entering a frame sets base stackPointer, etc.
 		//after the function is done, we will return to this location of this frame.
 		//Runtime frames will clean the stack when we leave them.
@@ -481,11 +485,6 @@ public class Compiler
 		var kvp = _subroutines.First(x => x.Value.FrameID == original.FrameIndex);
 		var f = kvp.Value;
 		f.UpdateOperands(original,newOps);
-	}
-
-	private void SetRegistersClean()
-	{
-		_dirtyRegisters = new bool[8];//all false, unchanged.
 	}
 	
 	#endregion

@@ -56,7 +56,7 @@ document.getElementById('compile').onclick = () => {
 };
 
 document.getElementById('step').onclick = ()=>{
-    //if state is ready, firstStep
+    //if state is ready, frstStep
     let s = exports.BMinusRuntime.GetState();
     if(s === 5 || s === 4 || s === 3){//uninitiazed, complete, error
         let p = editor.state.doc.toString();
@@ -346,7 +346,6 @@ function GetAndRenderAllInstructions(){
         fullInstructionList.removeChild(fullInstructionList.lastChild);
     }
     let numberFrames = exports.BMinusRuntime.GetFrameCount();
-    let firstlink;
 
     for (let curFrame = 0;curFrame<numberFrames;curFrame++) {
 

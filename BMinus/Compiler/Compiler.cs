@@ -28,15 +28,17 @@ public class Compiler
 	private List<UnknownFunctionCall> _unknownFunctionCalls = new List<UnknownFunctionCall>();
 
 	private HashSet<UnknownExtern> _unknownExterns = new HashSet<UnknownExtern>();
+
+	private List<UnknownGoTo> _unknownGoTos = new List<UnknownGoTo>();
 	//functions, basically
 	private SubroutineDefinition Frame => _subroutines[_frames.Peek()];
 	public Dictionary<string, SubroutineDefinition> Subroutines => _subroutines;
 
 	private readonly Dictionary<string,SubroutineDefinition> _subroutines = new Dictionary<string, SubroutineDefinition>();
+	public Dictionary<string, InstructionLocation> Labels => _labels;
 	private readonly Dictionary<string, InstructionLocation> _labels = new Dictionary<string, InstructionLocation>();
 	//a stack of frames is needed too? is it? how do we keep compiling the root frame after we finish the subroute
 	private Stack<string> _frames = new Stack<string>();
-
 	private VMRunner _runner;
 	public Compiler(VMRunner runner)
 	{
@@ -65,6 +67,11 @@ public class Compiler
 		{
 			unknownExtern.TryToFindExternAgain(this);
 		}
+
+		foreach (var uGoTo in _unknownGoTos)
+		{
+			// uGoTo
+		} 
 	}
 	
 	public void Compile(Statement statement)
@@ -180,9 +187,18 @@ public class Compiler
 			//dynamic goto's are not supported, this is compile time.
 			// string label = temporary LabelValue.
 			//destination = getdestination
-			//if we are not in the current frame, we need to clean the stack?
+			if (_labels.TryGetValue(gotoStatement.Label, out var location))
+			{
+				//the VM should handle the frameIndex, and repeatedly calling LeaveFrame.
+				Emit(OpCode.GoTo, gotoStatement.UID,location.FrameIndex, location.FrameIndex);//
+			}
+			else
+			{
+				//save this until we finish the rest of compiling.
+				var gotoLoc = Emit(OpCode.GoTo, gotoStatement.UID,999, 999);//
+				_unknownGoTos.Add(new UnknownGoTo(gotoStatement.Label,gotoLoc));
+			}
 			//shit.
-			Emit(OpCode.GoTo, gotoStatement.UID,0, 0);//
 			return;
 		}else if (statement is IfElseStatement ifElseStatement)
 		{

@@ -248,7 +248,7 @@ public class Lexer
 				return false;
 			}
 
-			if (Peek() == ':')
+			if (_source[_pos] == ':')//peek
 			{
 				Consume(':');
 				var l = new Token(TokenType.Label, id);

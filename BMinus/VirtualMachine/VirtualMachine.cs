@@ -285,7 +285,8 @@ public class VirtualMachine
 				{
 					LeaveFrame();
 				}
-				//
+				
+				CurrentFrame.SetIP(op.OperandB);
 				return;
 			case OpCode.Return:
 				SetRegister(RET, GetRegister(op.OperandA));

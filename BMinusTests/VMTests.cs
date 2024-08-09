@@ -232,5 +232,17 @@ public class VMTests
 		RunTestOnOutput(p, e);
 	}
 
-	
+	[Test]
+	[TestCase("""
+	          auto a;
+	          goto test;
+	          putint(2);
+	          test:
+	          putint(1);
+	          """, "1")]
+
+	public static void GoToTest(string p, string e)
+	{
+		RunTestOnOutput(p, e);
+	}
 }
